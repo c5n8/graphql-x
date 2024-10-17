@@ -20,8 +20,10 @@
   "packageManager": "pnpm@9.12.1",
   "main": "dist/index.js",
   "scripts": {
+    "prepublishOnly": "npm run ci",
     "dev": "vitest",
     "ci": "npm run build && npm run check-format && npm run check-exports && npm run test",
+    "local-release": "changeset version && changeset publish",
     "build": "tsc",
     "format": "prettier --write .",
     "check-format": "prettier --check .",
@@ -33,6 +35,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.16.4",
+    "@changesets/cli": "^2.27.9",
     "prettier": "^3.3.3",
     "typescript": "^5.6.3",
     "vitest": "^2.1.3"
