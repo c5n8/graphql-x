@@ -15,8 +15,9 @@
     "type": "git",
     "url": "git+https://github.com/tenex-engineering/graphql-x.git"
   },
-  "type": "module",
   "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@9.12.1",
   "main": "dist/index.js",
   "scripts": {
     "dev": "vitest",
