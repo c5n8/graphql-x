@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.1.4
+
+### Patch Changes
+
+- dc4fdff: add package files
+
 ## 0.1.3
 
 ### Patch Changes
