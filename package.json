@@ -19,6 +19,9 @@
   "type": "module",
   "packageManager": "pnpm@9.12.1",
   "main": "dist/index.js",
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "prepublishOnly": "npm run ci",
     "dev": "vitest",
