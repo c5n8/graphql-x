@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.1.5
+
+### Patch Changes
+
+- bb87bb5: update homepage url
+
 ## 0.1.4
 
 ### Patch Changes
