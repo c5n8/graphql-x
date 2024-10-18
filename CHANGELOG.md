@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.1.3
+
+### Patch Changes
+
+- ebef807: fix package name
+
 ## 0.1.2
 
 ### Patch Changes
