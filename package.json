@@ -24,19 +24,25 @@
     "!**/*.test.*",
     "!**/*.js.map"
   ],
+  "imports": {
+    "#app/*": "./dist/*"
+  },
   "scripts": {
     "prepublishOnly": "npm run ci",
-    "dev": "vitest",
-    "ci": "npm run build && npm run check-format && npm run check-exports && npm run test",
+    "dev": "concurrently --names=\"tsc,test\" --prefix-colors=\"cyan,green\" \"npm run watch:tsc\" \"npm run watch:test\"",
+    "ci": "npm run lint && npm run build && npm run check-format && npm run check-exports && npm run test",
     "local-release": "changeset version && changeset publish",
     "build": "tsc",
     "lint": "eslint . --fix",
     "format": "prettier --write .",
     "check-format": "prettier --check .",
     "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
-    "test": "vitest run"
+    "test": "vitest run",
+    "watch:tsc": "tsc --watch --preserveWatchOutput",
+    "watch:test": "vitest --clearScreen=false"
   },
   "dependencies": {
+    "@parcel/watcher": "^2.4.1",
     "graphql": "^16.9.0"
   },
   "devDependencies": {
@@ -45,10 +51,14 @@
     "@eslint/compat": "^1.2.0",
     "@eslint/js": "^9.12.0",
     "@types/eslint__js": "^8.42.3",
+    "@types/node": "^22.7.7",
+    "concurrently": "^9.0.1",
     "eslint": "^9.12.0",
+    "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.3.3",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.10.0",
+    "vite": "^5.4.9",
     "vitest": "^2.1.3"
   }
 }

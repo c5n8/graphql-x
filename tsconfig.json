@@ -1,6 +1,13 @@
 {
   "include": ["src/**/*"],
   "compilerOptions": {
+    "pretty": true,
+    "types": ["vite/client"],
+
+    "paths": {
+      "#app/*": ["./src/*"]
+    },
+
     /* Base Options: */
     "esModuleInterop": true,
     "skipLibCheck": true,
