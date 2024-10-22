@@ -1,7 +1,9 @@
 import type { Bundle, Document } from '#app/document.js'
 import {
   Kind,
+  type FieldDefinitionNode,
   type InputObjectTypeDefinitionNode,
+  type NamedTypeNode,
   type ObjectTypeDefinitionNode,
   type TypeNode,
 } from 'graphql'
@@ -23,6 +25,9 @@ export default function (bundle: Bundle, document: Document): Bundle {
   addMutation(node, bundle)
   addMutationInput(node, bundle, document)
   addMutationOutput(node, bundle)
+  addMutationResult(node, bundle)
+  addMutationValidation(node, bundle)
+  addMutationValidationIssues(node, bundle)
 
   return bundle
 }
@@ -97,6 +102,46 @@ function addMutationInput(
 
   const relationInputNames: string[] = []
 
+  function getType(
+    field: FieldDefinitionNode,
+    fieldType: TypeNode,
+    createType: (type: NamedTypeNode) => TypeNode = (type) => type,
+  ) {
+    if (fieldType.kind === Kind.NAMED_TYPE) {
+      if (
+        !(
+          fieldType.name.value !== 'ID' &&
+          field.directives?.some(
+            (directive) => directive.name.value === 'readonly',
+          ) !== true
+        )
+      ) {
+        return
+      }
+
+      if (objectTypeNames.includes(fieldType.name.value)) {
+        const typeName = `Create${node.name.value}${fieldType.name.value}RelationInput`
+        relationInputNames.push(typeName)
+
+        return createType({
+          kind: Kind.NAMED_TYPE,
+          name: {
+            kind: Kind.NAME,
+            value: typeName,
+          },
+        })
+      }
+
+      return createType({
+        kind: Kind.NAMED_TYPE,
+        name: {
+          kind: Kind.NAME,
+          value: fieldType.name.value,
+        },
+      })
+    }
+  }
+
   bundle.expansions.push({
     kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
     name: {
@@ -104,84 +149,13 @@ function addMutationInput(
       value: `Create${node.name.value}Input`,
     },
     fields: node.fields?.flatMap((field) => {
-      let type: TypeNode | undefined
-
-      if (
-        field.type.kind === Kind.NON_NULL_TYPE &&
-        field.type.type.kind === Kind.NAMED_TYPE
-      ) {
-        if (field.type.type.name.value === 'ID') {
-          return []
-        }
-
-        if (
-          field.directives?.some(
-            (directive) => directive.name.value === 'readonly',
-          )
-        ) {
-          return []
-        }
-
-        if (objectTypeNames.includes(field.type.type.name.value)) {
-          const typeName = `Create${node.name.value}${field.type.type.name.value}RelationInput`
-          relationInputNames.push(typeName)
-
-          type = {
-            kind: Kind.NON_NULL_TYPE,
-            type: {
-              kind: Kind.NAMED_TYPE,
-              name: {
-                kind: Kind.NAME,
-                value: typeName,
-              },
-            },
-          }
-        } else {
-          type = {
-            kind: Kind.NON_NULL_TYPE,
-            type: {
-              kind: Kind.NAMED_TYPE,
-              name: {
-                kind: Kind.NAME,
-                value: field.type.type.name.value,
-              },
-            },
-          }
-        }
-      } else if (field.type.kind === Kind.NAMED_TYPE) {
-        if (field.type.name.value === 'ID') {
-          return []
-        }
-
-        if (
-          field.directives?.some(
-            (directive) => directive.name.value === 'readonly',
-          )
-        ) {
-          return []
-        }
-
-        if (objectTypeNames.includes(field.type.name.value)) {
-          const typeName = `Create${node.name.value}${field.type.name.value}RelationInput`
-          relationInputNames.push(typeName)
-
-          type = {
-            kind: Kind.NAMED_TYPE,
-            name: {
-              kind: Kind.NAME,
-              value: typeName,
-            },
-          }
-        } else {
-          type = {
-            kind: Kind.NAMED_TYPE,
-            name: {
-              kind: Kind.NAME,
-              value: field.type.name.value,
-            },
-          }
-        }
-      }
+      const type =
+        field.type.kind === Kind.NON_NULL_TYPE
+          ? getType(field, field.type.type, (type) => ({
+              kind: Kind.NON_NULL_TYPE,
+              type,
+            }))
+          : getType(field, field.type)
 
       if (type == null) {
         return []
@@ -233,94 +207,98 @@ function addMutationInput(
 }
 
 function addMutationOutput(node: ObjectTypeDefinitionNode, bundle: Bundle) {
-  bundle.expansions.push(
-    {
-      kind: Kind.UNION_TYPE_DEFINITION,
-      name: {
-        kind: Kind.NAME,
-        value: `Create${node.name.value}Output`,
-      },
-      types: [
-        {
-          kind: Kind.NAMED_TYPE,
-          name: {
-            kind: Kind.NAME,
-            value: `Create${node.name.value}Result`,
-          },
-        },
-        {
-          kind: Kind.NAMED_TYPE,
-          name: {
-            kind: Kind.NAME,
-            value: `Create${node.name.value}Validation`,
-          },
-        },
-      ],
+  bundle.expansions.push({
+    kind: Kind.UNION_TYPE_DEFINITION,
+    name: {
+      kind: Kind.NAME,
+      value: `Create${node.name.value}Output`,
     },
-
-    // Mutation Result
-    {
-      kind: Kind.OBJECT_TYPE_DEFINITION,
-      name: {
-        kind: Kind.NAME,
-        value: `Create${node.name.value}Result`,
+    types: [
+      {
+        kind: Kind.NAMED_TYPE,
+        name: {
+          kind: Kind.NAME,
+          value: `Create${node.name.value}Result`,
+        },
       },
-      fields: [
-        {
-          kind: Kind.FIELD_DEFINITION,
-          name: {
-            kind: Kind.NAME,
-            value: 'result',
-          },
+      {
+        kind: Kind.NAMED_TYPE,
+        name: {
+          kind: Kind.NAME,
+          value: `Create${node.name.value}Validation`,
+        },
+      },
+    ],
+  })
+}
+
+function addMutationResult(node: ObjectTypeDefinitionNode, bundle: Bundle) {
+  bundle.expansions.push({
+    kind: Kind.OBJECT_TYPE_DEFINITION,
+    name: {
+      kind: Kind.NAME,
+      value: `Create${node.name.value}Result`,
+    },
+    fields: [
+      {
+        kind: Kind.FIELD_DEFINITION,
+        name: {
+          kind: Kind.NAME,
+          value: 'result',
+        },
+        type: {
+          kind: Kind.NON_NULL_TYPE,
           type: {
-            kind: Kind.NON_NULL_TYPE,
-            type: {
-              kind: Kind.NAMED_TYPE,
-              name: {
-                kind: Kind.NAME,
-                value: node.name.value,
-              },
+            kind: Kind.NAMED_TYPE,
+            name: {
+              kind: Kind.NAME,
+              value: node.name.value,
             },
           },
         },
-      ],
-    },
-
-    // Mutation Input Validation
-    {
-      kind: Kind.OBJECT_TYPE_DEFINITION,
-      name: {
-        kind: Kind.NAME,
-        value: `Create${node.name.value}Validation`,
       },
-      fields: [
-        {
-          kind: Kind.FIELD_DEFINITION,
-          name: {
-            kind: Kind.NAME,
-            value: 'issues',
-          },
+    ],
+  })
+}
+
+function addMutationValidation(node: ObjectTypeDefinitionNode, bundle: Bundle) {
+  bundle.expansions.push({
+    kind: Kind.OBJECT_TYPE_DEFINITION,
+    name: {
+      kind: Kind.NAME,
+      value: `Create${node.name.value}Validation`,
+    },
+    fields: [
+      {
+        kind: Kind.FIELD_DEFINITION,
+        name: {
+          kind: Kind.NAME,
+          value: 'issues',
+        },
+        type: {
+          kind: Kind.NON_NULL_TYPE,
           type: {
-            kind: Kind.NON_NULL_TYPE,
-            type: {
-              kind: Kind.NAMED_TYPE,
-              name: {
-                kind: Kind.NAME,
-                value: `Create${node.name.value}ValidationIssues`,
-              },
+            kind: Kind.NAMED_TYPE,
+            name: {
+              kind: Kind.NAME,
+              value: `Create${node.name.value}ValidationIssues`,
             },
           },
         },
-      ],
-    },
-
-    // Mutation Input Validation Issues
-    {
-      kind: Kind.SCALAR_TYPE_DEFINITION,
-      name: {
-        kind: Kind.NAME,
-        value: `Create${node.name.value}ValidationIssues`,
       },
+    ],
+  })
+}
+
+function addMutationValidationIssues(
+  node: ObjectTypeDefinitionNode,
+  bundle: Bundle,
+) {
+  bundle.expansions.push({
+    kind: Kind.SCALAR_TYPE_DEFINITION,
+    name: {
+      kind: Kind.NAME,
+      value: `Create${node.name.value}ValidationIssues`,
     },
-  )
+  })
 }
