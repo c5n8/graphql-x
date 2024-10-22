@@ -1,0 +1,11 @@
+type Post @create {
+  id: ID!
+  createdAt: DateTime @readonly
+  title: String!
+  body: String
+  category: Category
+}
+
+type Category {
+  id: ID!
+}

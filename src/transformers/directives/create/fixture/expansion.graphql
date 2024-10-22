@@ -1,0 +1,25 @@
+extend type Mutation {
+  createPost(input: CreatePostInput!): CreatePostOutput!
+}
+
+input CreatePostInput {
+  title: String!
+  body: String
+  category: CreatePostCategoryRelationInput
+}
+
+input CreatePostCategoryRelationInput {
+  id: ID!
+}
+
+union CreatePostOutput = CreatePostResult | CreatePostValidation
+
+type CreatePostResult {
+  result: Post!
+}
+
+type CreatePostValidation {
+  issues: CreatePostValidationIssues!
+}
+
+scalar CreatePostValidationIssues
