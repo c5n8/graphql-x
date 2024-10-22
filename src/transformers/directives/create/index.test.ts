@@ -3,44 +3,61 @@ import { Kind, parse, print } from 'graphql'
 import type { Bundle, Document } from '#app/document.js'
 import expand from './index.js'
 import initial from './fixture/initial.graphql?raw'
-import expansion from './fixture/expansion.graphql?raw'
+import expanded from './fixture/expanded.graphql?raw'
 
 test('expand directive @create', async () => {
-  expansionTestBench({ expand, initial, expansion })
+  expansionTestBench({ expand, initial, expanded })
 })
 
 function expansionTestBench({
   expand,
   initial,
-  expansion,
+  expanded,
 }: {
-  expand: (node: Bundle, document: Document) => Bundle
+  expand: (node: Bundle, document: Document) => void
   initial: string
-  expansion: string
+  expanded: string
 }) {
   expect(() => parse(initial)).not.toThrowError()
-  expect(() => parse(expansion)).not.toThrowError()
+  expect(() => parse(expanded)).not.toThrowError()
 
   const document: Document = {
     bundles: parse(initial).definitions.map((node) => ({
       node,
       expansions: [],
     })),
+    globals: [],
   }
 
-  const [bundle] = document.bundles
-
-  if (bundle == null) {
-    throw new Error('invalid document')
+  for (const bundle of document.bundles) {
+    expand(bundle, document)
   }
-
-  const { expansions } = expand(bundle, document)
 
   const result =
     print({
       kind: Kind.DOCUMENT,
-      definitions: expansions,
-    }) + '\n'
+      definitions: document.bundles.flatMap((bundle) => {
+        return [bundle.node, ...bundle.expansions]
+      }),
+    }) +
+    '\n' +
+    '\n' +
+    Object.keys(
+      document.globals.reduce(
+        (accumulator, definition) => {
+          const printed = print({
+            kind: Kind.DOCUMENT,
+            definitions: [definition],
+          })
 
-  expect(result).toBe(expansion)
+          accumulator[printed] = Symbol()
+
+          return accumulator
+        },
+        {} as Record<string, symbol>,
+      ),
+    ).join('\n\n') +
+    '\n'
+
+  expect(result).toBe(expanded)
 }

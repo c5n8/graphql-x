@@ -1,3 +1,17 @@
+scalar DateTime
+
+directive @create on OBJECT
+
+directive @readonly on FIELD_DEFINITION
+
+type Post @create {
+  id: ID!
+  createdAt: DateTime @readonly
+  title: String!
+  body: String
+  category: Category
+}
+
 extend type Mutation {
   createPost(input: CreatePostInput!): CreatePostOutput!
 }
@@ -15,11 +29,17 @@ input CreatePostCategoryRelationInput {
 union CreatePostOutput = CreatePostResult | CreatePostValidation
 
 type CreatePostResult {
-  result: Post!
+  result: Post! @exclusive
 }
 
 type CreatePostValidation {
-  issues: CreatePostValidationIssues!
+  issues: CreatePostValidationIssues! @exclusive
 }
 
 scalar CreatePostValidationIssues
+
+type Category {
+  id: ID!
+}
+
+directive @exclusive on FIELD_DEFINITION

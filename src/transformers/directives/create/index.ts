@@ -8,7 +8,7 @@ import {
   type TypeNode,
 } from 'graphql'
 
-export default function (bundle: Bundle, document: Document): Bundle {
+export default function (bundle: Bundle, document: Document) {
   const { node } = bundle
 
   if (
@@ -16,7 +16,7 @@ export default function (bundle: Bundle, document: Document): Bundle {
     node.directives?.some((directive) => directive.name.value === 'create')
   ) {
     // valid
-  } else return bundle
+  } else return
 
   addMutation(node, bundle)
   addMutationInput(node, bundle, document)
@@ -24,8 +24,7 @@ export default function (bundle: Bundle, document: Document): Bundle {
   addMutationResult(node, bundle)
   addMutationValidation(node, bundle)
   addMutationValidationIssues(node, bundle)
-
-  return bundle
+  addGlobals(document)
 }
 
 function addMutation(node: ObjectTypeDefinitionNode, bundle: Bundle) {
@@ -252,6 +251,15 @@ function addMutationResult(node: ObjectTypeDefinitionNode, bundle: Bundle) {
             },
           },
         },
+        directives: [
+          {
+            kind: Kind.DIRECTIVE,
+            name: {
+              kind: Kind.NAME,
+              value: 'exclusive',
+            },
+          },
+        ],
       },
     ],
   })
@@ -281,6 +289,15 @@ function addMutationValidation(node: ObjectTypeDefinitionNode, bundle: Bundle) {
             },
           },
         },
+        directives: [
+          {
+            kind: Kind.DIRECTIVE,
+            name: {
+              kind: Kind.NAME,
+              value: 'exclusive',
+            },
+          },
+        ],
       },
     ],
   })
@@ -296,5 +313,22 @@ function addMutationValidationIssues(
       kind: Kind.NAME,
       value: `Create${node.name.value}ValidationIssues`,
     },
+  })
+}
+
+function addGlobals(document: Document) {
+  document.globals.push({
+    kind: Kind.DIRECTIVE_DEFINITION,
+    name: {
+      kind: Kind.NAME,
+      value: 'exclusive',
+    },
+    repeatable: false,
+    locations: [
+      {
+        kind: Kind.NAME,
+        value: 'FIELD_DEFINITION',
+      },
+    ],
   })
 }
