@@ -9,18 +9,14 @@ import {
 } from 'graphql'
 
 export default function (bundle: Bundle, document: Document): Bundle {
-  if (
-    !(
-      bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
-      bundle.node.directives?.some(
-        (directive) => directive.name.value === 'create',
-      )
-    )
-  ) {
-    return bundle
-  }
-
   const { node } = bundle
+
+  if (
+    node.kind === Kind.OBJECT_TYPE_DEFINITION &&
+    node.directives?.some((directive) => directive.name.value === 'create')
+  ) {
+    // valid
+  } else return bundle
 
   addMutation(node, bundle)
   addMutationInput(node, bundle, document)
@@ -102,46 +98,6 @@ function addMutationInput(
 
   const relationInputNames: string[] = []
 
-  function getType(
-    field: FieldDefinitionNode,
-    fieldType: TypeNode,
-    createType: (type: NamedTypeNode) => TypeNode = (type) => type,
-  ) {
-    if (fieldType.kind === Kind.NAMED_TYPE) {
-      if (
-        !(
-          fieldType.name.value !== 'ID' &&
-          field.directives?.some(
-            (directive) => directive.name.value === 'readonly',
-          ) !== true
-        )
-      ) {
-        return
-      }
-
-      if (objectTypeNames.includes(fieldType.name.value)) {
-        const typeName = `Create${node.name.value}${fieldType.name.value}RelationInput`
-        relationInputNames.push(typeName)
-
-        return createType({
-          kind: Kind.NAMED_TYPE,
-          name: {
-            kind: Kind.NAME,
-            value: typeName,
-          },
-        })
-      }
-
-      return createType({
-        kind: Kind.NAMED_TYPE,
-        name: {
-          kind: Kind.NAME,
-          value: fieldType.name.value,
-        },
-      })
-    }
-  }
-
   bundle.expansions.push({
     kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
     name: {
@@ -149,6 +105,46 @@ function addMutationInput(
       value: `Create${node.name.value}Input`,
     },
     fields: node.fields?.flatMap((field) => {
+      function getType(
+        field: FieldDefinitionNode,
+        fieldType: TypeNode,
+        createType: (type: NamedTypeNode) => TypeNode = (type) => type,
+      ) {
+        if (fieldType.kind === Kind.NAMED_TYPE) {
+          if (
+            fieldType.name.value !== 'ID' &&
+            field.directives?.some(
+              (directive) => directive.name.value === 'readonly',
+            ) !== true
+          ) {
+            // valid
+          } else {
+            return
+          }
+
+          if (objectTypeNames.includes(fieldType.name.value)) {
+            const typeName = `Create${node.name.value}${fieldType.name.value}RelationInput`
+            relationInputNames.push(typeName)
+
+            return createType({
+              kind: Kind.NAMED_TYPE,
+              name: {
+                kind: Kind.NAME,
+                value: typeName,
+              },
+            })
+          }
+
+          return createType({
+            kind: Kind.NAMED_TYPE,
+            name: {
+              kind: Kind.NAME,
+              value: fieldType.name.value,
+            },
+          })
+        }
+      }
+
       const type =
         field.type.kind === Kind.NON_NULL_TYPE
           ? getType(field, field.type.type, (type) => ({
