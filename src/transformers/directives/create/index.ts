@@ -104,11 +104,10 @@ function addMutationInput(
       value: `Create${node.name.value}Input`,
     },
     fields: node.fields?.flatMap((field) => {
-      function getType(
-        field: FieldDefinitionNode,
+      const getType = (
         fieldType: TypeNode,
-        createType: (type: NamedTypeNode) => TypeNode = (type) => type,
-      ) {
+        wrapType: (type: NamedTypeNode) => TypeNode = (type) => type,
+      ) => {
         if (fieldType.kind === Kind.NAMED_TYPE) {
           if (
             fieldType.name.value !== 'ID' &&
@@ -125,7 +124,7 @@ function addMutationInput(
             const typeName = `Create${node.name.value}${fieldType.name.value}RelationInput`
             relationInputNames.push(typeName)
 
-            return createType({
+            return wrapType({
               kind: Kind.NAMED_TYPE,
               name: {
                 kind: Kind.NAME,
@@ -134,7 +133,7 @@ function addMutationInput(
             })
           }
 
-          return createType({
+          return wrapType({
             kind: Kind.NAMED_TYPE,
             name: {
               kind: Kind.NAME,
@@ -146,11 +145,11 @@ function addMutationInput(
 
       const type =
         field.type.kind === Kind.NON_NULL_TYPE
-          ? getType(field, field.type.type, (type) => ({
+          ? getType(field.type.type, (type) => ({
               kind: Kind.NON_NULL_TYPE,
               type,
             }))
-          : getType(field, field.type)
+          : getType(field.type)
 
       if (type == null) {
         return []
