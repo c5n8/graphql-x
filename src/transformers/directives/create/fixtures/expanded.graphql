@@ -9,6 +9,7 @@ type Post @create {
   createdAt: DateTime @readonly
   title: String!
   body: String
+  tags: [[Category!]!]!
   category: Category
 }
 
@@ -19,6 +20,7 @@ extend type Mutation {
 input CreatePostInput {
   title: String!
   body: String
+  tags: [[CreatePostCategoryRelationInput!]!]!
   category: CreatePostCategoryRelationInput
 }
 

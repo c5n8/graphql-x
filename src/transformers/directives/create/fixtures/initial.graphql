@@ -9,6 +9,7 @@ type Post @create {
   createdAt: DateTime @readonly
   title: String!
   body: String
+  tags: [[Category!]!]!
   category: Category
 }
 

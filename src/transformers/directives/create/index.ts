@@ -2,6 +2,7 @@ import type { Bundle, Document } from '#app/document.js'
 import {
   Kind,
   type InputObjectTypeDefinitionNode,
+  type ListTypeNode,
   type NamedTypeNode,
   type ObjectTypeDefinitionNode,
   type TypeNode,
@@ -79,7 +80,8 @@ function addMutationInput(
   bundle: Bundle,
   document: Document,
 ) {
-  // TODO embed these to document  {
+  // TODO embed these to document
+  // {
   const objectTypeMap = Object.fromEntries(
     document.bundles.flatMap((bundle) => {
       const { node } = bundle
@@ -94,7 +96,7 @@ function addMutationInput(
   const objectTypeNames = Object.keys(objectTypeMap)
   // }
 
-  const relationInputNames: string[] = []
+  const relationInputRegistry: Record<string, string> = {}
 
   bundle.expansions.push({
     kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
@@ -105,8 +107,9 @@ function addMutationInput(
     fields: node.fields?.flatMap((field) => {
       const getType = (
         fieldType: TypeNode,
-        wrapType: (type: NamedTypeNode) => TypeNode = (type) => type,
-      ) => {
+        wrapType: (type: NamedTypeNode | ListTypeNode) => TypeNode = (type) =>
+          type,
+      ): TypeNode | undefined => {
         if (fieldType.kind === Kind.NAMED_TYPE) {
           if (
             fieldType.name.value !== 'ID' &&
@@ -121,7 +124,7 @@ function addMutationInput(
 
           if (objectTypeNames.includes(fieldType.name.value)) {
             const typeName = `Create${node.name.value}${fieldType.name.value}RelationInput`
-            relationInputNames.push(typeName)
+            relationInputRegistry[typeName] = typeName
 
             return wrapType({
               kind: Kind.NAMED_TYPE,
@@ -138,6 +141,25 @@ function addMutationInput(
               kind: Kind.NAME,
               value: fieldType.name.value,
             },
+          })
+        }
+
+        if (fieldType.kind === Kind.LIST_TYPE) {
+          const type =
+            fieldType.type.kind === Kind.NON_NULL_TYPE
+              ? getType(fieldType.type.type, (type) => ({
+                  kind: Kind.NON_NULL_TYPE,
+                  type,
+                }))
+              : getType(fieldType.type)
+
+          if (type == null) {
+            return
+          }
+
+          return wrapType({
+            kind: Kind.LIST_TYPE,
+            type,
           })
         }
       }
@@ -168,34 +190,36 @@ function addMutationInput(
   })
 
   bundle.expansions.push(
-    ...relationInputNames.map<InputObjectTypeDefinitionNode>((name) => {
-      return {
-        kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-        name: {
-          kind: Kind.NAME,
-          value: name,
-        },
-        fields: [
-          {
-            kind: Kind.INPUT_VALUE_DEFINITION,
-            name: {
-              kind: Kind.NAME,
-              value: 'id',
-            },
-            type: {
-              kind: Kind.NON_NULL_TYPE,
+    ...Object.keys(relationInputRegistry).map<InputObjectTypeDefinitionNode>(
+      (name) => {
+        return {
+          kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+          name: {
+            kind: Kind.NAME,
+            value: name,
+          },
+          fields: [
+            {
+              kind: Kind.INPUT_VALUE_DEFINITION,
+              name: {
+                kind: Kind.NAME,
+                value: 'id',
+              },
               type: {
-                kind: Kind.NAMED_TYPE,
-                name: {
-                  kind: Kind.NAME,
-                  value: 'ID',
+                kind: Kind.NON_NULL_TYPE,
+                type: {
+                  kind: Kind.NAMED_TYPE,
+                  name: {
+                    kind: Kind.NAME,
+                    value: 'ID',
+                  },
                 },
               },
             },
-          },
-        ],
-      }
-    }),
+          ],
+        }
+      },
+    ),
   )
 }
 
