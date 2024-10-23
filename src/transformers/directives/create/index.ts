@@ -7,23 +7,25 @@ import {
   type TypeNode,
 } from 'graphql'
 
-export default function (bundle: Bundle, document: Document) {
-  const { node } = bundle
+export default function (document: Document) {
+  for (const bundle of document.bundles) {
+    const { node } = bundle
 
-  if (
-    node.kind !== Kind.OBJECT_TYPE_DEFINITION ||
-    node.directives?.some(({ name }) => name.value === 'create') !== true
-  ) {
-    return
+    if (
+      node.kind !== Kind.OBJECT_TYPE_DEFINITION ||
+      node.directives?.some(({ name }) => name.value === 'create') !== true
+    ) {
+      continue
+    }
+
+    addMutation(node, bundle)
+    addMutationInput(node, bundle, document)
+    addMutationOutput(node, bundle)
+    addMutationResult(node, bundle)
+    addMutationValidation(node, bundle)
+    addMutationValidationIssues(node, bundle)
+    addGlobals(document)
   }
-
-  addMutation(node, bundle)
-  addMutationInput(node, bundle, document)
-  addMutationOutput(node, bundle)
-  addMutationResult(node, bundle)
-  addMutationValidation(node, bundle)
-  addMutationValidationIssues(node, bundle)
-  addGlobals(document)
 }
 
 function addMutation(node: ObjectTypeDefinitionNode, bundle: Bundle) {

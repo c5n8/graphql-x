@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 import { buildASTSchema, Kind, parse, print } from 'graphql'
 import * as prettier from 'prettier'
-import type { Bundle, Document } from '#app/document.js'
+import type { Document } from '#app/document.js'
 import baseSchema from '#documents/schema.graphql?raw'
 import expand from './index.js'
 import initialSchema from './fixtures/initial.graphql?raw'
@@ -20,7 +20,7 @@ async function expansionTestBench({
   initialSchema,
   expandedSchema,
 }: {
-  expand: (node: Bundle, document: Document) => void
+  expand: (document: Document) => void
   initialSchema: string
   expandedSchema: string
 }) {
@@ -37,9 +37,7 @@ async function expansionTestBench({
     globals: [],
   }
 
-  for (const bundle of document.bundles) {
-    expand(bundle, document)
-  }
+  expand(document)
 
   const result =
     print({
@@ -48,8 +46,7 @@ async function expansionTestBench({
         return [bundle.node, ...bundle.expansions]
       }),
     }) +
-    '\n' +
-    '\n' +
+    '\n\n' +
     Array.from(
       document.globals.reduce((set, definition) => {
         const printed = print({
