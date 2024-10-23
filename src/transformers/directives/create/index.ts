@@ -1,7 +1,6 @@
 import type { Bundle, Document } from '#app/document.js'
 import {
   Kind,
-  type FieldDefinitionNode,
   type InputObjectTypeDefinitionNode,
   type NamedTypeNode,
   type ObjectTypeDefinitionNode,

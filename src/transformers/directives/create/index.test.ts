@@ -1,9 +1,10 @@
 import { expect, test } from 'vitest'
-import { Kind, parse, print } from 'graphql'
+import { buildASTSchema, Kind, parse, print } from 'graphql'
 import type { Bundle, Document } from '#app/document.js'
 import expand from './index.js'
-import initial from './fixture/initial.graphql?raw'
-import expanded from './fixture/expanded.graphql?raw'
+import initial from './fixtures/initial.graphql?raw'
+import expanded from './fixtures/expanded.graphql?raw'
+import baseSchema from '#documents/schema.graphql?raw'
 
 test('expand directive @create', async () => {
   expansionTestBench({ expand, initial, expanded })
@@ -18,11 +19,13 @@ function expansionTestBench({
   initial: string
   expanded: string
 }) {
-  expect(() => parse(initial)).not.toThrowError()
-  expect(() => parse(expanded)).not.toThrowError()
+  const initialDocument = parse(initial)
+
+  buildASTSchema(initialDocument)
+  buildASTSchema(parse(baseSchema + expanded))
 
   const document: Document = {
-    bundles: parse(initial).definitions.map((node) => ({
+    bundles: initialDocument.definitions.map((node) => ({
       node,
       expansions: [],
     })),

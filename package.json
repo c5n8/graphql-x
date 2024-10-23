@@ -25,7 +25,8 @@
     "!**/*.js.map"
   ],
   "imports": {
-    "#app/*": "./dist/*"
+    "#app/*": "./dist/*",
+    "#documents/*": "./documents/*"
   },
   "scripts": {
     "prepublishOnly": "npm run ci",
