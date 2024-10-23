@@ -29,8 +29,8 @@ input CreatePostCategoryRelationInput {
 }
 
 union CreatePostOutput
-  @exclusive(type: "CreatePostResult", field: "result")
-  @exclusive(type: "CreatePostValidation", field: "issues") =
+  @exclusive(type: "CreatePostResult", fields: ["result"])
+  @exclusive(type: "CreatePostValidation", fields: ["issues"]) =
   | CreatePostResult
   | CreatePostValidation
 
@@ -48,4 +48,4 @@ type Category {
   id: ID!
 }
 
-directive @exclusive(type: String, field: String) repeatable on UNION
+directive @exclusive(type: String, fields: [String]) repeatable on UNION

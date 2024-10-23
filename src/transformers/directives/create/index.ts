@@ -244,11 +244,16 @@ function addMutationOutput(node: ObjectTypeDefinitionNode, bundle: Bundle) {
             kind: Kind.ARGUMENT,
             name: {
               kind: Kind.NAME,
-              value: 'field',
+              value: 'fields',
             },
             value: {
-              kind: Kind.STRING,
-              value: 'result',
+              kind: Kind.LIST,
+              values: [
+                {
+                  kind: Kind.STRING,
+                  value: 'result',
+                },
+              ],
             },
           },
         ],
@@ -275,11 +280,16 @@ function addMutationOutput(node: ObjectTypeDefinitionNode, bundle: Bundle) {
             kind: Kind.ARGUMENT,
             name: {
               kind: Kind.NAME,
-              value: 'field',
+              value: 'fields',
             },
             value: {
-              kind: Kind.STRING,
-              value: 'issues',
+              kind: Kind.LIST,
+              values: [
+                {
+                  kind: Kind.STRING,
+                  value: 'issues',
+                },
+              ],
             },
           },
         ],
@@ -402,13 +412,16 @@ function addGlobals(document: Document) {
         kind: Kind.INPUT_VALUE_DEFINITION,
         name: {
           kind: Kind.NAME,
-          value: 'field',
+          value: 'fields',
         },
         type: {
-          kind: Kind.NAMED_TYPE,
-          name: {
-            kind: Kind.NAME,
-            value: 'String',
+          kind: Kind.LIST_TYPE,
+          type: {
+            kind: Kind.NAMED_TYPE,
+            name: {
+              kind: Kind.NAME,
+              value: 'String',
+            },
           },
         },
       },
