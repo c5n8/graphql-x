@@ -50,20 +50,17 @@ async function expansionTestBench({
     }) +
     '\n' +
     '\n' +
-    Object.keys(
-      document.globals.reduce(
-        (accumulator, definition) => {
-          const printed = print({
-            kind: Kind.DOCUMENT,
-            definitions: [definition],
-          })
+    Array.from(
+      document.globals.reduce((set, definition) => {
+        const printed = print({
+          kind: Kind.DOCUMENT,
+          definitions: [definition],
+        })
 
-          accumulator[printed] = Symbol()
+        set.add(printed)
 
-          return accumulator
-        },
-        {} as Record<string, symbol>,
-      ),
+        return set
+      }, new Set<string>()),
     ).join()
 
   const formatted = await prettier.format(result, { parser: 'graphql' })

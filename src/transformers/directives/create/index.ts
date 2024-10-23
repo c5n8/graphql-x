@@ -81,21 +81,18 @@ function addMutationInput(
 ) {
   // TODO embed these to document
   // {
-  const objectTypeMap = Object.fromEntries(
-    document.bundles.flatMap((bundle) => {
-      const { node } = bundle
+  const objectTypeNameSet = document.bundles.reduce((set, bundle) => {
+    const { node } = bundle
 
-      if (node.kind === Kind.OBJECT_TYPE_DEFINITION) {
-        return [[node.name.value, node]]
-      }
+    if (node.kind === Kind.OBJECT_TYPE_DEFINITION) {
+      set.add(node.name.value)
+    }
 
-      return []
-    }),
-  )
-  const objectTypeNames = Object.keys(objectTypeMap)
+    return set
+  }, new Set<string>())
   // }
 
-  const relationInputRegistry: Record<string, string> = {}
+  const relationInputSet = new Set<string>()
 
   bundle.expansions.push({
     kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
@@ -143,9 +140,9 @@ function addMutationInput(
             return
           }
 
-          if (objectTypeNames.includes(type.name.value)) {
+          if (objectTypeNameSet.has(type.name.value)) {
             const typeName = `Create${node.name.value}${type.name.value}RelationInput`
-            relationInputRegistry[typeName] = typeName
+            relationInputSet.add(typeName)
 
             return wrapType({
               kind: Kind.NAMED_TYPE,
@@ -184,7 +181,7 @@ function addMutationInput(
   })
 
   bundle.expansions.push(
-    ...Object.keys(relationInputRegistry).map<InputObjectTypeDefinitionNode>(
+    ...Array.from(relationInputSet).map<InputObjectTypeDefinitionNode>(
       (name) => {
         return {
           kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
