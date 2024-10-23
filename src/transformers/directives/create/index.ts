@@ -2,8 +2,7 @@ import type { Bundle, Document } from '#app/document.js'
 import {
   Kind,
   type InputObjectTypeDefinitionNode,
-  type ListTypeNode,
-  type NamedTypeNode,
+  type NonNullTypeNode,
   type ObjectTypeDefinitionNode,
   type TypeNode,
 } from 'graphql'
@@ -12,11 +11,11 @@ export default function (bundle: Bundle, document: Document) {
   const { node } = bundle
 
   if (
-    node.kind === Kind.OBJECT_TYPE_DEFINITION &&
-    node.directives?.some((directive) => directive.name.value === 'create')
+    node.kind !== Kind.OBJECT_TYPE_DEFINITION ||
+    node.directives?.some(({ name }) => name.value === 'create') !== true
   ) {
-    // valid
-  } else return
+    return
+  }
 
   addMutation(node, bundle)
   addMutationInput(node, bundle, document)
@@ -105,25 +104,47 @@ function addMutationInput(
       value: `Create${node.name.value}Input`,
     },
     fields: node.fields?.flatMap((field) => {
-      const getType = (
-        fieldType: TypeNode,
-        wrapType: (type: NamedTypeNode | ListTypeNode) => TypeNode = (type) =>
-          type,
-      ): TypeNode | undefined => {
-        if (fieldType.kind === Kind.NAMED_TYPE) {
-          if (
-            fieldType.name.value !== 'ID' &&
-            field.directives?.some(
-              (directive) => directive.name.value === 'readonly',
-            ) !== true
-          ) {
-            // valid
-          } else {
+      const type = (function getType(
+        type: TypeNode = field.type,
+        wrapType: (type: TypeNode) => TypeNode = (type) => type,
+      ): TypeNode | undefined {
+        if (field.directives?.some(({ name }) => name.value === 'readonly')) {
+          return
+        }
+
+        if (type.kind === Kind.NON_NULL_TYPE) {
+          const result = getType(type.type, (type) => ({
+            kind: Kind.NON_NULL_TYPE,
+            type: type as NonNullTypeNode['type'],
+          }))
+
+          if (result == null) {
             return
           }
 
-          if (objectTypeNames.includes(fieldType.name.value)) {
-            const typeName = `Create${node.name.value}${fieldType.name.value}RelationInput`
+          return wrapType(result)
+        }
+
+        if (type.kind === Kind.LIST_TYPE) {
+          const result = getType(type.type, (type) => ({
+            kind: Kind.LIST_TYPE,
+            type,
+          }))
+
+          if (result == null) {
+            return
+          }
+
+          return wrapType(result)
+        }
+
+        if (type.kind === Kind.NAMED_TYPE) {
+          if (type.name.value === 'ID') {
+            return
+          }
+
+          if (objectTypeNames.includes(type.name.value)) {
+            const typeName = `Create${node.name.value}${type.name.value}RelationInput`
             relationInputRegistry[typeName] = typeName
 
             return wrapType({
@@ -139,38 +160,11 @@ function addMutationInput(
             kind: Kind.NAMED_TYPE,
             name: {
               kind: Kind.NAME,
-              value: fieldType.name.value,
+              value: type.name.value,
             },
           })
         }
-
-        if (fieldType.kind === Kind.LIST_TYPE) {
-          const type =
-            fieldType.type.kind === Kind.NON_NULL_TYPE
-              ? getType(fieldType.type.type, (type) => ({
-                  kind: Kind.NON_NULL_TYPE,
-                  type,
-                }))
-              : getType(fieldType.type)
-
-          if (type == null) {
-            return
-          }
-
-          return wrapType({
-            kind: Kind.LIST_TYPE,
-            type,
-          })
-        }
-      }
-
-      const type =
-        field.type.kind === Kind.NON_NULL_TYPE
-          ? getType(field.type.type, (type) => ({
-              kind: Kind.NON_NULL_TYPE,
-              type,
-            }))
-          : getType(field.type)
+      })()
 
       if (type == null) {
         return []
