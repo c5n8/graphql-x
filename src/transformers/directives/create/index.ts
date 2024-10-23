@@ -224,6 +224,70 @@ function addMutationOutput(node: ObjectTypeDefinitionNode, bundle: Bundle) {
       kind: Kind.NAME,
       value: `Create${node.name.value}Output`,
     },
+    directives: [
+      {
+        kind: Kind.DIRECTIVE,
+        name: {
+          kind: Kind.NAME,
+          value: 'exclusive',
+        },
+        arguments: [
+          {
+            kind: Kind.ARGUMENT,
+            name: {
+              kind: Kind.NAME,
+              value: 'type',
+            },
+            value: {
+              kind: Kind.STRING,
+              value: `Create${node.name.value}Result`,
+            },
+          },
+          {
+            kind: Kind.ARGUMENT,
+            name: {
+              kind: Kind.NAME,
+              value: 'field',
+            },
+            value: {
+              kind: Kind.STRING,
+              value: 'result',
+            },
+          },
+        ],
+      },
+      {
+        kind: Kind.DIRECTIVE,
+        name: {
+          kind: Kind.NAME,
+          value: 'exclusive',
+        },
+        arguments: [
+          {
+            kind: Kind.ARGUMENT,
+            name: {
+              kind: Kind.NAME,
+              value: 'type',
+            },
+            value: {
+              kind: Kind.STRING,
+              value: `Create${node.name.value}Validation`,
+            },
+          },
+          {
+            kind: Kind.ARGUMENT,
+            name: {
+              kind: Kind.NAME,
+              value: 'field',
+            },
+            value: {
+              kind: Kind.STRING,
+              value: 'issues',
+            },
+          },
+        ],
+      },
+    ],
     types: [
       {
         kind: Kind.NAMED_TYPE,
@@ -267,15 +331,6 @@ function addMutationResult(node: ObjectTypeDefinitionNode, bundle: Bundle) {
             },
           },
         },
-        directives: [
-          {
-            kind: Kind.DIRECTIVE,
-            name: {
-              kind: Kind.NAME,
-              value: 'exclusive',
-            },
-          },
-        ],
       },
     ],
   })
@@ -305,15 +360,6 @@ function addMutationValidation(node: ObjectTypeDefinitionNode, bundle: Bundle) {
             },
           },
         },
-        directives: [
-          {
-            kind: Kind.DIRECTIVE,
-            name: {
-              kind: Kind.NAME,
-              value: 'exclusive',
-            },
-          },
-        ],
       },
     ],
   })
@@ -339,11 +385,41 @@ function addGlobals(document: Document) {
       kind: Kind.NAME,
       value: 'exclusive',
     },
-    repeatable: false,
+    repeatable: true,
+    arguments: [
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: {
+          kind: Kind.NAME,
+          value: 'type',
+        },
+        type: {
+          kind: Kind.NAMED_TYPE,
+          name: {
+            kind: Kind.NAME,
+            value: 'String',
+          },
+        },
+      },
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: {
+          kind: Kind.NAME,
+          value: 'field',
+        },
+        type: {
+          kind: Kind.NAMED_TYPE,
+          name: {
+            kind: Kind.NAME,
+            value: 'String',
+          },
+        },
+      },
+    ],
     locations: [
       {
         kind: Kind.NAME,
-        value: 'FIELD_DEFINITION',
+        value: 'UNION',
       },
     ],
   })

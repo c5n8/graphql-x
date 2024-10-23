@@ -1,8 +1,8 @@
-scalar DateTime
-
 directive @create on OBJECT
 
 directive @readonly on FIELD_DEFINITION
+
+scalar DateTime
 
 type Post @create {
   id: ID!

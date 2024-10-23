@@ -1,8 +1,8 @@
-scalar DateTime
-
 directive @create on OBJECT
 
 directive @readonly on FIELD_DEFINITION
+
+scalar DateTime
 
 type Post @create {
   id: ID!
@@ -28,14 +28,18 @@ input CreatePostCategoryRelationInput {
   id: ID!
 }
 
-union CreatePostOutput = CreatePostResult | CreatePostValidation
+union CreatePostOutput
+  @exclusive(type: "CreatePostResult", field: "result")
+  @exclusive(type: "CreatePostValidation", field: "issues") =
+  | CreatePostResult
+  | CreatePostValidation
 
 type CreatePostResult {
-  result: Post! @exclusive
+  result: Post!
 }
 
 type CreatePostValidation {
-  issues: CreatePostValidationIssues! @exclusive
+  issues: CreatePostValidationIssues!
 }
 
 scalar CreatePostValidationIssues
@@ -44,4 +48,4 @@ type Category {
   id: ID!
 }
 
-directive @exclusive on FIELD_DEFINITION
+directive @exclusive(type: String, field: String) repeatable on UNION

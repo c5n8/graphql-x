@@ -1,31 +1,36 @@
 import { expect, test } from 'vitest'
 import { buildASTSchema, Kind, parse, print } from 'graphql'
+import * as prettier from 'prettier'
 import type { Bundle, Document } from '#app/document.js'
-import expand from './index.js'
-import initial from './fixtures/initial.graphql?raw'
-import expanded from './fixtures/expanded.graphql?raw'
 import baseSchema from '#documents/schema.graphql?raw'
+import expand from './index.js'
+import initialSchema from './fixtures/initial.graphql?raw'
+import expandedSchema from './fixtures/expanded.graphql?raw'
 
 test('expand directive @create', async () => {
-  expansionTestBench({ expand, initial, expanded })
+  expansionTestBench({
+    expand,
+    initialSchema,
+    expandedSchema,
+  })
 })
 
-function expansionTestBench({
+async function expansionTestBench({
   expand,
-  initial,
-  expanded,
+  initialSchema,
+  expandedSchema,
 }: {
   expand: (node: Bundle, document: Document) => void
-  initial: string
-  expanded: string
+  initialSchema: string
+  expandedSchema: string
 }) {
-  const initialDocument = parse(initial)
+  const initialAST = parse(initialSchema)
 
-  buildASTSchema(initialDocument)
-  buildASTSchema(parse(baseSchema + expanded))
+  buildASTSchema(initialAST)
+  buildASTSchema(parse(baseSchema + expandedSchema))
 
   const document: Document = {
-    bundles: initialDocument.definitions.map((node) => ({
+    bundles: initialAST.definitions.map((node) => ({
       node,
       expansions: [],
     })),
@@ -59,8 +64,9 @@ function expansionTestBench({
         },
         {} as Record<string, symbol>,
       ),
-    ).join('\n\n') +
-    '\n'
+    ).join()
 
-  expect(result).toBe(expanded)
+  const formatted = await prettier.format(result, { parser: 'graphql' })
+
+  expect(formatted).toBe(expandedSchema)
 }

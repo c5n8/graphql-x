@@ -17,4 +17,9 @@ export default tslint.config(
   ...tslint.configs.stylistic,
   prettierConfig,
   includeIgnoreFile(gitignorePath),
+  {
+    rules: {
+      'object-shorthand': ['error', 'properties'],
+    },
+  },
 )
