@@ -43,15 +43,14 @@ async function expansionTestBench({
   const result = await invoke(async () => {
     let x
 
-    x =
+    x = [
       print({
         kind: Kind.DOCUMENT,
         definitions: document.bundles.flatMap((bundle) => {
           return [bundle.node, ...bundle.expansions]
         }),
-      }) +
-      '\n\n' +
-      Array.from(
+      }),
+      ...Array.from(
         document.globals.reduce((set, definition) => {
           const printed = print({
             kind: Kind.DOCUMENT,
@@ -62,7 +61,9 @@ async function expansionTestBench({
 
           return set
         }, new Set<string>()),
-      ).join('\n\n')
+      ),
+    ].join('\n\n')
+
     x = await prettier.format(x, { parser: 'graphql' })
 
     return x

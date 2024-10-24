@@ -23,15 +23,14 @@ export async function expand(schema: string) {
     transform(document)
   }
 
-  const result =
+  const result = [
     print({
       kind: Kind.DOCUMENT,
       definitions: document.bundles.flatMap((bundle) => {
         return [bundle.node, ...bundle.expansions]
       }),
-    }) +
-    '\n\n' +
-    Array.from(
+    }),
+    ...Array.from(
       document.globals.reduce((set, definition) => {
         const printed = print({
           kind: Kind.DOCUMENT,
@@ -42,7 +41,8 @@ export async function expand(schema: string) {
 
         return set
       }, new Set<string>()),
-    ).join('\n\n')
+    ),
+  ].join('\n\n')
 
   const formatted = await prettier.format(result, { parser: 'graphql' })
 
