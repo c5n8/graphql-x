@@ -6,6 +6,7 @@ import baseSchema from '#documents/schema.graphql?raw'
 import expand from './index.js'
 import initialSchema from './fixtures/initial.graphql?raw'
 import expandedSchema from './fixtures/expanded.graphql?raw'
+import { invoke } from '#app/utils/invoke.js'
 
 test('expand directive @create', async () => {
   expansionTestBench({
@@ -39,28 +40,33 @@ async function expansionTestBench({
 
   expand(document)
 
-  const result =
-    print({
-      kind: Kind.DOCUMENT,
-      definitions: document.bundles.flatMap((bundle) => {
-        return [bundle.node, ...bundle.expansions]
-      }),
-    }) +
-    '\n\n' +
-    Array.from(
-      document.globals.reduce((set, definition) => {
-        const printed = print({
-          kind: Kind.DOCUMENT,
-          definitions: [definition],
-        })
+  const result = await invoke(async () => {
+    let x
 
-        set.add(printed)
+    x =
+      print({
+        kind: Kind.DOCUMENT,
+        definitions: document.bundles.flatMap((bundle) => {
+          return [bundle.node, ...bundle.expansions]
+        }),
+      }) +
+      '\n\n' +
+      Array.from(
+        document.globals.reduce((set, definition) => {
+          const printed = print({
+            kind: Kind.DOCUMENT,
+            definitions: [definition],
+          })
 
-        return set
-      }, new Set<string>()),
-    ).join()
+          set.add(printed)
 
-  const formatted = await prettier.format(result, { parser: 'graphql' })
+          return set
+        }, new Set<string>()),
+      ).join('\n\n')
+    x = await prettier.format(x, { parser: 'graphql' })
 
-  expect(formatted).toBe(expandedSchema)
+    return x
+  })
+
+  expect(result).toBe(expandedSchema)
 }

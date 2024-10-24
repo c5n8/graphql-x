@@ -29,8 +29,8 @@ input CreatePostCategoryRelationInput {
 }
 
 union CreatePostOutput
-  @exclusive(type: "CreatePostResult", fields: ["result"])
-  @exclusive(type: "CreatePostValidation", fields: ["issues"]) =
+  @member(type: "CreatePostResult", exclusives: ["result"])
+  @member(type: "CreatePostValidation", exclusives: ["issues"]) =
   | CreatePostResult
   | CreatePostValidation
 
@@ -42,10 +42,12 @@ type CreatePostValidation {
   issues: CreatePostValidationIssues!
 }
 
-scalar CreatePostValidationIssues
+scalar CreatePostValidationIssues @report(input: "CreatePostInput")
 
 type Category {
   id: ID!
 }
 
-directive @exclusive(type: String, fields: [String]) repeatable on UNION
+directive @member(type: String, exclusives: [String]) repeatable on UNION
+
+directive @report(input: String) on SCALAR

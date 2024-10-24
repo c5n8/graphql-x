@@ -43,7 +43,7 @@ export async function expand(schema: string) {
 
         return set
       }, new Set<string>()),
-    ).join()
+    ).join('\n\n')
 
   const formatted = await prettier.format(result, { parser: 'graphql' })
 

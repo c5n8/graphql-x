@@ -39,8 +39,8 @@
     "check-format": "prettier --check .",
     "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
     "test": "vitest run",
-    "watch:build": "tsc --watch",
-    "watch:test": "vitest"
+    "watch:build": "tsc --watch --preserveWatchOutput --noEmit",
+    "watch:test": "vitest --clearScreen=false"
   },
   "dependencies": {
     "@parcel/watcher": "^2.4.1",

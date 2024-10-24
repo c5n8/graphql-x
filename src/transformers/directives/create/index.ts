@@ -1,4 +1,5 @@
 import type { Bundle, Document } from '#app/document.js'
+import { invoke } from '#app/utils/invoke.js'
 import {
   Kind,
   type InputObjectTypeDefinitionNode,
@@ -82,7 +83,6 @@ function addMutationInput(
   document: Document,
 ) {
   // TODO embed these to document
-  // {
   const objectTypeNameSet = document.bundles.reduce((set, bundle) => {
     const { node } = bundle
 
@@ -92,7 +92,6 @@ function addMutationInput(
 
     return set
   }, new Set<string>())
-  // }
 
   const relationInputSet = new Set<string>()
 
@@ -103,14 +102,14 @@ function addMutationInput(
       value: `Create${node.name.value}Input`,
     },
     fields: node.fields?.flatMap((field) => {
-      const type = (function getType(
-        type: TypeNode = field.type,
-        wrapType: (type: TypeNode) => TypeNode = (type) => type,
-      ): TypeNode | undefined {
-        if (field.directives?.some(({ name }) => name.value === 'readonly')) {
-          return
-        }
+      if (field.directives?.some(({ name }) => name.value === 'readonly')) {
+        return []
+      }
 
+      const type = invoke(function getType(
+        type = field.type,
+        wrapType = (type: TypeNode) => type,
+      ): TypeNode | undefined {
         if (type.kind === Kind.NON_NULL_TYPE) {
           const result = getType(type.type, (type) => ({
             kind: Kind.NON_NULL_TYPE,
@@ -163,7 +162,7 @@ function addMutationInput(
             },
           })
         }
-      })()
+      })
 
       if (type == null) {
         return []
@@ -228,7 +227,7 @@ function addMutationOutput(node: ObjectTypeDefinitionNode, bundle: Bundle) {
         kind: Kind.DIRECTIVE,
         name: {
           kind: Kind.NAME,
-          value: 'exclusive',
+          value: 'member',
         },
         arguments: [
           {
@@ -246,7 +245,7 @@ function addMutationOutput(node: ObjectTypeDefinitionNode, bundle: Bundle) {
             kind: Kind.ARGUMENT,
             name: {
               kind: Kind.NAME,
-              value: 'fields',
+              value: 'exclusives',
             },
             value: {
               kind: Kind.LIST,
@@ -264,7 +263,7 @@ function addMutationOutput(node: ObjectTypeDefinitionNode, bundle: Bundle) {
         kind: Kind.DIRECTIVE,
         name: {
           kind: Kind.NAME,
-          value: 'exclusive',
+          value: 'member',
         },
         arguments: [
           {
@@ -282,7 +281,7 @@ function addMutationOutput(node: ObjectTypeDefinitionNode, bundle: Bundle) {
             kind: Kind.ARGUMENT,
             name: {
               kind: Kind.NAME,
-              value: 'fields',
+              value: 'exclusives',
             },
             value: {
               kind: Kind.LIST,
@@ -384,6 +383,28 @@ function addMutationValidationIssues(
       kind: Kind.NAME,
       value: `Create${node.name.value}ValidationIssues`,
     },
+    directives: [
+      {
+        kind: Kind.DIRECTIVE,
+        name: {
+          kind: Kind.NAME,
+          value: 'report',
+        },
+        arguments: [
+          {
+            kind: Kind.ARGUMENT,
+            name: {
+              kind: Kind.NAME,
+              value: 'input',
+            },
+            value: {
+              kind: Kind.STRING,
+              value: `Create${node.name.value}Input`,
+            },
+          },
+        ],
+      },
+    ],
   })
 }
 
@@ -392,7 +413,7 @@ function addGlobals(document: Document) {
     kind: Kind.DIRECTIVE_DEFINITION,
     name: {
       kind: Kind.NAME,
-      value: 'exclusive',
+      value: 'member',
     },
     repeatable: true,
     arguments: [
@@ -414,7 +435,7 @@ function addGlobals(document: Document) {
         kind: Kind.INPUT_VALUE_DEFINITION,
         name: {
           kind: Kind.NAME,
-          value: 'fields',
+          value: 'exclusives',
         },
         type: {
           kind: Kind.LIST_TYPE,
@@ -432,6 +453,37 @@ function addGlobals(document: Document) {
       {
         kind: Kind.NAME,
         value: 'UNION',
+      },
+    ],
+  })
+
+  document.globals.push({
+    kind: Kind.DIRECTIVE_DEFINITION,
+    name: {
+      kind: Kind.NAME,
+      value: 'report',
+    },
+    repeatable: false,
+    arguments: [
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: {
+          kind: Kind.NAME,
+          value: 'input',
+        },
+        type: {
+          kind: Kind.NAMED_TYPE,
+          name: {
+            kind: Kind.NAME,
+            value: 'String',
+          },
+        },
+      },
+    ],
+    locations: [
+      {
+        kind: Kind.NAME,
+        value: 'SCALAR',
       },
     ],
   })

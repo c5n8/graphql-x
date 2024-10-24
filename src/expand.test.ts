@@ -4,5 +4,7 @@ import initialSchema from './transformers/directives/create/fixtures/initial.gra
 import expandedSchema from './transformers/directives/create/fixtures/expanded.graphql?raw'
 
 test('expand', async () => {
-  expect(await expand(initialSchema)).toBe(expandedSchema)
+  const result = await expand(initialSchema)
+
+  expect(result).toBe(expandedSchema)
 })
