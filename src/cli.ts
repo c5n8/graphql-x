@@ -55,7 +55,9 @@ if (watch) {
     async (_, events) => {
       for (const event of events) {
         if (path.relative(event.path, schemaPath) === '') {
-          return callback()
+          callback()
+
+          return
         }
       }
     },
