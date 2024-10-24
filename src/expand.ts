@@ -30,8 +30,7 @@ export async function expand(schema: string) {
         return [bundle.node, ...bundle.expansions]
       }),
     }) +
-    '\n' +
-    '\n' +
+    '\n\n' +
     Array.from(
       document.globals.reduce((set, definition) => {
         const printed = print({
