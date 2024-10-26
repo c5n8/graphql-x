@@ -1,5 +1,5 @@
 import { expand } from '#app/expand.js'
-import { createTrailingLeaderOperation } from '#app/utils/create-trailing-leader-operation.js'
+import { traillead } from '#app/utils/traillead.js'
 import { subscribe } from '@parcel/watcher'
 import { mkdir, readFile, writeFile } from 'fs/promises'
 import * as path from 'path'
@@ -27,7 +27,7 @@ await mkdir(path.dirname(outputPath), { recursive: true })
 const delay = { quantity: 128, unit: 'millisecond' }
 
 const callback = debounce(
-  createTrailingLeaderOperation(async () => {
+  traillead(async () => {
     try {
       console.log('Expanding...')
       await main()
