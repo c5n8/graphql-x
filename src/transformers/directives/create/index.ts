@@ -107,8 +107,8 @@ function addMutationInput(
       }
 
       const type = invoke(function getType(
-        type: TypeNode = field.type,
-        wrapType: (type: TypeNode) => TypeNode = (type: TypeNode) => type,
+        type = field.type,
+        wrapType = (type: TypeNode) => type,
       ): TypeNode | undefined {
         if (type.kind === Kind.NON_NULL_TYPE) {
           const result = getType(type.type, (type) => ({
