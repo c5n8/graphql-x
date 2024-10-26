@@ -22,6 +22,7 @@ const {
 } = args.values
 
 await readFile(schemaPath)
+await mkdir(path.dirname(outputPath), { recursive: true })
 
 const delay = { quantity: 128, unit: 'millisecond' }
 
@@ -67,6 +68,5 @@ if (watch) {
 async function main() {
   const initial = await readFile(schemaPath, { encoding: 'utf-8' })
   const expanded = await expand(initial)
-  await mkdir(path.dirname(outputPath), { recursive: true })
   await writeFile(outputPath, expanded, { encoding: 'utf-8' })
 }
