@@ -9,6 +9,8 @@ import {
 } from 'graphql'
 
 export default function (document: Document) {
+  let needGlobals = false
+
   for (const bundle of document.bundles) {
     const { node } = bundle
 
@@ -25,6 +27,10 @@ export default function (document: Document) {
     addMutationResult(node, bundle)
     addMutationValidation(node, bundle)
     addMutationValidationIssues(node, bundle)
+    needGlobals = true
+  }
+
+  if (needGlobals) {
     addGlobals(document)
   }
 }
