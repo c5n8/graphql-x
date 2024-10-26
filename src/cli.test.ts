@@ -3,6 +3,7 @@ import expandedSchema from './transformers/directives/create/fixtures/expanded.g
 import { exec as _exec } from 'child_process'
 import { promisify } from 'util'
 import { readFile, unlink } from 'fs/promises'
+import './cli.js?raw'
 import './transformers/directives/create/fixtures/initial.graphql?raw'
 
 const exec = promisify(_exec)
