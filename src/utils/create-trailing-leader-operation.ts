@@ -21,7 +21,6 @@ export function createTrailingLeaderOperation<
 
   const operate = (async (...args: unknown[]) => {
     if (current != null) {
-      console.log('queued', ...args)
       next = () => operate(...args)
 
       return
