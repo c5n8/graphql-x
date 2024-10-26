@@ -1,38 +1,29 @@
 import EventEmitter from 'events'
 
 export function createTrailingLeaderOperation<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  F extends (...args: any[]) => Promise<any>,
+  F extends (...args: never[]) => Promise<void>,
 >(fn: F): F {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let current: Promise<any> | null
-  let next: (() => void) | null
-
+  let current: Promise<void> | null
+  let next: (() => Promise<void>) | null
   const event = new EventEmitter()
 
-  event.on('finish', () => {
-    current = null
-
-    if (next != null) {
-      next()
-      next = null
-    }
+  event.on('next', () => {
+    next?.()
   })
 
-  const operate = (async (...args: unknown[]) => {
+  return async function operate(...args) {
     if (current != null) {
-      next = () => operate(...args)
+      next = async () => {
+        next = null
+        await operate(...args)
+      }
 
       return
     }
 
     current = fn(...args)
-    const result = await current
-
-    event.emit('finish')
-
-    return result
-  }) as F
-
-  return operate
+    await current
+    current = null
+    event.emit('next')
+  } as F
 }
