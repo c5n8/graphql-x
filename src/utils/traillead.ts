@@ -1,8 +1,8 @@
 import EventEmitter from 'events'
 
-export function createTrailingLeaderOperation<
-  F extends (...args: never[]) => Promise<void>,
->(fn: F): F {
+export function traillead<F extends (...args: never[]) => Promise<void>>(
+  fn: F,
+): F {
   let current: Promise<void> | null
   let next: (() => Promise<void>) | null
   const event = new EventEmitter()
