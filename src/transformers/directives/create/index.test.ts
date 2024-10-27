@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 import { buildASTSchema, Kind, parse, print } from 'graphql'
 import * as prettier from 'prettier'
-import type { Document } from '#app/document.js'
+import type { Document } from '#app/types/document.js'
 import baseSchema from '#documents/schema.graphql?raw'
 import expand from './index.js'
 import initialSchema from './fixtures/initial.graphql?raw'

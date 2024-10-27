@@ -1,4 +1,4 @@
-import type { Bundle, Document } from '#app/document.js'
+import type { Bundle, Document } from '#app/types/document.js'
 import { invoke } from '#app/utils/invoke.js'
 import {
   Kind,

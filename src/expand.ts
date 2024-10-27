@@ -1,4 +1,4 @@
-import type { Document } from '#app/document.js'
+import type { Document } from '#app/types/document.js'
 import { Kind, parse, print } from 'graphql'
 import * as prettier from 'prettier'
 
