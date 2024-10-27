@@ -1,6 +1,7 @@
 import type { Document } from '#app/types/document.js'
 import { Kind, parse, print } from 'graphql'
 import * as prettier from 'prettier'
+import cleanup from '#app/cleanup/index.js'
 
 export async function expand(schema: string) {
   const ast = parse(schema)
@@ -23,13 +24,15 @@ export async function expand(schema: string) {
     transform(document)
   }
 
-  const result = [
-    print({
-      kind: Kind.DOCUMENT,
-      definitions: document.bundles.flatMap((bundle) => {
-        return [bundle.node, ...bundle.expansions]
-      }),
+  const cleaned = cleanup({
+    kind: Kind.DOCUMENT,
+    definitions: document.bundles.flatMap((bundle) => {
+      return [bundle.node, ...bundle.expansions]
     }),
+  })
+
+  const result = [
+    print(cleaned),
     ...Array.from(
       document.globals.reduce((set, definition) => {
         const printed = print({

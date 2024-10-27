@@ -13,7 +13,7 @@ type Post @create {
   category: Category
 }
 
-extend type Mutation {
+type Mutation {
   createPost(input: CreatePostInput!): CreatePostOutput!
 }
 
