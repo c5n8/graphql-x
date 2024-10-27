@@ -4,3 +4,4 @@ dist/
 node_modules/
 compose.override.yaml
 core.*
+**/.generated

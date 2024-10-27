@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 import { exec as _exec } from 'child_process'
 import { promisify } from 'util'
-import { readFile, unlink } from 'fs/promises'
+import { readFile, rm } from 'fs/promises'
 import './cli.js?raw'
 import './fixtures/initial.graphql?raw'
 import expandedSchema from './fixtures/expanded.graphql?raw'
@@ -13,23 +13,21 @@ const exec = promisify(_exec)
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const schemaPath = path.join(__dirname, './fixtures/initial.graphql')
-const outputPath = './dist/schema.graphql'
+const outputPath = './documents/.generated/schema.graphql'
+const outputDir = path.dirname(outputPath)
 
 test('cli', async () => {
+  await rm(outputDir, { recursive: true, force: true })
   await exec('npm run build')
   await exec(
     [
-      'node',
-      '--enable-source-maps',
-      'dist/cli.js',
+      'npx',
+      'graphql-x',
       `--schema ${schemaPath}`,
       `--output ${outputPath}`,
     ].join(' '),
   )
 
-  const result = await readFile('./dist/schema.graphql', { encoding: 'utf-8' })
-
+  const result = await readFile(outputPath, { encoding: 'utf-8' })
   expect(result).toBe(expandedSchema)
-
-  await unlink('./dist/schema.graphql')
 })
