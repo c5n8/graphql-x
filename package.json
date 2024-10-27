@@ -24,6 +24,9 @@
     "!**/*.test.*",
     "!**/*.js.map"
   ],
+  "bin": {
+    "graphql-x": "./bin/graphql-x"
+  },
   "imports": {
     "#app/*": "./dist/*",
     "#documents/*": "./documents/*"
