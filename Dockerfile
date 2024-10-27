@@ -23,15 +23,6 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     && cp --recursive /root/.local/share/pnpm/ /pnpm/
 
 ####
-FROM deps AS build
-
-WORKDIR /app/
-
-COPY ./ ./
-
-RUN npm run build
-
-####
 FROM node-base AS code
 
 COPY --from=node-base /opt/ /opt/
@@ -49,7 +40,6 @@ RUN chown node:node ./
 COPY --chown=node:node ./ ./
 COPY --chown=node:node --from=deps /pnpm/ /pnpm/
 COPY --chown=node:node --from=deps /app/node_modules/ ./node_modules/
-COPY --chown=node:node --from=build /app/dist/ ./dist/
 
 USER node
 
