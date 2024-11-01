@@ -1,10 +1,10 @@
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import * as path from 'node:path'
+import { parseArgs } from 'node:util'
+import { subscribe } from '@parcel/watcher'
+import { debounce } from 'lodash-es'
 import { expand } from '#app/expand.js'
 import { traillead } from '#app/utils/traillead.js'
-import { subscribe } from '@parcel/watcher'
-import { mkdir, readFile, writeFile } from 'fs/promises'
-import * as path from 'path'
-import { parseArgs } from 'util'
-import { debounce } from 'lodash-es'
 
 const args = parseArgs({
   options: {

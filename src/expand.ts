@@ -1,9 +1,13 @@
-import type { Document } from '#app/types/document.js'
 import { Kind, parse, print } from 'graphql'
 import * as prettier from 'prettier'
 import cleanup from '#app/cleanup/index.js'
+import { type Document } from '#app/types/document.js'
 
 export async function expand(schema: string) {
+  const transformers = await Promise.all([
+    import('#app/transformers/directives/create/index.js'),
+  ])
+
   const ast = parse(schema)
 
   const document: Document = {
@@ -13,10 +17,6 @@ export async function expand(schema: string) {
     })),
     globals: [],
   }
-
-  const transformers = await Promise.all([
-    import('#app/transformers/directives/create/index.js'),
-  ])
 
   for (const transformer of transformers) {
     const { default: transform } = transformer

@@ -1,12 +1,12 @@
+import { exec as _exec } from 'node:child_process'
+import { readFile, rm } from 'node:fs/promises'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { promisify } from 'node:util'
 import { expect, test } from 'vitest'
-import { exec as _exec } from 'child_process'
-import { promisify } from 'util'
-import { readFile, rm } from 'fs/promises'
 import './cli.js?raw'
 import './fixtures/initial.graphql?raw'
 import expandedSchema from './fixtures/expanded.graphql?raw'
-import path from 'path'
-import { fileURLToPath } from 'url'
 
 const exec = promisify(_exec)
 

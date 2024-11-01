@@ -1,5 +1,3 @@
-import type { Bundle, Document } from '#app/types/document.js'
-import { invoke } from '#app/utils/invoke.js'
 import {
   Kind,
   type InputObjectTypeDefinitionNode,
@@ -7,6 +5,8 @@ import {
   type ObjectTypeDefinitionNode,
   type TypeNode,
 } from 'graphql'
+import { type Bundle, type Document } from '#app/types/document.js'
+import { invoke } from '#app/utils/invoke.js'
 
 export default function (document: Document) {
   let needsGlobals = false

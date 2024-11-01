@@ -1,12 +1,12 @@
-import { expect, test } from 'vitest'
-import { buildASTSchema, Kind, parse, print } from 'graphql'
+import { Kind, buildASTSchema, parse, print } from 'graphql'
 import * as prettier from 'prettier'
-import type { Document } from '#app/types/document.js'
-import baseSchema from '#documents/schema.graphql?raw'
-import expand from './index.js'
-import initialSchema from './fixtures/initial.graphql?raw'
+import { expect, test } from 'vitest'
 import expandedSchema from './fixtures/expanded.graphql?raw'
+import initialSchema from './fixtures/initial.graphql?raw'
+import expand from './index.js'
+import { type Document } from '#app/types/document.js'
 import { invoke } from '#app/utils/invoke.js'
+import baseSchema from '#documents/schema.graphql?raw'
 
 test('expand directive @create', async () => {
   expansionTestBench({
