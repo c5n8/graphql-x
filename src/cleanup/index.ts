@@ -1,4 +1,6 @@
-import { Kind, type DefinitionNode, type DocumentNode } from 'graphql'
+import type { DefinitionNode } from 'graphql'
+import type { DocumentNode } from 'graphql'
+import { Kind } from 'graphql'
 
 export default function (document: DocumentNode) {
   let types = ['Query', 'Mutation', 'Subscription']

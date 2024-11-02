@@ -1,12 +1,11 @@
-import {
-  Kind,
-  type InputObjectTypeDefinitionNode,
-  type NonNullTypeNode,
-  type ObjectTypeDefinitionNode,
-  type TypeNode,
-} from 'graphql'
-import { type Bundle, type Document } from '#app/types/document.js'
+import type { Bundle } from '#app/types/document.js'
+import type { Document } from '#app/types/document.js'
+import type { InputObjectTypeDefinitionNode } from 'graphql'
 import { invoke } from '#app/utils/invoke.js'
+import { Kind } from 'graphql'
+import type { NonNullTypeNode } from 'graphql'
+import type { ObjectTypeDefinitionNode } from 'graphql'
+import type { TypeNode } from 'graphql'
 
 export default function (document: Document) {
   let needsGlobals = false

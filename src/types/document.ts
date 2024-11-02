@@ -1,4 +1,4 @@
-import { type DefinitionNode } from 'graphql'
+import type { DefinitionNode } from 'graphql'
 
 export interface Document {
   bundles: Bundle[]

@@ -1,4 +1,5 @@
-import { expect, test } from 'vitest'
+import { expect } from 'vitest'
+import { test } from 'vitest'
 import { traillead } from '#app/utils/traillead.js'
 
 test('traillead', async () => {

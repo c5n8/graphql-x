@@ -1,7 +1,9 @@
-import { Kind, parse, print } from 'graphql'
-import * as prettier from 'prettier'
 import cleanup from '#app/cleanup/index.js'
-import { type Document } from '#app/types/document.js'
+import type { Document } from '#app/types/document.js'
+import { Kind } from 'graphql'
+import { parse } from 'graphql'
+import * as prettier from 'prettier'
+import { print } from 'graphql'
 
 export async function expand(schema: string) {
   const transformers = await Promise.all([
