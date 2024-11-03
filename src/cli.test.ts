@@ -31,5 +31,6 @@ test('cli', async () => {
   )
 
   const result = await readFile(outputPath, { encoding: 'utf-8' })
+
   expect(result).toBe(expandedSchema)
 })

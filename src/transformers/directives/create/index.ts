@@ -148,6 +148,7 @@ function addMutationInput(
 
           if (objectTypeNameSet.has(type.name.value)) {
             const typeName = `Create${node.name.value}${type.name.value}RelationInput`
+
             relationInputSet.add(typeName)
 
             return wrapType({

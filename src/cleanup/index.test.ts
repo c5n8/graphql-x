@@ -18,6 +18,7 @@ test('expand directive @create', async () => {
 
   for (const initialSchema of initialSchemas) {
     const initialAST = parse(initialSchema)
+
     buildASTSchema(parse(expandedSchema))
 
     const document: Document = {

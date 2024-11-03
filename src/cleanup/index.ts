@@ -4,6 +4,7 @@ import { Kind } from 'graphql'
 
 export default function (document: DocumentNode) {
   let types = ['Query', 'Mutation', 'Subscription']
+
   for (const node of document.definitions) {
     if (
       (node.kind === Kind.OBJECT_TYPE_DEFINITION ||

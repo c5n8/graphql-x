@@ -140,6 +140,7 @@ export default ESLintUtils.RuleCreator((name) => `txe/${name}`)({
 
           const start = importDeclarations[0].range[0]
           const end = importDeclarations[importDeclarations.length - 1].range[1]
+
           return fixer.replaceTextRange([start, end], fix)
         },
       })
