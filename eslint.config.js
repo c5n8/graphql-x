@@ -10,6 +10,7 @@ import importPlugin from 'eslint-plugin-import'
 import { includeIgnoreFile } from '@eslint/compat'
 import * as path from 'node:path'
 import prettierConfig from 'eslint-config-prettier'
+import stylisticJs from '@stylistic/eslint-plugin-js'
 import tslint from 'typescript-eslint'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -72,6 +73,28 @@ export default [
       'import/namespace': 'off',
       'import/no-empty-named-blocks': 'warn',
       'import/consistent-type-specifier-style': ['warn', 'prefer-top-level'],
+    },
+  },
+
+  {
+    plugins: {
+      '@stylistic/js': stylisticJs,
+    },
+    rules: {
+      '@stylistic/js/padding-line-between-statements': [
+        'warn',
+        { blankLine: 'always', prev: ['const', 'let', 'var'], next: '*' },
+        { blankLine: 'always', prev: '*', next: ['const', 'let', 'var'] },
+        {
+          blankLine: 'any',
+          prev: ['const', 'let', 'var'],
+          next: ['const', 'let', 'var'],
+        },
+        { blankLine: 'always', prev: '*', next: 'block-like' },
+        { blankLine: 'always', prev: 'block-like', next: '*' },
+        { blankLine: 'always', prev: ['case', 'default'], next: '*' },
+        { blankLine: 'always', prev: '*', next: 'return' },
+      ],
     },
   },
 
