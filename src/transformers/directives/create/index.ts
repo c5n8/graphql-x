@@ -251,7 +251,7 @@ function addMutationOutput(node: ObjectTypeDefinitionNode, bundle: Bundle) {
             kind: Kind.ARGUMENT,
             name: {
               kind: Kind.NAME,
-              value: 'exclusives',
+              value: 'signatures',
             },
             value: {
               kind: Kind.LIST,
@@ -287,7 +287,7 @@ function addMutationOutput(node: ObjectTypeDefinitionNode, bundle: Bundle) {
             kind: Kind.ARGUMENT,
             name: {
               kind: Kind.NAME,
-              value: 'exclusives',
+              value: 'signatures',
             },
             value: {
               kind: Kind.LIST,
@@ -394,7 +394,7 @@ function addMutationValidationIssues(
         kind: Kind.DIRECTIVE,
         name: {
           kind: Kind.NAME,
-          value: 'report',
+          value: 'issues',
         },
         arguments: [
           {
@@ -441,7 +441,7 @@ function addGlobals(document: Document) {
         kind: Kind.INPUT_VALUE_DEFINITION,
         name: {
           kind: Kind.NAME,
-          value: 'exclusives',
+          value: 'signatures',
         },
         type: {
           kind: Kind.LIST_TYPE,
@@ -467,7 +467,7 @@ function addGlobals(document: Document) {
     kind: Kind.DIRECTIVE_DEFINITION,
     name: {
       kind: Kind.NAME,
-      value: 'report',
+      value: 'issues',
     },
     repeatable: false,
     arguments: [
