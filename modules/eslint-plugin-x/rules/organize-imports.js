@@ -132,7 +132,6 @@ export default ESLintUtils.RuleCreator((name) => `txe/${name}`)({
       context.report({
         node: importDeclarations[0],
         messageId: 'avoidUnsortedImports',
-        /** @param {import('@typescript-eslint/utils/ts-eslint').RuleFixer} fixer */
         fix: (fixer) => {
           const fix = sortedDeclarations
             .map((declaration) => sourceCode.getText(declaration))
