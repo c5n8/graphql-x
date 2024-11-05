@@ -3,7 +3,7 @@ extend type Query {
 }
 
 extend type Query {
-  queryx: Boolean
+  query2: Boolean
 }
 
 extend type Mutation {
@@ -11,7 +11,7 @@ extend type Mutation {
 }
 
 extend type Mutation {
-  mutationx: Boolean
+  mutation2: Boolean
 }
 
 extend type Subscription {
@@ -19,5 +19,5 @@ extend type Subscription {
 }
 
 extend type Subscription {
-  subscriptionx: Boolean
+  subscription2: Boolean
 }
