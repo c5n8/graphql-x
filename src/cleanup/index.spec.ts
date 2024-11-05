@@ -1,4 +1,4 @@
-import { buildASTSchema } from 'graphql'
+import { buildSchema } from 'graphql'
 import cleanup from './index.js'
 import type { Document } from '#app/types/document.js'
 import expandedSchema from './fixtures/expanded.graphql?raw'
@@ -11,6 +11,8 @@ import { print } from 'graphql'
 import { test } from 'vitest'
 
 test('expand directive @create', async () => {
+  buildSchema(expandedSchema)
+
   const initialSchemas = await Promise.all([
     import('./fixtures/initial-1.graphql?raw'),
     import('./fixtures/initial-2.graphql?raw'),
@@ -18,8 +20,6 @@ test('expand directive @create', async () => {
 
   for (const initialSchema of initialSchemas) {
     const initialAST = parse(initialSchema)
-
-    buildASTSchema(parse(expandedSchema))
 
     const document: Document = {
       bundles: initialAST.definitions.map((node) => ({

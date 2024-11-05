@@ -1,5 +1,5 @@
 import baseSchema from '#documents/schema.graphql?raw'
-import { buildASTSchema } from 'graphql'
+import { buildSchema } from 'graphql'
 import type { Document } from '#app/types/document.js'
 import expand from './index.js'
 import expandedSchema from './fixtures/expanded.graphql?raw'
@@ -29,11 +29,10 @@ async function expansionTestBench({
   initialSchema: string
   expandedSchema: string
 }) {
+  buildSchema(initialSchema)
+  buildSchema(baseSchema + expandedSchema)
+
   const initialAST = parse(initialSchema)
-
-  buildASTSchema(initialAST)
-  buildASTSchema(parse(baseSchema + expandedSchema))
-
   const document: Document = {
     bundles: initialAST.definitions.map((node) => ({
       node,
