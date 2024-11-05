@@ -102,7 +102,7 @@ export default ESLintUtils.RuleCreator((name) => `txe/${name}`)({
         return
       }
 
-      const sortedDeclarations = [...importDeclarations].sort((a, b) => {
+      const sortedDeclarations = importDeclarations.sort((a, b) => {
         const aa = a.specifiers[0]
         const bb = b.specifiers[0]
 
