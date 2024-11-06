@@ -34,11 +34,11 @@ export default [
         'warn',
         {
           selector: 'TSEnumDeclaration',
-          message: "Don't declare enums",
+          message: 'Avoid enums',
         },
         {
           selector: 'TSParameterProperty',
-          message: "Don't use class parameter property",
+          message: 'Avoid class parameter property',
         },
       ],
     },
