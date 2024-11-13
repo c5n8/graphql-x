@@ -2,7 +2,7 @@
 
 import eslint from '@eslint/js'
 import eslintPluginUnicorn from 'eslint-plugin-unicorn'
-import eslintPluginX from './modules/eslint-plugin-x/index.js'
+import eslintPluginX from '@txe/eslint-plugin-x'
 import { fileURLToPath } from 'node:url'
 import globals from 'globals'
 // @ts-expect-error https://github.com/import-js/eslint-plugin-import/issues/3090
