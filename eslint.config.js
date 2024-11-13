@@ -1,48 +1,32 @@
 // @ts-check
 
-import eslint from '@eslint/js'
+import eslintConfigPrettier from 'eslint-config-prettier'
+// @ts-expect-error https://github.com/import-js/eslint-plugin-import/issues/3090
+import eslintPluginImport from 'eslint-plugin-import'
+import eslintPluginJs from '@eslint/js'
+import eslintPluginStylisticJs from '@stylistic/eslint-plugin-js'
 import eslintPluginUnicorn from 'eslint-plugin-unicorn'
 import eslintPluginX from '@txe/eslint-plugin-x'
+import eslintToolingTs from 'typescript-eslint'
 import { fileURLToPath } from 'node:url'
 import globals from 'globals'
-// @ts-expect-error https://github.com/import-js/eslint-plugin-import/issues/3090
-import importPlugin from 'eslint-plugin-import'
 import { includeIgnoreFile } from '@eslint/compat'
 import * as path from 'node:path'
-import prettierConfig from 'eslint-config-prettier'
-import stylisticJs from '@stylistic/eslint-plugin-js'
-import tslint from 'typescript-eslint'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const gitignorePath = path.resolve(__dirname, '.gitignore')
 
-/** @type {import('@typescript-eslint/utils').TSESLint.FlatConfig.ConfigArray} */
+/** @type {import('eslint').Linter.Config[]} */
 export default [
-  eslint.configs.recommended,
-  {
-    rules: {
-      'object-shorthand': ['warn', 'properties'],
-    },
-  },
+  includeIgnoreFile(gitignorePath),
 
-  ...tslint.configs.strict,
-  ...tslint.configs.stylistic,
-  {
-    rules: {
-      'no-restricted-syntax': [
-        'warn',
-        {
-          selector: 'TSEnumDeclaration',
-          message: 'Avoid enums',
-        },
-        {
-          selector: 'TSParameterProperty',
-          message: 'Avoid class parameter property',
-        },
-      ],
-    },
-  },
+  eslintPluginJs.configs.recommended,
+  ...eslintToolingTs.configs.strict,
+  ...eslintToolingTs.configs.stylistic,
+  eslintPluginImport.flatConfigs.recommended,
+  eslintConfigPrettier,
+  ...eslintPluginX.configs.recommended,
 
   {
     languageOptions: {
@@ -50,37 +34,22 @@ export default [
     },
     plugins: {
       unicorn: eslintPluginUnicorn,
+      '@stylistic/js': eslintPluginStylisticJs,
     },
     rules: {
-      'unicorn/prefer-node-protocol': 'warn',
-    },
-  },
-
-  {
-    plugins: {
-      x: eslintPluginX,
-    },
-    rules: {
-      'x/organize-imports': 'warn',
-    },
-  },
-
-  importPlugin.flatConfigs.recommended,
-  {
-    rules: {
-      'import/no-unresolved': 'off',
-      'import/no-duplicates': 'off',
+      'no-restricted-syntax': [
+        'error',
+        { selector: 'TSEnumDeclaration', message: 'Avoid enums' },
+      ],
+      'object-shorthand': ['warn', 'properties'],
+      'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
+      'import/first': 'error',
       'import/namespace': 'off',
-      'import/no-empty-named-blocks': 'warn',
-      'import/consistent-type-specifier-style': ['warn', 'prefer-top-level'],
-    },
-  },
-
-  {
-    plugins: {
-      '@stylistic/js': stylisticJs,
-    },
-    rules: {
+      'import/no-duplicates': 'off',
+      'import/no-empty-named-blocks': 'error',
+      'import/no-unresolved': 'off',
+      'unicorn/prefer-node-protocol': 'error',
+      '@typescript-eslint/parameter-properties': 'error',
       '@stylistic/js/padding-line-between-statements': [
         'warn',
         { blankLine: 'always', prev: '*', next: 'block-like' },
@@ -90,7 +59,4 @@ export default [
       ],
     },
   },
-
-  prettierConfig,
-  includeIgnoreFile(gitignorePath),
 ]
