@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.6.0
+
+### Minor Changes
+
+- fdee429: config package module
+
 ## 0.5.0
 
 ### Minor Changes
