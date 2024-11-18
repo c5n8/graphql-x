@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.8.0
+
+### Minor Changes
+
+- 6d7acfd: update tsconfig
+
 ## 0.7.0
 
 ### Minor Changes
