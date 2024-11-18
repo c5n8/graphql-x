@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.5.0
+
+### Minor Changes
+
+- d66380d: update package exports config
+
 ## 0.4.0
 
 ### Minor Changes
