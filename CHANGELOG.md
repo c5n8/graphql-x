@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.9.0
+
+### Minor Changes
+
+- 1c88aa3: fix module stuff
+
 ## 0.8.2
 
 ### Patch Changes
