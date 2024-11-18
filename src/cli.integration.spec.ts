@@ -21,14 +21,7 @@ const outputDir = path.dirname(outputPath)
 test('cli', async () => {
   await rm(outputDir, { recursive: true, force: true })
   await exec('npm run build')
-  await exec(
-    [
-      'npx',
-      'graphql-x',
-      `--schema ${schemaPath}`,
-      `--output ${outputPath}`,
-    ].join(' '),
-  )
+  await exec(`npx graphql-x --schema ${schemaPath} --output ${outputPath}`)
 
   const result = await readFile(outputPath, { encoding: 'utf-8' })
 
