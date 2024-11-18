@@ -1,4 +1,4 @@
-import './cli.js?raw'
+import './cli.js'
 import './fixtures/initial.graphql?raw'
 import { exec as _exec } from 'node:child_process'
 import expandedSchema from './fixtures/expanded.graphql?raw'
@@ -15,7 +15,7 @@ const exec = promisify(_exec)
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const schemaPath = path.join(__dirname, './fixtures/initial.graphql')
-const outputPath = './documents/.generated/schema.graphql'
+const outputPath = path.join(__dirname, './fixtures/.generated/schema.graphql')
 const outputDir = path.dirname(outputPath)
 
 test('cli', async () => {
