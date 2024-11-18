@@ -35,7 +35,6 @@
     "prepublishOnly": "npm run ci",
     "dev": "concurrently --names=\"build,test\" --prefix-colors=\"cyan,green\" \"npm run watch:build -- --noEmit\" \"npm run watch:test\"",
     "ci": "npm run lint && npm run build && npm run check-format && npm run check-exports && npm run test",
-    "local-release": "changeset version && changeset publish",
     "build": "tsc",
     "lint": "eslint . --fix",
     "format": "prettier --write .",
