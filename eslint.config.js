@@ -47,11 +47,13 @@ export default [
       'import/namespace': 'off',
       'import/no-duplicates': 'off',
       'import/no-empty-named-blocks': 'error',
+      'import/newline-after-import': 'warn',
       'import/no-unresolved': 'off',
       'unicorn/prefer-node-protocol': 'error',
       '@typescript-eslint/parameter-properties': 'error',
       '@stylistic/js/padding-line-between-statements': [
         'warn',
+        { blankLine: 'never', prev: 'import', next: 'import' },
         { blankLine: 'always', prev: '*', next: 'block-like' },
         { blankLine: 'always', prev: 'block-like', next: '*' },
         { blankLine: 'always', prev: ['case', 'default'], next: '*' },
