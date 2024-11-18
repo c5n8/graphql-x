@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.3.0
+
+### Minor Changes
+
+- cc418d8: update build config
+
 ## 0.2.0
 
 ### Minor Changes
