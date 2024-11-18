@@ -1,6 +1,6 @@
 {
   "name": "@txe/graphql-x",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "GraphQL eXpansion",
   "keywords": [
     "graphql",
@@ -31,11 +31,6 @@
   },
   "imports": {
     "#app/*": "./dist/*"
-  },
-  "exports": {
-    ".": {
-      "import": "./dist/index.js"
-    }
   },
   "scripts": {
     "prepublishOnly": "npm run ci",
