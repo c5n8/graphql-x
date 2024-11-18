@@ -1,10 +1,10 @@
 {
   "include": ["src/**/*"],
   "compilerOptions": {
-    "baseUrl": "./src",
     "pretty": true,
     "types": ["vite/client"],
 
+    "baseUrl": "./",
     "paths": {
       "#app/*": ["./src/*"],
       "#documents/*": ["./documents/*"]
