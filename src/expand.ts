@@ -8,6 +8,7 @@ import { print } from 'graphql'
 export async function expand(schema: string) {
   const transformers = await Promise.all([
     import('#app/transformers/directives/create/index.js'),
+    import('#app/transformers/directives/update/index.js'),
   ])
 
   const ast = parse(schema)

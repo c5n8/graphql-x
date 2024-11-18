@@ -5,9 +5,5 @@ import { test } from 'vitest'
 import { testExpansion } from '#app/testing/utils/test-expansion.js'
 
 test('expand directive @create', async () => {
-  testExpansion({
-    expand,
-    initialSchema,
-    expandedSchema,
-  })
+  testExpansion({ expand, initialSchema, expandedSchema })
 })

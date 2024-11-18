@@ -1,51 +1,17 @@
-directive @create on OBJECT
-
 directive @update on OBJECT
 
 directive @readonly on FIELD_DEFINITION
 
 scalar DateTime
 
-type Post @create @update {
+type Post @update {
   id: ID!
-  createdAt: DateTime @readonly
+  updatedAt: DateTime @readonly
   title: String!
   body: String
   tags: [String!]
   category: Category
 }
-
-type Mutation {
-  createPost(input: CreatePostInput!): CreatePostOutput!
-}
-
-input CreatePostInput {
-  title: String!
-  body: String
-  tags: [String!]
-  category: CreatePostCategoryRelationInput
-}
-
-input CreatePostCategoryRelationInput {
-  id: ID!
-}
-
-union CreatePostOutput
-  @signature(fields: ["issues", "result"])
-  @member(type: "CreatePostResult", signature: "result")
-  @member(type: "CreatePostValidation", signature: "issues") =
-  | CreatePostResult
-  | CreatePostValidation
-
-type CreatePostResult {
-  result: Post!
-}
-
-type CreatePostValidation {
-  issues: CreatePostValidationIssues!
-}
-
-scalar CreatePostValidationIssues @issues(input: "CreatePostInput")
 
 extend type Mutation {
   updatePost(input: UpdatePostInput!): UpdatePostOutput!
