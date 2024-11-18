@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.2.0
+
+### Minor Changes
+
+- 1f8c51c: Expand directives: @create, @update
+
 ## 0.1.5
 
 ### Patch Changes

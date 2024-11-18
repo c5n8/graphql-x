@@ -1,0 +1,23 @@
+extend type Query {
+  query: Boolean
+}
+
+extend type Query {
+  query2: Boolean
+}
+
+extend type Mutation {
+  mutation: Boolean
+}
+
+extend type Mutation {
+  mutation2: Boolean
+}
+
+extend type Subscription {
+  subscription: Boolean
+}
+
+extend type Subscription {
+  subscription2: Boolean
+}

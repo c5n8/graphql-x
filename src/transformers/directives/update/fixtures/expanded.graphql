@@ -1,0 +1,56 @@
+directive @update on OBJECT
+
+directive @readonly on FIELD_DEFINITION
+
+scalar DateTime
+
+type Post @update {
+  id: ID!
+  updatedAt: DateTime @readonly
+  title: String!
+  body: String
+  tags: [String!]
+  category: Category
+}
+
+extend type Mutation {
+  updatePost(input: UpdatePostInput!): UpdatePostOutput!
+}
+
+input UpdatePostInput {
+  title: String!
+  body: String
+  tags: [String!]
+  category: UpdatePostCategoryRelationInput
+}
+
+input UpdatePostCategoryRelationInput {
+  id: ID!
+}
+
+union UpdatePostOutput
+  @signature(fields: ["issues", "result"])
+  @member(type: "UpdatePostResult", signature: "result")
+  @member(type: "UpdatePostValidation", signature: "issues") =
+  | UpdatePostResult
+  | UpdatePostValidation
+
+type UpdatePostResult {
+  result: Post!
+}
+
+type UpdatePostValidation {
+  issues: UpdatePostValidationIssues!
+}
+
+scalar UpdatePostValidationIssues @issues(input: "UpdatePostInput")
+
+type Category {
+  id: ID!
+}
+
+directive @signature(fields: [String!]!) on UNION
+
+directive @member(type: String!, signature: String!) repeatable on UNION
+
+directive @issues(input: String!) on SCALAR

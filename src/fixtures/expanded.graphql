@@ -1,0 +1,90 @@
+directive @create on OBJECT
+
+directive @update on OBJECT
+
+directive @readonly on FIELD_DEFINITION
+
+scalar DateTime
+
+type Post @create @update {
+  id: ID!
+  createdAt: DateTime @readonly
+  title: String!
+  body: String
+  tags: [String!]
+  category: Category
+}
+
+type Mutation {
+  createPost(input: CreatePostInput!): CreatePostOutput!
+}
+
+input CreatePostInput {
+  title: String!
+  body: String
+  tags: [String!]
+  category: CreatePostCategoryRelationInput
+}
+
+input CreatePostCategoryRelationInput {
+  id: ID!
+}
+
+union CreatePostOutput
+  @signature(fields: ["issues", "result"])
+  @member(type: "CreatePostResult", signature: "result")
+  @member(type: "CreatePostValidation", signature: "issues") =
+  | CreatePostResult
+  | CreatePostValidation
+
+type CreatePostResult {
+  result: Post!
+}
+
+type CreatePostValidation {
+  issues: CreatePostValidationIssues!
+}
+
+scalar CreatePostValidationIssues @issues(input: "CreatePostInput")
+
+extend type Mutation {
+  updatePost(input: UpdatePostInput!): UpdatePostOutput!
+}
+
+input UpdatePostInput {
+  title: String!
+  body: String
+  tags: [String!]
+  category: UpdatePostCategoryRelationInput
+}
+
+input UpdatePostCategoryRelationInput {
+  id: ID!
+}
+
+union UpdatePostOutput
+  @signature(fields: ["issues", "result"])
+  @member(type: "UpdatePostResult", signature: "result")
+  @member(type: "UpdatePostValidation", signature: "issues") =
+  | UpdatePostResult
+  | UpdatePostValidation
+
+type UpdatePostResult {
+  result: Post!
+}
+
+type UpdatePostValidation {
+  issues: UpdatePostValidationIssues!
+}
+
+scalar UpdatePostValidationIssues @issues(input: "UpdatePostInput")
+
+type Category {
+  id: ID!
+}
+
+directive @signature(fields: [String!]!) on UNION
+
+directive @member(type: String!, signature: String!) repeatable on UNION
+
+directive @issues(input: String!) on SCALAR

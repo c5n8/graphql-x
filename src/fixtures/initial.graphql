@@ -1,0 +1,20 @@
+directive @create on OBJECT
+
+directive @update on OBJECT
+
+directive @readonly on FIELD_DEFINITION
+
+scalar DateTime
+
+type Post @create @update {
+  id: ID!
+  createdAt: DateTime @readonly
+  title: String!
+  body: String
+  tags: [String!]
+  category: Category
+}
+
+type Category {
+  id: ID!
+}
