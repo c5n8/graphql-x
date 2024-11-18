@@ -1,5 +1,5 @@
 import { cmdErrorHandling } from '#app/utils/cmd-error-handling.js'
-import { debounce } from 'lodash-es'
+import debounce from 'debounce'
 import { expand } from '#app/expand.js'
 import { invoke } from '#app/utils/invoke.js'
 import { mkdir } from 'node:fs/promises'
