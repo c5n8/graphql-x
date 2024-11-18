@@ -1,5 +1,6 @@
 {
-  "include": ["src/**/*"],
+  "include": ["./src/**/*"],
+
   "compilerOptions": {
     "pretty": true,
     "types": ["vite/client"],
@@ -24,14 +25,16 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
+    "forceConsistentCasingInFileNames": true,
 
     /* If your code doesn't require access to DOM APIs: */
     "lib": ["ES2022"],
 
     /* If transpiling with TypeScript: */
     "module": "Node16",
-    "outDir": "dist",
-    "rootDir": "src",
+    "outDir": "./dist/",
+    "rootDir": "./src/",
+    // "sourceMap": true,
 
     /* AND if you're building for a library: */
     "declaration": true

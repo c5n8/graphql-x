@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.8.2
+
+### Patch Changes
+
+- a4f6bf8: fix type mapping
+
 ## 0.8.1
 
 ### Patch Changes
