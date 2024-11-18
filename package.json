@@ -1,6 +1,6 @@
 {
   "name": "@txe/graphql-x",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "GraphQL eXpansion",
   "keywords": [
     "graphql",
@@ -21,8 +21,9 @@
   "main": "dist/index.js",
   "files": [
     "dist/",
-    "!**/*.spec.*",
-    "!**/*.js.map"
+    "!dist/testing/",
+    "!dist/types/",
+    "!**/*.spec.*"
   ],
   "bin": {
     "graphql-x": "bin/graphql-x"
