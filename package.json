@@ -18,13 +18,14 @@
   "license": "MIT",
   "type": "module",
   "packageManager": "pnpm@9.12.1",
-  "main": "dist/index.js",
   "files": [
     "dist/",
     "!dist/testing/",
     "!dist/types/",
     "!**/*.spec.*"
   ],
+  "main": "dist/index.js",
+  "module": "dist/index.js",
   "bin": {
     "graphql-x": "bin/graphql-x"
   },
