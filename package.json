@@ -24,14 +24,13 @@
     "!dist/types/",
     "!**/*.spec.*"
   ],
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "bin": {
     "graphql-x": "bin/graphql-x"
   },
   "imports": {
-    "#app/*": "./dist/*",
-    "#documents/*": "./documents/*"
+    "#app/*": "./dist/*"
   },
   "exports": {
     ".": {

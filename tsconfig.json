@@ -5,7 +5,8 @@
     "types": ["vite/client"],
 
     "paths": {
-      "#app/*": ["./src/*"]
+      "#app/*": ["./src/*"],
+      "#documents/*": ["./documents/*"]
     },
 
     /* Base Options: */
