@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.8.1
+
+### Patch Changes
+
+- 0f1bc5d: fix
+
 ## 0.8.0
 
 ### Minor Changes
