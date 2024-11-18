@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.7.0
+
+### Minor Changes
+
+- 0fd6fc5: refactor
+
 ## 0.6.0
 
 ### Minor Changes

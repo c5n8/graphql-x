@@ -1,6 +1,6 @@
 {
   "name": "@txe/graphql-x",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "GraphQL eXpansion",
   "keywords": [
     "graphql",
@@ -24,14 +24,13 @@
     "!dist/types/",
     "!**/*.spec.*"
   ],
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "bin": {
     "graphql-x": "bin/graphql-x"
   },
   "imports": {
-    "#app/*": "./dist/*",
-    "#documents/*": "./documents/*"
+    "#app/*": "./dist/*"
   },
   "exports": {
     ".": {
