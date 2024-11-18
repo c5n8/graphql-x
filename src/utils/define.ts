@@ -1,3 +1,3 @@
-export function define<T>(value: NoInfer<T>): T {
+export function define<T = never>(value: NoInfer<T>): T {
   return value
 }
