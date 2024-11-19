@@ -31,7 +31,8 @@
     "expansion"
   ],
   "type": "module",
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
   "bin": {
     "graphql-x": "bin/graphql-x"
   },
