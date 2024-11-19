@@ -1,4 +1,6 @@
 {
+  "name": "@txe/graphql-x",
+  "version": "0.12.0",
   "scripts": {
     "ci": "npm run check-lint && npm run build && npm run check-exports && npm run test && npm run check-format && npm run check-spelling",
     "dev": "concurrently --names=\"build,test\" --prefix-colors=\"cyan,green\" \"npm run watch:build -- --noEmit\" \"npm run watch:test\"",
@@ -13,8 +15,6 @@
     "watch:build": "tsc --watch --preserveWatchOutput",
     "watch:test": "vitest --exclude=\"**/*.integration.spec.*\" --coverage --clearScreen=false"
   },
-  "name": "@txe/graphql-x",
-  "version": "0.12.0",
   "description": "GraphQL eXpansion",
   "license": "MIT",
   "author": "Chabib N. R. <cnr@tenex.engineering> (https://tenex.engineering)",
