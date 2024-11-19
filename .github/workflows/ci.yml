@@ -21,11 +21,11 @@ jobs:
       command: pnpm install --frozen-lockfile --prefer-offline
 
   build:
-    name: Build
+    name: Build & check exports
     needs: [deps]
     uses: ./.github/workflows/base.yml
     with:
-      command: npm run build
+      command: npm run build && npm run check-exports
 
   test:
     name: Test
@@ -55,17 +55,10 @@ jobs:
     with:
       command: npm run check-spelling
 
-  check-exports:
-    name: Check exports
-    needs: [build]
-    uses: ./.github/workflows/base.yml
-    with:
-      command: npm run check-exports
-
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    needs: [deps, build, test, lint, check-exports]
+    needs: [build, test, lint]
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
