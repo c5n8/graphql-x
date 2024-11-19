@@ -94,12 +94,14 @@ jobs:
 
   test-integration:
     name: Test - Integration
+    needs: [deps, build]
     uses: ./.github/workflows/base-1.yml
     with:
       command: npm run test:integration
 
   check-exports:
     name: Check exports
+    needs: [deps, build]
     uses: ./.github/workflows/base-1.yml
     with:
       command: npm run check-exports
