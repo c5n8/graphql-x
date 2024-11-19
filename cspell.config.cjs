@@ -12,6 +12,7 @@ module.exports = {
       addWords: true,
     },
   ],
+  useGitignore: true,
   dictionaries: ['words'],
   ignorePaths: ['pnpm-lock.yaml'],
 }
