@@ -127,9 +127,7 @@ jobs:
           path: dist/
           key: ${{ runner.os }}-build-${{ github.sha }}
 
-      - run: npm pkg delete scripts
-
-      - run: npm pkg delete packageManager
+      - run: npm pkg delete scripts packageManager
 
       - run: npm publish --provenance --access public
         env:
