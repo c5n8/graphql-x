@@ -28,7 +28,8 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
-      - uses: actions/cache@v4
+      - name: Cache node_modules
+        uses: actions/cache@v4
         with:
           path: dist/
           key: ${{ runner.os }}-build-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -49,7 +50,7 @@ jobs:
         with:
           node-version: '22.x'
 
-      - name: Cache node_modules
+      - name: Cache restore node_modules
         uses: actions/cache/restore@v4
         with:
           fail-on-cache-miss: true
@@ -59,21 +60,74 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Cache build
+      - name: Cache save build
         uses: actions/cache/save@v4
         with:
           path: dist/
           key: ${{ runner.os }}-build-${{ github.sha }}
 
-      - name: Check exports
-        run: npm run check-exports
-
-  test:
-    name: Test
+  test-unit:
+    name: Test - Unit
     needs: [deps]
     uses: ./.github/workflows/base.yml
     with:
-      command: npm run test
+      command: npm run test:unit
+
+  test-integration:
+    name: Test - Integration
+    runs-on: ubuntu-latest
+    needs: [deps, build]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Cache restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          fail-on-cache-miss: true
+          path: node_modules/
+          key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Cache restore build
+        uses: actions/cache/restore@v4
+        with:
+          fail-on-cache-miss: true
+          path: dist/
+          key: ${{ runner.os }}-build-${{ github.sha }}
+
+      - run: npm run test:integration
+
+  check-exports:
+    name: Check exports
+    runs-on: ubuntu-latest
+    needs: [deps, build]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Cache restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          fail-on-cache-miss: true
+          path: node_modules/
+          key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Cache restore build
+        uses: actions/cache/restore@v4
+        with:
+          fail-on-cache-miss: true
+          path: dist/
+          key: ${{ runner.os }}-build-${{ github.sha }}
+
+      - run: npm run check-exports
 
   lint:
     name: Lint
@@ -99,7 +153,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    needs: [build, test, lint]
+    needs: [build, test-unit, test-integration, check-exports, lint]
     steps:
       - uses: actions/checkout@v4
 
@@ -108,7 +162,7 @@ jobs:
         with:
           node-version: '22.x'
 
-      - name: Cache build
+      - name: Cache restore build
         uses: actions/cache/restore@v4
         with:
           fail-on-cache-miss: true
@@ -126,9 +180,9 @@ jobs:
   artifact:
     name: Artifact
     runs-on: ubuntu-latest
-    needs: [build, test, lint]
+    needs: [build, test-unit, test-integration, check-exports, lint]
     steps:
-      - name: Cache build
+      - name: Cache restore build
         uses: actions/cache/restore@v4
         with:
           fail-on-cache-miss: true

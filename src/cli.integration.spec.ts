@@ -22,8 +22,7 @@ const outputDir = path.dirname(outputPath)
 
 test('cli', async () => {
   await rm(outputDir, { recursive: true, force: true })
-  await exec('npm run build')
-  await exec(`npx graphql-x --schema ${schemaPath} --output ${outputPath}`)
+  await exec(`bin/graphql-x --schema ${schemaPath} --output ${outputPath}`)
 
   const result = await invoke(async () => {
     let x

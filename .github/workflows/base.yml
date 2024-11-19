@@ -6,7 +6,7 @@ on:
         type: string
 
 jobs:
-  x:
+  base:
     runs-on: ubuntu-latest
 
     permissions:
@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: '22.x'
 
-      - name: Cache node_modules
+      - name: Cache restore node_modules
         uses: actions/cache/restore@v4
         with:
           fail-on-cache-miss: true
