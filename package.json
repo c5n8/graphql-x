@@ -42,7 +42,7 @@
     "!**/*.spec.*"
   ],
   "imports": {
-    "#app/*": "dist/*"
+    "#app/*": "./dist/*"
   },
   "packageManager": "pnpm@9.12.1",
   "dependencies": {
