@@ -16,14 +16,14 @@ concurrency:
 jobs:
   deps:
     name: Install dependencies
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.MACHINE }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
+          node-version: ${{ vars.NODE_VERSION }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -41,14 +41,14 @@ jobs:
   build:
     name: Build
     needs: [deps]
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.MACHINE }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
+          node-version: ${{ vars.NODE_VERSION }}
 
       - name: Cache restore node_modules
         uses: actions/cache/restore@v4
@@ -69,14 +69,14 @@ jobs:
   test-unit:
     name: Test - Unit
     needs: [deps]
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.MACHINE }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
+          node-version: ${{ vars.NODE_VERSION }}
 
       - name: Cache restore node_modules
         uses: actions/cache/restore@v4
@@ -128,8 +128,8 @@ jobs:
       command: npm run check-spelling
 
   deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
+    name: Publish
+    runs-on: ${{ vars.MACHINE }}
     needs: [build, test-unit, test-integration, check-exports, lint]
     steps:
       - uses: actions/checkout@v4
@@ -137,7 +137,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
+          node-version: ${{ vars.NODE_VERSION }}
 
       - name: Cache restore build
         uses: actions/cache/restore@v4
@@ -155,8 +155,8 @@ jobs:
       #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   artifact:
-    name: Artifact
-    runs-on: ubuntu-latest
+    name: Upload artifact
+    runs-on: ${{ vars.MACHINE }}
     needs: [build, test-unit, test-integration, check-exports, lint]
     steps:
       - name: Cache restore build
