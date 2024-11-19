@@ -83,28 +83,9 @@ jobs:
   test-unit:
     name: Test - Unit
     needs: [deps]
-    runs-on: ${{ vars.MACHINE }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ vars.NODE_VERSION }}
-
-      - name: Cache restore node_modules
-        uses: actions/cache/restore@v4
-        with:
-          fail-on-cache-miss: true
-          path: node_modules/
-          key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
-
-      - run: npm run test:unit
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: coverage
-          path: coverage/
+    uses: ./.github/workflows/base-x.yml
+    with:
+      command: npm run test:unit
 
   lint:
     name: Lint
@@ -153,20 +134,3 @@ jobs:
       # - run: npm publish --provenance --access public
       #   env:
       #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  artifact:
-    name: Upload build artifact
-    runs-on: ${{ vars.MACHINE }}
-    needs: [build, test-unit, test-integration, check-exports, lint]
-    steps:
-      - name: Cache restore build
-        uses: actions/cache/restore@v4
-        with:
-          fail-on-cache-miss: true
-          path: dist/
-          key: ${{ runner.os }}-build-${{ github.sha }}
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: build
-          path: dist/
