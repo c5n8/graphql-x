@@ -1,5 +1,5 @@
-import type { Bundle } from '#app/types/document.js'
-import type { Document } from '#app/types/document.js'
+import type { Bundle } from '#app/document.js'
+import type { Document } from '#app/document.js'
 import type { InputObjectTypeDefinitionNode } from 'graphql'
 import { invoke } from '#app/utils/invoke.js'
 import { Kind } from 'graphql'

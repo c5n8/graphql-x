@@ -1,6 +1,6 @@
 import { buildSchema } from 'graphql'
 import cleanup from './index.js'
-import type { Document } from '#app/types/document.js'
+import type { Document } from '#app/document.js'
 import expandedSchema from './fixtures/expanded.graphql?raw'
 import { expect } from 'vitest'
 import { invoke } from '#app/utils/invoke.js'

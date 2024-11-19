@@ -1,5 +1,5 @@
 import cleanup from '#app/cleanup/index.js'
-import type { Document } from '#app/types/document.js'
+import type { Document } from '#app/document.js'
 import { Kind } from 'graphql'
 import { parse } from 'graphql'
 import { print } from 'graphql'

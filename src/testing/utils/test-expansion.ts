@@ -1,6 +1,6 @@
 import baseSchema from '#documents/schema.graphql?raw'
 import { buildSchema } from 'graphql'
-import type { Document } from '#app/types/document.js'
+import type { Document } from '#app/document.js'
 import { expect } from 'vitest'
 import { invoke } from '#app/utils/invoke.js'
 import { Kind } from 'graphql'
