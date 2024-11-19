@@ -39,6 +39,7 @@ jobs:
 
   build:
     name: Build & check exports
+    needs: [deps]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,9 +48,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
 
       - name: Cache node_modules
         uses: actions/cache/restore@v4
