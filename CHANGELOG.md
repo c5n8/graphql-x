@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.10.0
+
+### Minor Changes
+
+- 5353d99: fix
+
 ## 0.9.0
 
 ### Minor Changes

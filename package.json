@@ -1,40 +1,5 @@
 {
-  "name": "@txe/graphql-x",
-  "version": "0.9.0",
-  "description": "GraphQL eXpansion",
-  "keywords": [
-    "graphql",
-    "expansion"
-  ],
-  "homepage": "https://github.com/tenex-engineering/graphql-x#readme",
-  "bugs": {
-    "url": "https://github.com/tenex-engineering/graphql-x/issues"
-  },
-  "author": "Chabib N. R. <cnr@tenex.engineering> (https://tenex.engineering)",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tenex-engineering/graphql-x.git"
-  },
-  "license": "MIT",
-  "type": "module",
-  "packageManager": "pnpm@9.12.1",
-  "files": [
-    "dist/",
-    "!dist/testing/",
-    "!dist/types/",
-    "!**/*.spec.*"
-  ],
-  "main": "./dist/index.js",
-  "exports": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "bin": {
-    "graphql-x": "bin/graphql-x"
-  },
-  "imports": {
-    "#app/*": "./dist/*"
-  },
   "scripts": {
-    "prepublishOnly": "npm run ci",
     "ci": "npm run check-lint && npm run build && npm run check-exports && npm run test && npm run check-format && npm run check-spelling",
     "dev": "concurrently --names=\"build,test\" --prefix-colors=\"cyan,green\" \"npm run watch:build -- --noEmit\" \"npm run watch:test\"",
     "build": "tsc",
@@ -48,10 +13,43 @@
     "watch:build": "tsc --watch --preserveWatchOutput",
     "watch:test": "vitest --exclude=\"**/*.integration.spec.*\" --coverage --clearScreen=false"
   },
+  "name": "@txe/graphql-x",
+  "version": "0.10.0",
+  "description": "GraphQL eXpansion",
+  "license": "MIT",
+  "author": "Chabib N. R. <cnr@tenex.engineering> (https://tenex.engineering)",
+  "homepage": "https://github.com/tenex-engineering/graphql-x#readme",
+  "bugs": {
+    "url": "https://github.com/tenex-engineering/graphql-x/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tenex-engineering/graphql-x.git"
+  },
+  "keywords": [
+    "graphql",
+    "expansion"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "graphql-x": "bin/graphql-x"
+  },
+  "files": [
+    "dist/",
+    "!dist/testing/",
+    "!dist/types/",
+    "!**/*.spec.*"
+  ],
+  "imports": {
+    "#app/*": "dist/*"
+  },
+  "packageManager": "pnpm@9.12.1",
   "dependencies": {
     "@parcel/watcher": "^2.5.0",
     "debounce": "^2.2.0",
-    "graphql": "^16.9.0"
+    "graphql": "^16.9.0",
+    "prettier": "^3.3.3"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.17.0",
@@ -70,7 +68,6 @@
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-unicorn": "^56.0.0",
     "globals": "^15.12.0",
-    "prettier": "^3.3.3",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.14.0",
     "vite": "^5.4.11",
