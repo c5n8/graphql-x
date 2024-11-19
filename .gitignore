@@ -2,6 +2,7 @@
 .vscode/
 
 dist/
+coverage/
 node_modules/
 **/.generated
 
