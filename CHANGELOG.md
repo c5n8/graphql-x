@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.11.0
+
+### Minor Changes
+
+- c404bb4: refactor: remove prettier from production build
+
 ## 0.10.1
 
 ### Patch Changes

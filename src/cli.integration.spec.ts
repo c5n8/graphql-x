@@ -4,7 +4,9 @@ import { exec as _exec } from 'node:child_process'
 import expandedSchema from './fixtures/expanded.graphql?raw'
 import { expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
+import { invoke } from '#app/utils/invoke.js'
 import path from 'node:path'
+import * as prettier from 'prettier'
 import { promisify } from 'node:util'
 import { readFile } from 'node:fs/promises'
 import { rm } from 'node:fs/promises'
@@ -23,7 +25,14 @@ test('cli', async () => {
   await exec('npm run build')
   await exec(`npx graphql-x --schema ${schemaPath} --output ${outputPath}`)
 
-  const result = await readFile(outputPath, { encoding: 'utf-8' })
+  const result = await invoke(async () => {
+    let x
+
+    x = await readFile(outputPath, { encoding: 'utf-8' })
+    x = await prettier.format(x, { parser: 'graphql' })
+
+    return x
+  })
 
   expect(result).toBe(expandedSchema)
 })

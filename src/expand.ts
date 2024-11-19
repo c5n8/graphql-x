@@ -2,7 +2,6 @@ import cleanup from '#app/cleanup/index.js'
 import type { Document } from '#app/types/document.js'
 import { Kind } from 'graphql'
 import { parse } from 'graphql'
-import * as prettier from 'prettier'
 import { print } from 'graphql'
 
 export async function expand(schema: string) {
@@ -50,7 +49,5 @@ export async function expand(schema: string) {
     ),
   ].join('\n\n')
 
-  const formatted = await prettier.format(result, { parser: 'graphql' })
-
-  return formatted
+  return result
 }
