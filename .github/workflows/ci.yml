@@ -119,6 +119,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ vars.NODE_VERSION }}
+          registry-url: https://registry.npmjs.org
 
       - name: Cache restore build
         uses: actions/cache/restore@v4
