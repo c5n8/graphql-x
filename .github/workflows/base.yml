@@ -6,7 +6,7 @@ on:
         type: string
 
 jobs:
-  base:
+  x:
     runs-on: ubuntu-latest
 
     permissions:
@@ -25,19 +25,10 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: Cache node_modules
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
+          fail-on-cache-miss: true
           path: node_modules/
           key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Cache build
-        uses: actions/cache@v4
-        with:
-          path: dist/
-          key: ${{ runner.os }}-build-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-build-
 
       - run: ${{ inputs.command }}
