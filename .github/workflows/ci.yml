@@ -1,4 +1,4 @@
-name: Publish package to npmjs
+name: Publish package to npm
 
 on:
   release:
@@ -10,35 +10,76 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ci:
+  deps:
+    name: Install dependencies
+    uses: ./.github/workflows/base.yml
+    with:
+      command: pnpm install --frozen-lockfile --prefer-offline
+
+  build:
+    name: Build
+    needs: [deps]
+    uses: ./.github/workflows/base.yml
+    with:
+      command: npm run build
+
+  test:
+    name: Test
+    needs: [deps]
+    uses: ./.github/workflows/base.yml
+    with:
+      command: npm run test
+
+  lint:
+    name: Lint
+    needs: [deps]
+    uses: ./.github/workflows/base.yml
+    with:
+      command: npm run lint
+
+  check-format:
+    name: Check format
+    needs: [deps]
+    uses: ./.github/workflows/base.yml
+    with:
+      command: npm run check-format
+
+  check-spelling:
+    name: Check spelling
+    needs: [deps]
+    uses: ./.github/workflows/base.yml
+    with:
+      command: npm run check-spelling
+
+  check-exports:
+    name: Check exports
+    needs: [build]
+    uses: ./.github/workflows/base.yml
+    with:
+      command: npm run check-exports
+
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      id-token: write
-
+    needs: [deps, build, test, lint, check-exports]
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Use Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
-          registry-url: 'https://registry.npmjs.org'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - run: npm run ci
-
+      - uses: actions/cache@v4
+        with:
+          path: dist/
+          key: ${{ runner.os }}-build-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
       - run: npm pkg delete scripts
-
       - run: npm pkg delete packageManager
-
-      - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: dist/
+      # - run: npm publish --provenance --access public
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

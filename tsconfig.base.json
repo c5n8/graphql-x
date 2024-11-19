@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "#app/*": ["./src/*"]
+    },
+
+    // Base Options:
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "ES2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+
+    // Strictness
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "forceConsistentCasingInFileNames": true,
+
+    // If your code doesn't require access to DOM APIs:
+    "lib": ["ES2023"],
+
+    // If transpiling with TypeScript:
+    "module": "Node16",
+    "rootDir": "./src/",
+    "outDir": "./dist/",
+
+    // Ensure color and formatting when compiler output is piped, e.g. through Docker
+    "pretty": true
+  }
+}
