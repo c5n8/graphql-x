@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.12.0
+
+### Minor Changes
+
+- 9be3797: config package exports
+
 ## 0.11.0
 
 ### Minor Changes
