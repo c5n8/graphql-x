@@ -94,34 +94,34 @@ jobs:
 
   test-integration:
     name: Test - Integration
-    uses: ./.github/workflows/shared/base-1.yml
+    uses: ./.github/workflows/base-1.yml
     with:
       command: npm run test:integration
 
   check-exports:
     name: Check exports
-    uses: ./.github/workflows/shared/base-1.yml
+    uses: ./.github/workflows/base-1.yml
     with:
       command: npm run check-exports
 
   lint:
     name: Lint
     needs: [deps]
-    uses: ./.github/workflows/shared/base-2.yml
+    uses: ./.github/workflows/base-2.yml
     with:
       command: npm run lint
 
   check-format:
     name: Check format
     needs: [deps]
-    uses: ./.github/workflows/shared/base-2.yml
+    uses: ./.github/workflows/base-2.yml
     with:
       command: npm run check-format
 
   check-spelling:
     name: Check spelling
     needs: [deps]
-    uses: ./.github/workflows/shared/base-2.yml
+    uses: ./.github/workflows/base-2.yml
     with:
       command: npm run check-spelling
 
