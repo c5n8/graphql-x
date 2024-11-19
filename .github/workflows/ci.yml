@@ -66,6 +66,20 @@ jobs:
           path: dist/
           key: ${{ runner.os }}-build-${{ github.sha }}
 
+  check-exports:
+    name: Check exports
+    needs: [deps, build]
+    uses: ./.github/workflows/base-y.yml
+    with:
+      command: npm run check-exports
+
+  test-integration:
+    name: Test - Integration
+    needs: [deps, build]
+    uses: ./.github/workflows/base-y.yml
+    with:
+      command: npm run test:integration
+
   test-unit:
     name: Test - Unit
     needs: [deps]
@@ -92,38 +106,24 @@ jobs:
           name: coverage
           path: coverage/
 
-  test-integration:
-    name: Test - Integration
-    needs: [deps, build]
-    uses: ./.github/workflows/base-1.yml
-    with:
-      command: npm run test:integration
-
-  check-exports:
-    name: Check exports
-    needs: [deps, build]
-    uses: ./.github/workflows/base-1.yml
-    with:
-      command: npm run check-exports
-
   lint:
     name: Lint
     needs: [deps]
-    uses: ./.github/workflows/base-2.yml
+    uses: ./.github/workflows/base-x.yml
     with:
       command: npm run lint
 
   check-format:
     name: Check format
     needs: [deps]
-    uses: ./.github/workflows/base-2.yml
+    uses: ./.github/workflows/base-x.yml
     with:
       command: npm run check-format
 
   check-spelling:
     name: Check spelling
     needs: [deps]
-    uses: ./.github/workflows/base-2.yml
+    uses: ./.github/workflows/base-x.yml
     with:
       command: npm run check-spelling
 
@@ -155,7 +155,7 @@ jobs:
       #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   artifact:
-    name: Upload artifact
+    name: Upload build artifact
     runs-on: ${{ vars.MACHINE }}
     needs: [build, test-unit, test-integration, check-exports, lint]
     steps:
