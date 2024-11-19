@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.13.0
+
+### Minor Changes
+
+- aa15185: alpha
+
 ## 0.12.0
 
 ### Minor Changes
