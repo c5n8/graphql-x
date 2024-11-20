@@ -17,7 +17,7 @@
     "forceConsistentCasingInFileNames": true,
 
     // If your code doesn't require access to DOM APIs:
-    "lib": ["ES2023"],
+    "lib": ["ES2023", "DOM"],
 
     // If transpiling with TypeScript:
     "module": "Node16",
