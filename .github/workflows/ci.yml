@@ -38,7 +38,8 @@ jobs:
           node-version: ${{ vars.NODE_VERSION }}
           cache: pnpm
 
-      - run: pnpm install --frozen-lockfile --prefer-offline
+      - if: steps.cache.outputs.cache-hit != 'true'
+        run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: Save node_modules to cache
         if: steps.cache.outputs.cache-hit != 'true'
