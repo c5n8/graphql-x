@@ -1,5 +1,3 @@
-export function invoke<F extends (...args: never[]) => ReturnType<F>>(
-  fn: F,
-): ReturnType<F> {
+export function invoke<T>(fn: (...args: never[]) => T): T {
   return fn()
 }
