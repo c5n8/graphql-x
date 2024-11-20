@@ -20,23 +20,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Restore node_modules from cache
+        id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules/
+          key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - name: Setup pnpm
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
+        if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/setup-node@v4
         with:
           node-version: ${{ vars.NODE_VERSION }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: dist/
-          key: ${{ runner.os }}-build-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-build-
+          cache: pnpm
 
       - run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Save node_modules to cache
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: node_modules/
+          key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
 
   build:
     name: Build
