@@ -3,7 +3,7 @@ import expandedSchema from './fixtures/expanded.graphql?raw'
 import { expect } from 'vitest'
 import initialSchema from './fixtures/initial.graphql?raw'
 import { invoke } from '#app/utils/invoke.js'
-import * as prettier from 'prettier'
+import prettier from 'prettier'
 import { test } from 'vitest'
 
 test('expand', async () => {

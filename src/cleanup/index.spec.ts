@@ -6,7 +6,7 @@ import { expect } from 'vitest'
 import { invoke } from '#app/utils/invoke.js'
 import { Kind } from 'graphql'
 import { parse } from 'graphql'
-import * as prettier from 'prettier'
+import prettier from 'prettier'
 import { print } from 'graphql'
 import { test } from 'vitest'
 

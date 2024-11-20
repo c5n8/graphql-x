@@ -3,7 +3,7 @@ import { expand } from '#app/expand.js'
 import { invoke } from '#app/utils/invoke.js'
 import { mkdir } from 'node:fs/promises'
 import { parseArgs } from 'node:util'
-import * as path from 'node:path'
+import path from 'node:path'
 import { readFile } from 'node:fs/promises'
 import { writeFile } from 'node:fs/promises'
 
