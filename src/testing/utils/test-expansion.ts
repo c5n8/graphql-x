@@ -1,4 +1,4 @@
-import baseSchema from '#documents/schema.gql?raw'
+import baseSchema from '#app/fixtures/base.gql?raw'
 import { buildSchema } from 'graphql'
 import type { Document } from '#app/document.js'
 import { expect } from 'vitest'
