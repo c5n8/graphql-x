@@ -1,2 +1,0 @@
-schema: './documents/schema.gql'
-documents: './src/**/*.gql'
