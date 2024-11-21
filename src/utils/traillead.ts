@@ -1,6 +1,6 @@
 export function traillead<F extends (...args: never[]) => Promise<void>>(
   fn: F,
-): F {
+): (...args: Parameters<F>) => Promise<void> {
   let current: Promise<void> | null
   let next: (() => Promise<void>) | null
 
@@ -18,5 +18,5 @@ export function traillead<F extends (...args: never[]) => Promise<void>>(
     await current
     current = null
     await next?.()
-  } as F
+  }
 }
