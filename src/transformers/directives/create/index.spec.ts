@@ -1,6 +1,6 @@
 import expand from './index.js'
-import expandedSchema from './fixtures/expanded.graphql?raw'
-import initialSchema from './fixtures/initial.graphql?raw'
+import expandedSchema from './fixtures/expanded.gql?raw'
+import initialSchema from './fixtures/initial.gql?raw'
 import { test } from 'vitest'
 import { testExpansion } from '#app/testing/utils/test-expansion.js'
 

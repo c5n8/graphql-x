@@ -1,7 +1,7 @@
 import './cli.js'
-import './fixtures/initial.graphql?raw'
+import './fixtures/initial.gql?raw'
 import { exec as _exec } from 'node:child_process'
-import expandedSchema from './fixtures/expanded.graphql?raw'
+import expandedSchema from './fixtures/expanded.gql?raw'
 import { expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { invoke } from '#app/utils/invoke.js'
@@ -16,8 +16,8 @@ const exec = promisify(_exec)
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const schemaPath = path.join(__dirname, './fixtures/initial.graphql')
-const outputPath = path.join(__dirname, './fixtures/.generated/schema.graphql')
+const schemaPath = path.join(__dirname, './fixtures/initial.gql')
+const outputPath = path.join(__dirname, './fixtures/.generated/schema.gql')
 const outputDir = path.dirname(outputPath)
 
 test('cli', async () => {

@@ -1,2 +1,2 @@
-schema: './documents/schema.graphql'
-documents: './src/**/*.graphql'
+schema: './documents/schema.gql'
+documents: './src/**/*.gql'

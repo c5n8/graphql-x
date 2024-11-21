@@ -1,7 +1,7 @@
 import { buildSchema } from 'graphql'
 import cleanup from './index.js'
 import type { Document } from '#app/document.js'
-import expandedSchema from './fixtures/expanded.graphql?raw'
+import expandedSchema from './fixtures/expanded.gql?raw'
 import { expect } from 'vitest'
 import { invoke } from '#app/utils/invoke.js'
 import { Kind } from 'graphql'
@@ -14,8 +14,8 @@ test('expand directive @create', async () => {
   buildSchema(expandedSchema)
 
   const initialSchemas = await Promise.all([
-    import('./fixtures/initial-1.graphql?raw'),
-    import('./fixtures/initial-2.graphql?raw'),
+    import('./fixtures/initial-1.gql?raw'),
+    import('./fixtures/initial-2.gql?raw'),
   ]).then((modules) => modules.map((module) => module.default))
 
   for (const initialSchema of initialSchemas) {
