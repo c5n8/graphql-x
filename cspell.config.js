@@ -1,3 +1,5 @@
+// @ts-check
+
 /** @type { import("@cspell/cspell-types").CSpellUserSettings } */
 export default {
   version: '0.2',
