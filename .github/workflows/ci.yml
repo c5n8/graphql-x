@@ -20,29 +20,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Restore node_modules from cache
-        id: cache
-        uses: actions/cache/restore@v4
-        with:
-          path: node_modules/
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-
       - name: Setup Node.js
-        if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/setup-node@v4
         with:
           node-version: ${{ vars.NODE_VERSION }}
           cache: yarn
 
-      - if: steps.cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
-
-      - name: Save node_modules to cache
-        if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+      - name: Cache node_modules
+        uses: actions/cache@v4
         with:
           path: node_modules/
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+
+      - run: yarn install --frozen-lockfile
 
   build:
     name: Build
