@@ -26,7 +26,7 @@ jobs:
         with:
           fail-on-cache-miss: true
           path: node_modules/
-          key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
 
       - name: Cache restore build
         uses: actions/cache/restore@v4

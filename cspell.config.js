@@ -14,5 +14,4 @@ export default {
   ],
   useGitignore: true,
   dictionaries: ['words'],
-  ignorePaths: ['pnpm-lock.yaml'],
 }
