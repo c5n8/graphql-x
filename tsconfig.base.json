@@ -16,13 +16,13 @@
     "noImplicitOverride": true,
     "forceConsistentCasingInFileNames": true,
 
-    // If your code doesn't require access to DOM APIs:
-    "lib": ["ES2023", "DOM"],
-
-    // If transpiling with TypeScript:
+    // Transpilation
     "module": "Node16",
     "rootDir": "./src/",
     "outDir": "./dist/",
+
+    // DOM is needed because modules with node protocol is there
+    "lib": ["ES2023", "DOM"],
 
     // Ensure color and formatting when compiler output is piped, e.g. through Docker
     "pretty": true

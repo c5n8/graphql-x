@@ -14,7 +14,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '#app': fileURLToPath(new URL('./src', import.meta.url)),
-      '#documents': fileURLToPath(new URL('./documents', import.meta.url)),
     },
   },
 })
