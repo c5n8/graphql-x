@@ -21,7 +21,7 @@
     "rootDir": "./src/",
     "outDir": "./dist/",
 
-    // DOM is needed because modules with node protocol is there
+    // DOM is needed because type definition for modules with node protocol is there apparently
     "lib": ["ES2023", "DOM"],
 
     // Ensure color and formatting when compiler output is piped, e.g. through Docker
