@@ -11,6 +11,8 @@
       "#app/*": ["./src/*"]
     },
 
-    "declaration": true
+    "declaration": true,
+
+    "types": ["node"]
   }
 }
