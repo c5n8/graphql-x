@@ -1,9 +1,9 @@
-// @ts-check
-
 /** @type { import("@cspell/cspell-types").CSpellUserSettings } */
 export default {
   version: '0.2',
   language: 'en',
+  useGitignore: true,
+  dictionaries: ['words'],
 
   dictionaryDefinitions: [
     {
@@ -12,6 +12,4 @@ export default {
       addWords: true,
     },
   ],
-  useGitignore: true,
-  dictionaries: ['words'],
 }

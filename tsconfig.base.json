@@ -5,6 +5,7 @@
     "skipLibCheck": true,
     "target": "ES2022",
     "allowJs": true,
+    "checkJs": true,
     "resolveJsonModule": true,
     "moduleDetection": "force",
     "isolatedModules": true,
@@ -18,8 +19,6 @@
 
     // Transpilation
     "module": "Node16",
-    "rootDir": "./src/",
-    "outDir": "./dist/",
 
     // DOM is needed because type definition for modules with node protocol is there apparently
     "lib": ["ES2023", "DOM"],

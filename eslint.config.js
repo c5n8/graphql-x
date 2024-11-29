@@ -1,5 +1,3 @@
-// @ts-check
-
 import eslintConfigPrettier from 'eslint-config-prettier'
 // @ts-expect-error https://github.com/import-js/eslint-plugin-import/issues/3090
 import eslintPluginImport from 'eslint-plugin-import'
@@ -22,11 +20,54 @@ export default [
   includeIgnoreFile(gitignorePath),
 
   eslintPluginJs.configs.recommended,
+  {
+    rules: {
+      'object-shorthand': ['warn', 'properties'],
+      'no-restricted-syntax': [
+        'warn',
+        { selector: 'TSEnumDeclaration', message: 'Avoid enums' },
+      ],
+    },
+  },
+
+  // eslint-disable-next-line import/no-named-as-default-member
   ...eslintToolingTs.configs.strict,
+  // eslint-disable-next-line import/no-named-as-default-member
   ...eslintToolingTs.configs.stylistic,
+  {
+    rules: {
+      '@typescript-eslint/parameter-properties': 'warn',
+    },
+  },
+
   eslintPluginImport.flatConfigs.recommended,
-  eslintConfigPrettier,
-  ...eslintPluginX.configs.recommended,
+  eslintPluginImport.flatConfigs.typescript,
+  {
+    settings: {
+      'import/resolver': {
+        typescript: true,
+      },
+    },
+    rules: {
+      'import/consistent-type-specifier-style': ['warn', 'prefer-top-level'],
+      'import/first': 'error',
+      'import/namespace': 'warn',
+      'import/no-duplicates': 'off',
+      'import/no-empty-named-blocks': 'warn',
+      'import/newline-after-import': 'warn',
+      // https://github.com/import-js/eslint-plugin-import/issues/3076
+      'import/no-unresolved': 'off',
+    },
+  },
+  {
+    files: ['src/**/*'],
+    rules: {
+      'import/no-extraneous-dependencies': [
+        'error',
+        { devDependencies: ['src/**/*.spec.*', 'src/testing/**/*'] },
+      ],
+    },
+  },
 
   {
     languageOptions: {
@@ -34,23 +75,17 @@ export default [
     },
     plugins: {
       unicorn: eslintPluginUnicorn,
+    },
+    rules: {
+      'unicorn/prefer-node-protocol': 'warn',
+    },
+  },
+
+  {
+    plugins: {
       '@stylistic/js': eslintPluginStylisticJs,
     },
     rules: {
-      'no-restricted-syntax': [
-        'error',
-        { selector: 'TSEnumDeclaration', message: 'Avoid enums' },
-      ],
-      'object-shorthand': ['warn', 'properties'],
-      'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
-      'import/first': 'error',
-      'import/namespace': 'off',
-      'import/no-duplicates': 'off',
-      'import/no-empty-named-blocks': 'error',
-      'import/newline-after-import': 'warn',
-      'import/no-unresolved': 'off',
-      'unicorn/prefer-node-protocol': 'error',
-      '@typescript-eslint/parameter-properties': 'error',
       '@stylistic/js/padding-line-between-statements': [
         'warn',
         { blankLine: 'never', prev: 'import', next: 'import' },
@@ -63,12 +98,12 @@ export default [
   },
 
   {
-    files: ['src/**/*'],
-    rules: {
-      'import/no-extraneous-dependencies': [
-        'error',
-        { devDependencies: ['src/**/*.spec.*', 'src/testing/**/*'] },
-      ],
+    files: ['*'],
+    languageOptions: {
+      globals: globals.node,
     },
   },
+
+  eslintConfigPrettier,
+  ...eslintPluginX.configs.recommended,
 ]

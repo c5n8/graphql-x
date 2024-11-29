@@ -1,7 +1,6 @@
 {
   "extends": "./tsconfig.base.json",
   "include": ["./src/**/*"],
-  "exclude": ["./src/**/*.spec.*", "./src/testing/**/*"],
 
   "compilerOptions": {
     "rootDir": "./src/",
@@ -11,6 +10,6 @@
       "#app/*": ["./src/*"]
     },
 
-    "declaration": true
+    "types": ["vite/client"]
   }
 }
