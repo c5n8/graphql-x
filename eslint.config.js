@@ -2,7 +2,7 @@ import eslintConfigPrettier from 'eslint-config-prettier'
 // @ts-expect-error https://github.com/import-js/eslint-plugin-import/issues/3090
 import eslintPluginImport from 'eslint-plugin-import'
 import eslintPluginJs from '@eslint/js'
-import eslintPluginStylisticJs from '@stylistic/eslint-plugin-js'
+import eslintPluginStylistic from '@stylistic/eslint-plugin'
 import eslintPluginUnicorn from 'eslint-plugin-unicorn'
 import eslintPluginX from '@txe/eslint-plugin-x'
 import eslintToolingTs from 'typescript-eslint'
@@ -15,8 +15,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const gitignorePath = path.resolve(__dirname, '.gitignore')
 
-/** @type {import('eslint').Linter.Config[]} */
-export default [
+export default eslintToolingTs.config(
   includeIgnoreFile(gitignorePath),
 
   eslintPluginJs.configs.recommended,
@@ -83,10 +82,11 @@ export default [
 
   {
     plugins: {
-      '@stylistic/js': eslintPluginStylisticJs,
+      // @ts-expect-error https://github.com/eslint-stylistic/eslint-stylistic/issues/398
+      '@stylistic': eslintPluginStylistic,
     },
     rules: {
-      '@stylistic/js/padding-line-between-statements': [
+      '@stylistic/padding-line-between-statements': [
         'warn',
         { blankLine: 'never', prev: 'import', next: 'import' },
         { blankLine: 'always', prev: '*', next: 'block-like' },
@@ -106,4 +106,4 @@ export default [
 
   eslintConfigPrettier,
   ...eslintPluginX.configs.recommended,
-]
+)
