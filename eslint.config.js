@@ -9,10 +9,6 @@ import * as eslintToolingTs from 'typescript-eslint'
 import globals from 'globals'
 
 export default eslintToolingTs.config(
-  {
-    ignores: ['dist/'],
-  },
-
   eslintPluginJs.configs.recommended,
   {
     rules: {
@@ -48,17 +44,9 @@ export default eslintToolingTs.config(
       'import/no-duplicates': 'off',
       'import/no-empty-named-blocks': 'warn',
       'import/newline-after-import': 'warn',
-      // https://github.com/import-js/eslint-plugin-import/issues/1739
-      // https://github.com/import-js/eslint-plugin-import/issues/3076
-      'import/no-unresolved': 'warn',
-    },
-  },
-  {
-    files: ['src/**/*'],
-    rules: {
       'import/no-extraneous-dependencies': [
         'error',
-        { devDependencies: ['src/**/*.spec.*', 'src/testing/**/*'] },
+        { devDependencies: ['*', 'src/**/*.spec.*', 'src/testing/**/*'] },
       ],
     },
   },
@@ -101,4 +89,8 @@ export default eslintToolingTs.config(
 
   eslintConfigPrettier,
   ...eslintPluginX.configs.recommended,
+
+  {
+    ignores: ['dist/'],
+  },
 )
