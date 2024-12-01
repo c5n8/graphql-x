@@ -6,17 +6,12 @@ import eslintPluginStylistic from '@stylistic/eslint-plugin'
 import eslintPluginUnicorn from 'eslint-plugin-unicorn'
 import eslintPluginX from '@txe/eslint-plugin-x'
 import * as eslintToolingTs from 'typescript-eslint'
-import { fileURLToPath } from 'node:url'
 import globals from 'globals'
-import { includeIgnoreFile } from '@eslint/compat'
-import path from 'node:path'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const gitignorePath = path.resolve(__dirname, '.gitignore')
 
 export default eslintToolingTs.config(
-  includeIgnoreFile(gitignorePath),
+  {
+    ignores: ['dist/'],
+  },
 
   eslintPluginJs.configs.recommended,
   {
@@ -53,8 +48,9 @@ export default eslintToolingTs.config(
       'import/no-duplicates': 'off',
       'import/no-empty-named-blocks': 'warn',
       'import/newline-after-import': 'warn',
+      // https://github.com/import-js/eslint-plugin-import/issues/1739
       // https://github.com/import-js/eslint-plugin-import/issues/3076
-      'import/no-unresolved': 'off',
+      'import/no-unresolved': 'warn',
     },
   },
   {
