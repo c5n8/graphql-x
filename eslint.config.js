@@ -5,7 +5,7 @@ import eslintPluginJs from '@eslint/js'
 import eslintPluginStylistic from '@stylistic/eslint-plugin'
 import eslintPluginUnicorn from 'eslint-plugin-unicorn'
 import eslintPluginX from '@txe/eslint-plugin-x'
-import eslintToolingTs from 'typescript-eslint'
+import * as eslintToolingTs from 'typescript-eslint'
 import { fileURLToPath } from 'node:url'
 import globals from 'globals'
 import { includeIgnoreFile } from '@eslint/compat'
@@ -29,9 +29,7 @@ export default eslintToolingTs.config(
     },
   },
 
-  // eslint-disable-next-line import/no-named-as-default-member
   ...eslintToolingTs.configs.strict,
-  // eslint-disable-next-line import/no-named-as-default-member
   ...eslintToolingTs.configs.stylistic,
   {
     rules: {
@@ -50,6 +48,7 @@ export default eslintToolingTs.config(
     rules: {
       'import/consistent-type-specifier-style': ['warn', 'prefer-top-level'],
       'import/first': 'error',
+      // https://github.com/import-js/eslint-plugin-import/issues/3101
       'import/namespace': 'warn',
       'import/no-duplicates': 'off',
       'import/no-empty-named-blocks': 'warn',
