@@ -211,36 +211,34 @@ function addMutationInput(
   })
 
   bundle.expansions.push(
-    ...Array.from(relationInputSet).map<InputObjectTypeDefinitionNode>(
-      (name) => {
-        return {
-          kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-          name: {
-            kind: Kind.NAME,
-            value: name,
-          },
-          fields: [
-            {
-              kind: Kind.INPUT_VALUE_DEFINITION,
-              name: {
-                kind: Kind.NAME,
-                value: 'id',
-              },
+    ...[...relationInputSet].map<InputObjectTypeDefinitionNode>((name) => {
+      return {
+        kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+        name: {
+          kind: Kind.NAME,
+          value: name,
+        },
+        fields: [
+          {
+            kind: Kind.INPUT_VALUE_DEFINITION,
+            name: {
+              kind: Kind.NAME,
+              value: 'id',
+            },
+            type: {
+              kind: Kind.NON_NULL_TYPE,
               type: {
-                kind: Kind.NON_NULL_TYPE,
-                type: {
-                  kind: Kind.NAMED_TYPE,
-                  name: {
-                    kind: Kind.NAME,
-                    value: 'ID',
-                  },
+                kind: Kind.NAMED_TYPE,
+                name: {
+                  kind: Kind.NAME,
+                  value: 'ID',
                 },
               },
             },
-          ],
-        }
-      },
-    ),
+          },
+        ],
+      }
+    }),
   )
 }
 

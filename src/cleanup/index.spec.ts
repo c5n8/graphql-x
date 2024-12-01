@@ -29,30 +29,28 @@ test('expand directive @create', async () => {
       globals: [],
     }
 
-    const cleaned = cleanup({
-      kind: Kind.DOCUMENT,
-      definitions: document.bundles.flatMap((bundle) => {
-        return [bundle.node, ...bundle.expansions]
-      }),
-    })
-
     const result = await invoke(async () => {
       let x
 
+      x = cleanup({
+        kind: Kind.DOCUMENT,
+        definitions: document.bundles.flatMap((bundle) => {
+          return [bundle.node, ...bundle.expansions]
+        }),
+      })
+
       x = [
-        print(cleaned),
-        ...Array.from(
-          document.globals.reduce((set, definition) => {
-            const printed = print({
-              kind: Kind.DOCUMENT,
-              definitions: [definition],
-            })
+        print(x),
+        ...document.globals.reduce((set, definition) => {
+          const printed = print({
+            kind: Kind.DOCUMENT,
+            definitions: [definition],
+          })
 
-            set.add(printed)
+          set.add(printed)
 
-            return set
-          }, new Set<string>()),
-        ),
+          return set
+        }, new Set<string>()),
       ].join('\n\n')
 
       x = await prettier.format(x, { parser: 'graphql' })

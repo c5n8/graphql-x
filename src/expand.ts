@@ -35,18 +35,16 @@ export async function expand(schema: string) {
 
   const result = [
     print(cleaned),
-    ...Array.from(
-      document.globals.reduce((set, definition) => {
-        const printed = print({
-          kind: Kind.DOCUMENT,
-          definitions: [definition],
-        })
+    ...document.globals.reduce((set, definition) => {
+      const printed = print({
+        kind: Kind.DOCUMENT,
+        definitions: [definition],
+      })
 
-        set.add(printed)
+      set.add(printed)
 
-        return set
-      }, new Set<string>()),
-    ),
+      return set
+    }, new Set<string>()),
   ].join('\n\n')
 
   return result
