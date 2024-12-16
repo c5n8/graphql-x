@@ -1,7 +1,5 @@
 import './cli.js'
-import './fixtures/initial.gql?raw'
 import { exec as _exec } from 'node:child_process'
-import expandedSchema from './fixtures/expanded.gql?raw'
 import { expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { invoke } from '#app/utils/invoke.js'
@@ -21,6 +19,11 @@ const outputPath = path.join(__dirname, './fixtures/.generated/schema.gql')
 const outputDir = path.dirname(outputPath)
 
 test('cli', async () => {
+  await import('./fixtures/initial.gql?raw')
+  const { default: expandedSchema } = await import(
+    './fixtures/expanded.gql?raw'
+  )
+
   await rm(outputDir, { recursive: true, force: true })
   await exec(`bin/graphql-x --schema ${schemaPath} --output ${outputPath}`)
 
