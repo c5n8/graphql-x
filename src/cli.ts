@@ -1,6 +1,6 @@
-import { cmdErrorHandling } from '#app/utils/cmd-error-handling.js'
-import { expand } from '#app/expand.js'
-import { invoke } from '#app/utils/invoke.js'
+import { cmdErrorHandling } from '#package/utils/cmd-error-handling.js'
+import { expand } from '#package/expand.js'
+import { invoke } from '#package/utils/invoke.js'
 import { mkdir } from 'node:fs/promises'
 import { parseArgs } from 'node:util'
 import path from 'node:path'
@@ -41,7 +41,7 @@ const cmd = await invoke(async () => {
 
   if (watch) {
     const { default: debounce } = await import('debounce')
-    const { traillead } = await import('#app/utils/traillead.js')
+    const { traillead } = await import('#package/utils/traillead.js')
 
     x = traillead(x)
     x = debounce(x, 128)

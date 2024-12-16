@@ -1,13 +1,13 @@
-import cleanup from '#app/cleanup/index.js'
-import type { Document } from '#app/document.js'
+import cleanup from '#package/cleanup/index.js'
+import type { Document } from '#package/document.js'
 import { Kind } from 'graphql'
 import { parse } from 'graphql'
 import { print } from 'graphql'
 
 export async function expand(schema: string) {
   const transformers = await Promise.all([
-    import('#app/transformers/directives/create/index.js'),
-    import('#app/transformers/directives/update/index.js'),
+    import('#package/transformers/directives/create/index.js'),
+    import('#package/transformers/directives/update/index.js'),
   ])
 
   const ast = parse(schema)

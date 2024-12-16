@@ -42,7 +42,7 @@
     "./dist/"
   ],
   "imports": {
-    "#app/*": "./dist/*"
+    "#package/*": "./dist/*"
   },
   "dependencies": {
     "@parcel/watcher": "^2.5.0",

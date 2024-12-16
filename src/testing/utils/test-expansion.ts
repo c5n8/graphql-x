@@ -1,11 +1,11 @@
 // https://github.com/import-js/eslint-plugin-import/issues/1739
 // https://github.com/import-js/eslint-plugin-import/issues/3076
 // eslint-disable-next-line import/no-unresolved
-import baseSchema from '#app/fixtures/base.gql?raw'
+import baseSchema from '#package/fixtures/base.gql?raw'
 import { buildSchema } from 'graphql'
-import type { Document } from '#app/document.js'
+import type { Document } from '#package/document.js'
 import { expect } from 'vitest'
-import { invoke } from '#app/utils/invoke.js'
+import { invoke } from '#package/utils/invoke.js'
 import { Kind } from 'graphql'
 import { parse } from 'graphql'
 import * as prettier from 'prettier'

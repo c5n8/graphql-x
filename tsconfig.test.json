@@ -7,7 +7,7 @@
     "outDir": "./dist/",
 
     "paths": {
-      "#app/*": ["./src/*"]
+      "#package/*": ["./src/*"]
     },
 
     "types": ["node", "vite/client"]

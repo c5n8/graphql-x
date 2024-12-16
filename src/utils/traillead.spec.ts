@@ -1,6 +1,6 @@
 import { expect } from 'vitest'
 import { test } from 'vitest'
-import { traillead } from '#app/utils/traillead.js'
+import { traillead } from '#package/utils/traillead.js'
 
 test('traillead', async () => {
   let store = 0
