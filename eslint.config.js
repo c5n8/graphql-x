@@ -37,13 +37,16 @@ export default eslintToolingTs.config(
       },
     },
     rules: {
+      'import/no-duplicates': 'off',
+
       'import/consistent-type-specifier-style': ['warn', 'prefer-top-level'],
-      'import/first': 'error',
       // https://github.com/import-js/eslint-plugin-import/issues/3101
       'import/namespace': 'warn',
-      'import/no-duplicates': 'off',
       'import/no-empty-named-blocks': 'warn',
+      'import/no-unresolved': 'warn',
       'import/newline-after-import': 'warn',
+
+      'import/first': 'error',
       'import/no-extraneous-dependencies': [
         'error',
         { devDependencies: ['*', 'src/**/*.spec.*', 'src/testing/**/*'] },
