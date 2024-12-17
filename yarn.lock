@@ -1518,6 +1518,11 @@
   dependencies:
     "@typescript-eslint/utils" "^8.13.0"
 
+"@txe/invoke@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@txe/invoke/-/invoke-0.1.0.tgz#96b061e33356664da9c0bf7bdd3c31f675f06d36"
+  integrity sha512-QZqpWV/fIHqM6s3ZPwrOTlg61hn8ztfYcjbYSTEZJXxZbOIRbaeA0volrlFB/GJ9xsW1V+m7NuE15518SoBa1Q==
+
 "@types/eslint-config-prettier@^6.11.3":
   version "6.11.3"
   resolved "https://registry.yarnpkg.com/@types/eslint-config-prettier/-/eslint-config-prettier-6.11.3.tgz#319f53eeb5a8b50e702fa081a9fe39bf01df8c1d"
@@ -1660,6 +1665,11 @@
     std-env "^3.8.0"
     test-exclude "^7.0.1"
     tinyrainbow "^1.2.0"
+
+"@vitest/eslint-plugin@^1.1.16":
+  version "1.1.16"
+  resolved "https://registry.yarnpkg.com/@vitest/eslint-plugin/-/eslint-plugin-1.1.16.tgz#f532ec5b7d066557f196bb9a6bf9d8b235af3c62"
+  integrity sha512-xecwJYuAp11AFsd2aoSnTWO3Wckgu7rjBz1VOhvsDtZzI4s7z/WerAR4gxnEFy37scdsE8wSlP95/2ry6sLhSg==
 
 "@vitest/expect@2.1.8":
   version "2.1.8"
