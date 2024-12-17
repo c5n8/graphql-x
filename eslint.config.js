@@ -4,11 +4,22 @@ import eslintPluginImport from 'eslint-plugin-import'
 import eslintPluginJs from '@eslint/js'
 import eslintPluginStylistic from '@stylistic/eslint-plugin'
 import eslintPluginUnicorn from 'eslint-plugin-unicorn'
+import eslintPluginVitest from '@vitest/eslint-plugin'
 import eslintPluginX from '@txe/eslint-plugin-x'
 import * as eslintToolingTs from 'typescript-eslint'
 import globals from 'globals'
 
 export default eslintToolingTs.config(
+  {
+    name: 'package/files-to-lint',
+    files: ['**/*.{js,ts}'],
+  },
+
+  {
+    name: 'package/files-to-ignore',
+    ignores: ['dist/**', 'coverage/**'],
+  },
+
   eslintPluginJs.configs.recommended,
   {
     rules: {
@@ -40,10 +51,19 @@ export default eslintToolingTs.config(
       'import/no-duplicates': 'off',
 
       'import/consistent-type-specifier-style': ['warn', 'prefer-top-level'],
-      // https://github.com/import-js/eslint-plugin-import/issues/3101
-      'import/namespace': 'warn',
       'import/no-empty-named-blocks': 'warn',
-      'import/no-unresolved': 'warn',
+      ...(process.env.NODE_ENV === 'development'
+        ? {
+            // https://github.com/import-js/eslint-plugin-import/issues/3101
+            'import/namespace': 'off',
+            // https://github.com/import-js/eslint-plugin-import/issues/3076
+            // https://github.com/import-js/eslint-plugin-import/issues/1739
+            'import/no-unresolved': 'off',
+          }
+        : {
+            'import/namespace': 'warn',
+            'import/no-unresolved': 'warn',
+          }),
       'import/newline-after-import': 'warn',
 
       'import/first': 'error',
@@ -66,12 +86,23 @@ export default eslintToolingTs.config(
     },
   },
 
+  // @ts-expect-error somebody in the future, please
+  eslintPluginStylistic.configs.customize({
+    arrowParens: true,
+    braceStyle: '1tbs',
+  }),
   {
     plugins: {
-      // @ts-expect-error https://github.com/eslint-stylistic/eslint-stylistic/issues/398
+      // https://github.com/eslint-stylistic/eslint-stylistic/issues/398
       '@stylistic': eslintPluginStylistic,
     },
     rules: {
+      // resolves conflicts with prettier
+      '@stylistic/indent': ['off'],
+      '@stylistic/indent-binary-ops': ['off'],
+      '@stylistic/operator-linebreak': ['off'],
+      //
+
       '@stylistic/padding-line-between-statements': [
         'warn',
         { blankLine: 'never', prev: 'import', next: 'import' },
@@ -84,6 +115,13 @@ export default eslintToolingTs.config(
   },
 
   {
+    ...eslintPluginVitest.configs.recommended,
+    files: ['src/**/*.spec.*'],
+  },
+
+  ...eslintPluginX.configs.recommended,
+
+  {
     files: ['*'],
     languageOptions: {
       globals: globals.node,
@@ -91,9 +129,4 @@ export default eslintToolingTs.config(
   },
 
   eslintConfigPrettier,
-  ...eslintPluginX.configs.recommended,
-
-  {
-    ignores: ['dist/'],
-  },
 )
