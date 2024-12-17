@@ -2,11 +2,13 @@ directive @create on OBJECT
 
 directive @update on OBJECT
 
+directive @delete on OBJECT
+
 directive @readonly on FIELD_DEFINITION
 
 scalar DateTime
 
-type Post @create @update {
+type Post @create @update @delete {
   id: ID!
   createdAt: DateTime @readonly
   title: String!
@@ -79,6 +81,14 @@ type UpdatePostValidation {
 
 scalar UpdatePostValidationIssues @issues(input: "UpdatePostInput")
 
+extend type Mutation {
+  deletePost(input: DeletePostInput!): Void
+}
+
+input DeletePostInput {
+  id: ID!
+}
+
 type Category {
   id: ID!
 }
@@ -88,3 +98,5 @@ directive @signature(fields: [String!]!) on UNION
 directive @member(type: String!, signature: String!) repeatable on UNION
 
 directive @issues(input: String!) on SCALAR
+
+scalar Void

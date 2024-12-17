@@ -1,0 +1,15 @@
+directive @delete on OBJECT
+
+type Post @delete {
+  id: ID!
+}
+
+extend type Mutation {
+  deletePost(input: DeletePostInput!): Void
+}
+
+input DeletePostInput {
+  id: ID!
+}
+
+scalar Void

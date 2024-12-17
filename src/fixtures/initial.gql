@@ -2,11 +2,13 @@ directive @create on OBJECT
 
 directive @update on OBJECT
 
+directive @delete on OBJECT
+
 directive @readonly on FIELD_DEFINITION
 
 scalar DateTime
 
-type Post @create @update {
+type Post @create @update @delete {
   id: ID!
   createdAt: DateTime @readonly
   title: String!

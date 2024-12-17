@@ -8,6 +8,7 @@ export async function expand(schema: string) {
   const transformers = await Promise.all([
     import('#package/transformers/directives/create/index.js'),
     import('#package/transformers/directives/update/index.js'),
+    import('#package/transformers/directives/delete/index.js'),
   ])
 
   const ast = parse(schema)
