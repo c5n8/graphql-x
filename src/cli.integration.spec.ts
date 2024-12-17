@@ -2,7 +2,9 @@ import './cli.js'
 import { exec as _exec } from 'node:child_process'
 import { expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { invoke } from '#package/utils/invoke.js'
+import { importDefaults } from '#package/testing/utils/import-defaults.js'
+import { invoke } from '@txe/invoke'
+import { onTestFinished } from 'vitest'
 import path from 'node:path'
 import * as prettier from 'prettier'
 import { promisify } from 'node:util'
@@ -12,17 +14,22 @@ import { test } from 'vitest'
 
 const exec = promisify(_exec)
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const schemaPath = path.join(__dirname, './fixtures/initial.gql')
-const outputPath = path.join(__dirname, './fixtures/.generated/schema.gql')
-const outputDir = path.dirname(outputPath)
-
 test('cli', async () => {
-  await import('./fixtures/initial.gql?raw')
-  const { default: expandedSchema } = await import(
-    './fixtures/expanded.gql?raw'
-  )
+  import('./fixtures/initial.gql?raw')
+  const schema = await importDefaults({
+    // initial: () => import('./fixtures/initial.gql?raw'),
+    expanded: () => import('./fixtures/expanded.gql?raw'),
+  })
+
+  onTestFinished(async () => {
+    await rm(outputDir, { recursive: true, force: true })
+  })
+
+  const __filename = fileURLToPath(import.meta.url)
+  const __dirname = path.dirname(__filename)
+  const schemaPath = path.join(__dirname, './fixtures/initial.gql')
+  const outputPath = path.join(__dirname, './fixtures/.generated/schema.gql')
+  const outputDir = path.dirname(outputPath)
 
   await rm(outputDir, { recursive: true, force: true })
   await exec(`bin/graphql-x --schema ${schemaPath} --output ${outputPath}`)
@@ -36,5 +43,5 @@ test('cli', async () => {
     return x
   })
 
-  expect(result).toBe(expandedSchema)
+  expect(result).toBe(schema.expanded)
 })

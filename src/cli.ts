@@ -1,6 +1,6 @@
 import { cmdErrorHandling } from '#package/utils/cmd-error-handling.js'
 import { expand } from '#package/expand.js'
-import { invoke } from '#package/utils/invoke.js'
+import { invoke } from '@txe/invoke'
 import { mkdir } from 'node:fs/promises'
 import { parseArgs } from 'node:util'
 import path from 'node:path'

@@ -1,13 +1,21 @@
+import { buildSchema } from 'graphql'
+import { execExpansion } from '#package/testing/utils/exec-expansion.js'
 import expand from './index.js'
-import expandedSchema from './fixtures/expanded.gql?raw'
-import initialSchema from './fixtures/initial.gql?raw'
+import { expect } from 'vitest'
+import { importDefaults } from '#package/testing/utils/import-defaults.js'
 import { test } from 'vitest'
-import { testExpansion } from '#package/testing/utils/test-expansion.js'
 
 test('expand directive @create', async () => {
-  testExpansion({
-    expand,
-    initialSchema,
-    expandedSchema,
+  const schema = await importDefaults({
+    base: () => import('#package/fixtures/base.gql?raw'),
+    initial: () => import('./fixtures/initial.gql?raw'),
+    expanded: () => import('./fixtures/expanded.gql?raw'),
   })
+
+  expect(() => buildSchema(schema.initial)).not.toThrow()
+  expect(() => buildSchema(schema.base + schema.expanded)).not.toThrow()
+
+  const result = await execExpansion({ expand, schema: schema.initial })
+
+  expect(result).toBe(schema.expanded)
 })

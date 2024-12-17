@@ -1,7 +1,7 @@
 import type { Bundle } from '#package/document.js'
 import type { Document } from '#package/document.js'
 import type { InputObjectTypeDefinitionNode } from 'graphql'
-import { invoke } from '#package/utils/invoke.js'
+import { invoke } from '@txe/invoke'
 import { Kind } from 'graphql'
 import type { NonNullTypeNode } from 'graphql'
 import type { ObjectTypeDefinitionNode } from 'graphql'
@@ -42,6 +42,8 @@ export function writeDirectiveExpansion(operation: 'create' | 'update') {
     if (needsGlobals) {
       addGlobals(document)
     }
+
+    return document
   }
 }
 
