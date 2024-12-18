@@ -1,13 +1,13 @@
 export function traillead<F extends (...args: never[]) => Promise<void>>(
   fn: F,
 ): (...args: Parameters<F>) => Promise<void> {
-  let current: Promise<void> | null
-  let next: (() => Promise<void>) | null
+  let current: Promise<void> | undefined
+  let next: (() => Promise<void>) | undefined
 
   return async function _fn(...args) {
-    if (current != null) {
+    if (current !== undefined) {
       next = async () => {
-        next = null
+        next = undefined
         await _fn(...args)
       }
 
@@ -16,7 +16,8 @@ export function traillead<F extends (...args: never[]) => Promise<void>>(
 
     current = fn(...args)
     await current
-    current = null
+    // eslint-disable-next-line require-atomic-updates
+    current = undefined
     await next?.()
   }
 }

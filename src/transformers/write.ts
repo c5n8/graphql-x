@@ -21,19 +21,17 @@ export function writeDirectiveExpansion(operation: 'create' | 'update') {
       },
     }
 
-    let needsGlobals = false
-
-    for (const bundle of document.bundles) {
-      const { node } = bundle
-
-      if (
-        node.kind !== Kind.OBJECT_TYPE_DEFINITION ||
-        node.directives?.some(
+    const bundles = document.bundles.filter(
+      (bundle): bundle is Bundle & { node: ObjectTypeDefinitionNode } =>
+        bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
+        (bundle.node.directives?.some(
           ({ name }) => name.value === `${context.operationName.lowercase}`,
-        ) !== true
-      ) {
-        continue
-      }
+        ) ??
+          false),
+    )
+
+    for (const bundle of bundles) {
+      const { node } = bundle
 
       addMutation(context, node, bundle)
       addMutationInput(context, node, bundle, document)
@@ -41,10 +39,9 @@ export function writeDirectiveExpansion(operation: 'create' | 'update') {
       addMutationResult(context, node, bundle)
       addMutationValidation(context, node, bundle)
       addMutationValidationIssues(context, node, bundle)
-      needsGlobals = true
     }
 
-    if (needsGlobals) {
+    if (bundles.length > 0) {
       addGlobals(document)
     }
 
@@ -151,7 +148,7 @@ function addMutationInput(
             type: type as NonNullTypeNode['type'],
           }))
 
-          if (result == null) {
+          if (result === undefined) {
             return
           }
 
@@ -164,7 +161,7 @@ function addMutationInput(
             type,
           }))
 
-          if (result == null) {
+          if (result === undefined) {
             return
           }
 
@@ -200,7 +197,7 @@ function addMutationInput(
         }
       })
 
-      if (type == null) {
+      if (type === undefined) {
         return []
       }
 

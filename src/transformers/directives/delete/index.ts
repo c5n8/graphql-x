@@ -7,9 +7,10 @@ export default (document: Document) => {
   const bundles = document.bundles.filter(
     (bundle): bundle is Bundle & { node: ObjectTypeDefinitionNode } =>
       bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
-      bundle.node.directives?.find(
+      (bundle.node.directives?.some(
         (directive) => directive.name.value === 'delete',
-      ) != null,
+      ) ??
+        false),
   )
 
   for (const bundle of bundles) {
@@ -24,51 +25,48 @@ function addMutation(
   bundle: Bundle,
   document: Document,
 ) {
-  bundle.expansions.push(
-    // Mutations
-    {
-      kind: Kind.OBJECT_TYPE_EXTENSION,
-      name: {
-        kind: Kind.NAME,
-        value: 'Mutation',
-      },
-      fields: [
-        {
-          kind: Kind.FIELD_DEFINITION,
-          name: {
-            kind: Kind.NAME,
-            value: `delete${node.name.value}`,
-          },
-          arguments: [
-            {
-              kind: Kind.INPUT_VALUE_DEFINITION,
-              name: {
-                kind: Kind.NAME,
-                value: 'input',
-              },
+  bundle.expansions.push({
+    kind: Kind.OBJECT_TYPE_EXTENSION,
+    name: {
+      kind: Kind.NAME,
+      value: 'Mutation',
+    },
+    fields: [
+      {
+        kind: Kind.FIELD_DEFINITION,
+        name: {
+          kind: Kind.NAME,
+          value: `delete${node.name.value}`,
+        },
+        arguments: [
+          {
+            kind: Kind.INPUT_VALUE_DEFINITION,
+            name: {
+              kind: Kind.NAME,
+              value: 'input',
+            },
+            type: {
+              kind: Kind.NON_NULL_TYPE,
               type: {
-                kind: Kind.NON_NULL_TYPE,
-                type: {
-                  kind: Kind.NAMED_TYPE,
-                  name: {
-                    kind: Kind.NAME,
-                    value: `Delete${node.name.value}Input`,
-                  },
+                kind: Kind.NAMED_TYPE,
+                name: {
+                  kind: Kind.NAME,
+                  value: `Delete${node.name.value}Input`,
                 },
               },
             },
-          ],
-          type: {
-            kind: Kind.NAMED_TYPE,
-            name: {
-              kind: Kind.NAME,
-              value: `Void`,
-            },
+          },
+        ],
+        type: {
+          kind: Kind.NAMED_TYPE,
+          name: {
+            kind: Kind.NAME,
+            value: `Void`,
           },
         },
-      ],
-    },
-  )
+      },
+    ],
+  })
 
   bundle.expansions.push({
     kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,

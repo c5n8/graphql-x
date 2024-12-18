@@ -18,48 +18,52 @@ test('expand directive @create', async () => {
     import('./fixtures/initial-2.gql?raw'),
   ]).then((modules) => modules.map((module) => module.default))
 
-  // TODO: optimize with parallel expansion
-  for (const initialSchema of initialSchemas) {
-    const initialAST = parse(initialSchema)
+  const results = await Promise.all(
+    initialSchemas.map(async (initialSchema) => {
+      const initialAST = parse(initialSchema)
 
-    const document: Document = {
-      bundles: initialAST.definitions.map((node) => ({
-        node,
-        expansions: [],
-      })),
-      globals: [],
-    }
+      const document: Document = {
+        bundles: initialAST.definitions.map((node) => ({
+          node,
+          expansions: [],
+        })),
+        globals: [],
+      }
 
-    const result = await invoke(async () => {
-      let x
+      const result = await invoke(async () => {
+        let x
 
-      x = cleanup({
-        kind: Kind.DOCUMENT,
-        definitions: document.bundles.flatMap((bundle) => [
-          bundle.node,
-          ...bundle.expansions,
-        ]),
+        x = cleanup({
+          kind: Kind.DOCUMENT,
+          definitions: document.bundles.flatMap((bundle) => [
+            bundle.node,
+            ...bundle.expansions,
+          ]),
+        })
+
+        x = [
+          print(x),
+          ...document.globals.reduce((set, definition) => {
+            const printed = print({
+              kind: Kind.DOCUMENT,
+              definitions: [definition],
+            })
+
+            set.add(printed)
+
+            return set
+          }, new Set<string>()),
+        ].join('\n\n')
+
+        x = await prettier.format(x, { parser: 'graphql' })
+
+        return x
       })
 
-      x = [
-        print(x),
-        ...document.globals.reduce((set, definition) => {
-          const printed = print({
-            kind: Kind.DOCUMENT,
-            definitions: [definition],
-          })
+      return result
+    }),
+  )
 
-          set.add(printed)
-
-          return set
-        }, new Set<string>()),
-      ].join('\n\n')
-
-      x = await prettier.format(x, { parser: 'graphql' })
-
-      return x
-    })
-
-    expect(result).toBe(expandedSchema)
-  }
+  expect(results[0]).toBe(expandedSchema)
+  expect(results[1]).toBe(expandedSchema)
 })
