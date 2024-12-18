@@ -104,10 +104,6 @@ export default eslintToolingTs.config(
     braceStyle: '1tbs',
   }),
   {
-    plugins: {
-      // https://github.com/eslint-stylistic/eslint-stylistic/issues/398
-      '@stylistic': eslintPluginStylistic,
-    },
     rules: {
       // Resolves conflicts with prettier
       '@stylistic/indent': ['off'],
@@ -127,8 +123,15 @@ export default eslintToolingTs.config(
   },
 
   {
-    ...eslintPluginVitest.configs.recommended,
+    ...eslintPluginVitest.configs.all,
     files: ['src/**/*.spec.*'],
+  },
+  {
+    rules: {
+      'vitest/consistent-test-filename': 'off',
+      'vitest/require-top-level-describe': 'off',
+      'vitest/prefer-expect-assertions': 'off',
+    },
   },
 
   ...eslintPluginX.configs.recommended,

@@ -19,19 +19,21 @@
     "style": "warn"
   },
   "rules": {
-    "eslint/func-names": "off",
-    "eslint/max-lines": "off",
-    "eslint/max-params": "off",
-    "eslint/no-duplicate-imports": "off",
-    "eslint/no-magic-numbers": "off",
-    "eslint/no-undefined": "off",
-    "eslint/sort-imports": "off",
-    "eslint/sort-keys": "off",
+    "func-names": "off",
+    "max-lines": "off",
+    "max-params": "off",
+    "no-duplicate-imports": "off",
+    "no-magic-numbers": "off",
+    "no-undefined": "off",
+    "sort-imports": "off",
+    "sort-keys": "off",
+
     "import/first": "error",
     "import/max-dependencies": "off",
     "import/no-default-export": "off",
     "import/no-duplicates": "off",
     "import/no-namespace": "off",
+    "jest/require-top-level-describe": "off",
     "oxc/no-async-await": "off",
     "oxc/no-optional-chaining": "off",
     "oxc/no-rest-spread-properties": "off",
@@ -40,14 +42,13 @@
     "unicorn/no-anonymous-default-export": "off",
     "unicorn/no-array-reduce": "off",
     "unicorn/text-encoding-identifier-case": "off",
-    "jest/require-top-level-describe": "off",
 
     // TODO replace console usages with something better?
-    "eslint/no-console": "off",
+    "no-console": "off",
 
     // warn
-    "eslint/no-continue": "warn",
-    "eslint/yoda": ["warn", "never"],
+    "no-continue": "warn",
+    "yoda": ["warn", "never"],
     "unicorn/prefer-node-protocol": "warn"
   }
 }
