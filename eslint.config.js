@@ -2,6 +2,7 @@ import eslintConfigPrettier from 'eslint-config-prettier'
 // @ts-expect-error https://github.com/import-js/eslint-plugin-import/issues/3090
 import eslintPluginImport from 'eslint-plugin-import'
 import eslintPluginJs from '@eslint/js'
+import eslintPluginOxlint from 'eslint-plugin-oxlint'
 import eslintPluginStylistic from '@stylistic/eslint-plugin'
 import eslintPluginUnicorn from 'eslint-plugin-unicorn'
 import eslintPluginVitest from '@vitest/eslint-plugin'
@@ -159,6 +160,8 @@ export default eslintToolingTs.config(
       globals: globals.node,
     },
   },
+
+  eslintPluginOxlint.configs['flat/all'],
 
   eslintConfigPrettier,
 )
