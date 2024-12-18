@@ -125,12 +125,12 @@ export default eslintToolingTs.config(
   {
     ...eslintPluginVitest.configs.all,
     files: ['src/**/*.spec.*'],
-  },
-  {
     rules: {
+      ...eslintPluginVitest.configs.all.rules,
       'vitest/consistent-test-filename': 'off',
       'vitest/require-top-level-describe': 'off',
       'vitest/prefer-expect-assertions': 'off',
+      'vitest/no-done-callback': 'off',
     },
   },
 
