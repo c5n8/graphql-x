@@ -16,8 +16,11 @@ test('traillead', async () => {
 
   const promise = save(1)
   await save(2)
+
   expect(store).toBe(0)
+
   deferred.resolve()
   await promise
+
   expect(store).toBe(2)
 })
