@@ -16,4 +16,4 @@ services:
           path: package.json
           target: /app/package.json
         - action: rebuild
-          path: yarn.lock
+          path: package-lock.json

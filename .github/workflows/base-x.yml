@@ -26,6 +26,6 @@ jobs:
         with:
           fail-on-cache-miss: true
           path: node_modules/
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - run: ${{ inputs.command }}
