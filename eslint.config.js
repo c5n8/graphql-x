@@ -37,6 +37,8 @@ export default eslintToolingTs.config(
       'max-lines-per-function': 'off',
       'max-statements': 'off',
       'no-use-before-define': 'off',
+      // TODO: somebody in the future, please revisit
+      'no-shadow': 'off',
       'one-var': 'off',
 
       'func-style': ['warn', 'declaration', { allowArrowFunctions: true }],
@@ -45,7 +47,6 @@ export default eslintToolingTs.config(
         'warn',
         { selector: 'TSEnumDeclaration', message: 'Avoid enums' },
       ],
-      'no-shadow': 'warn',
       'object-shorthand': ['warn', 'properties'],
       'require-atomic-updates': 'warn',
 

@@ -42,8 +42,10 @@
     "unicorn/text-encoding-identifier-case": "off",
     "jest/require-top-level-describe": "off",
 
+    // TODO replace console usages with something better?
+    "eslint/no-console": "off",
+
     // warn
-    "eslint/no-console": "warn",
     "eslint/no-continue": "warn",
     "eslint/yoda": ["warn", "never"],
     "unicorn/prefer-node-protocol": "warn"
