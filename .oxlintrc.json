@@ -1,0 +1,51 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "oxc",
+    "typescript",
+    "import",
+    "promise",
+    "node",
+    "unicorn",
+    "vitest",
+    "jsdoc"
+  ],
+  "categories": {
+    "correctness": "error",
+    "perf": "warn",
+    "restriction": "warn",
+    "suspicious": "warn",
+    "pedantic": "warn",
+    "style": "warn"
+  },
+  "rules": {
+    "eslint/func-names": "off",
+    "eslint/max-lines": "off",
+    "eslint/max-params": "off",
+    "eslint/no-duplicate-imports": "off",
+    "eslint/no-magic-numbers": "off",
+    "eslint/no-undefined": "off",
+    "eslint/sort-imports": "off",
+    "eslint/sort-keys": "off",
+    "import/first": "error",
+    "import/max-dependencies": "off",
+    "import/no-default-export": "off",
+    "import/no-duplicates": "off",
+    "import/no-namespace": "off",
+    "oxc/no-async-await": "off",
+    "oxc/no-optional-chaining": "off",
+    "oxc/no-rest-spread-properties": "off",
+    "typescript/consistent-indexed-object-style": "off",
+    "typescript/explicit-function-return-type": "off",
+    "unicorn/no-anonymous-default-export": "off",
+    "unicorn/no-array-reduce": "off",
+    "unicorn/text-encoding-identifier-case": "off",
+    "jest/require-top-level-describe": "off",
+
+    // warn
+    "eslint/no-console": "warn",
+    "eslint/no-continue": "warn",
+    "eslint/yoda": ["warn", "never"],
+    "unicorn/prefer-node-protocol": "warn"
+  }
+}

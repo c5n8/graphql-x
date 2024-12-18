@@ -4,10 +4,9 @@ import eslintPluginImport from 'eslint-plugin-import'
 import eslintPluginJs from '@eslint/js'
 import eslintPluginOxlint from 'eslint-plugin-oxlint'
 import eslintPluginStylistic from '@stylistic/eslint-plugin'
-import eslintPluginUnicorn from 'eslint-plugin-unicorn'
 import eslintPluginVitest from '@vitest/eslint-plugin'
 import eslintPluginX from '@txe/eslint-plugin-x'
-import * as eslintToolingTs from 'typescript-eslint'
+import eslintToolingTs from 'typescript-eslint'
 import globals from 'globals'
 import { invoke } from '@txe/invoke'
 
@@ -22,40 +21,34 @@ export default eslintToolingTs.config(
     ignores: ['dist/**', 'coverage/**'],
   },
 
+  {
+    files: ['*'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+
   eslintPluginJs.configs.all,
   {
     rules: {
+      'capitalized-comments': 'off',
+      'consistent-return': 'off',
+      'init-declarations': 'off',
       'max-lines-per-function': 'off',
       'max-statements': 'off',
-      'max-params': 'off',
-      'max-lines': 'off',
-
-      'capitalized-comments': 'off',
-      'no-duplicate-imports': 'off',
-      'one-var': 'off',
-      'sort-keys': 'off',
-      'sort-imports': 'off',
-      'init-declarations': 'off',
-      'no-eq-null': 'off',
-      'func-names': 'off',
       'no-use-before-define': 'off',
-      'no-magic-numbers': 'off',
-      'consistent-return': ['off'],
+      'one-var': 'off',
 
-      'no-shadow': 'warn',
-      'no-await-in-loop': 'warn',
-      'no-console': 'warn',
-      'no-continue': 'warn',
-      'require-atomic-updates': 'warn',
-      'id-length': ['warn', { exceptions: ['_', 'n', 'x'] }],
       'func-style': ['warn', 'declaration', { allowArrowFunctions: true }],
-      'object-shorthand': ['warn', 'properties'],
+      'id-length': ['warn', { exceptions: ['_', 'n', 'x'] }],
       'no-restricted-syntax': [
         'warn',
         { selector: 'TSEnumDeclaration', message: 'Avoid enums' },
       ],
+      'no-shadow': 'warn',
+      'object-shorthand': ['warn', 'properties'],
+      'require-atomic-updates': 'warn',
 
-      'eqeqeq': ['error', 'smart'],
       'no-warning-comments': ['error', { terms: ['fixme', 'xxx'] }],
     },
   },
@@ -77,10 +70,6 @@ export default eslintToolingTs.config(
       },
     },
     rules: {
-      'import/no-duplicates': 'off',
-
-      'import/consistent-type-specifier-style': ['warn', 'prefer-top-level'],
-      'import/no-empty-named-blocks': 'warn',
       ...invoke(() => {
         if (process.env.NODE_ENV === 'development') {
           return {
@@ -97,25 +86,14 @@ export default eslintToolingTs.config(
           'import/no-unresolved': 'warn',
         }
       }),
-      'import/newline-after-import': 'warn',
 
-      'import/first': 'error',
+      'import/consistent-type-specifier-style': ['warn', 'prefer-top-level'],
+      'import/newline-after-import': 'warn',
       'import/no-extraneous-dependencies': [
         'error',
         { devDependencies: ['*', 'src/**/*.spec.*', 'src/testing/**/*'] },
       ],
-    },
-  },
-
-  {
-    languageOptions: {
-      globals: globals.builtin,
-    },
-    plugins: {
-      unicorn: eslintPluginUnicorn,
-    },
-    rules: {
-      'unicorn/prefer-node-protocol': 'warn',
+      'import/no-empty-named-blocks': 'warn',
     },
   },
 
@@ -130,7 +108,7 @@ export default eslintToolingTs.config(
       '@stylistic': eslintPluginStylistic,
     },
     rules: {
-      // resolves conflicts with prettier
+      // Resolves conflicts with prettier
       '@stylistic/indent': ['off'],
       '@stylistic/indent-binary-ops': ['off'],
       '@stylistic/operator-linebreak': ['off'],
@@ -153,15 +131,6 @@ export default eslintToolingTs.config(
   },
 
   ...eslintPluginX.configs.recommended,
-
-  {
-    files: ['*'],
-    languageOptions: {
-      globals: globals.node,
-    },
-  },
-
   eslintPluginOxlint.configs['flat/all'],
-
   eslintConfigPrettier,
 )
