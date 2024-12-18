@@ -16,8 +16,8 @@ const exec = promisify(_exec)
 
 test('cli', async () => {
   import('./fixtures/initial.gql?raw')
+
   const schema = await importDefaults({
-    // initial: () => import('./fixtures/initial.gql?raw'),
     expanded: () => import('./fixtures/expanded.gql?raw'),
   })
 
@@ -25,10 +25,10 @@ test('cli', async () => {
     await rm(outputDir, { recursive: true, force: true })
   })
 
-  const __filename = fileURLToPath(import.meta.url)
-  const __dirname = path.dirname(__filename)
-  const schemaPath = path.join(__dirname, './fixtures/initial.gql')
-  const outputPath = path.join(__dirname, './fixtures/.generated/schema.gql')
+  const filename = fileURLToPath(import.meta.url)
+  const dirname = path.dirname(filename)
+  const schemaPath = path.join(dirname, './fixtures/initial.gql')
+  const outputPath = path.join(dirname, './fixtures/.generated/schema.gql')
   const outputDir = path.dirname(outputPath)
 
   await rm(outputDir, { recursive: true, force: true })

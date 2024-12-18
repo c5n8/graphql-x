@@ -29,9 +29,10 @@ export async function expand(schema: string) {
 
   const cleaned = cleanup({
     kind: Kind.DOCUMENT,
-    definitions: document.bundles.flatMap((bundle) => {
-      return [bundle.node, ...bundle.expansions]
-    }),
+    definitions: document.bundles.flatMap((bundle) => [
+      bundle.node,
+      ...bundle.expansions,
+    ]),
   })
 
   const result = [

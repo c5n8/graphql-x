@@ -7,11 +7,16 @@ import type { NonNullTypeNode } from 'graphql'
 import type { ObjectTypeDefinitionNode } from 'graphql'
 import type { TypeNode } from 'graphql'
 
+const operationNames = {
+  create: 'Create',
+  update: 'Update',
+}
+
 export function writeDirectiveExpansion(operation: 'create' | 'update') {
   return function (document: Document) {
     const context = {
       operationName: {
-        uppercase: operation === 'create' ? 'Create' : 'Update',
+        uppercase: operationNames[operation],
         lowercase: operation,
       },
     }
@@ -213,34 +218,32 @@ function addMutationInput(
   })
 
   bundle.expansions.push(
-    ...[...relationInputSet].map<InputObjectTypeDefinitionNode>((name) => {
-      return {
-        kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-        name: {
-          kind: Kind.NAME,
-          value: name,
-        },
-        fields: [
-          {
-            kind: Kind.INPUT_VALUE_DEFINITION,
-            name: {
-              kind: Kind.NAME,
-              value: 'id',
-            },
+    ...[...relationInputSet].map<InputObjectTypeDefinitionNode>((name) => ({
+      kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+      name: {
+        kind: Kind.NAME,
+        value: name,
+      },
+      fields: [
+        {
+          kind: Kind.INPUT_VALUE_DEFINITION,
+          name: {
+            kind: Kind.NAME,
+            value: 'id',
+          },
+          type: {
+            kind: Kind.NON_NULL_TYPE,
             type: {
-              kind: Kind.NON_NULL_TYPE,
-              type: {
-                kind: Kind.NAMED_TYPE,
-                name: {
-                  kind: Kind.NAME,
-                  value: 'ID',
-                },
+              kind: Kind.NAMED_TYPE,
+              name: {
+                kind: Kind.NAME,
+                value: 'ID',
               },
             },
           },
-        ],
-      }
-    }),
+        },
+      ],
+    })),
   )
 }
 

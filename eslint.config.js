@@ -8,6 +8,7 @@ import eslintPluginVitest from '@vitest/eslint-plugin'
 import eslintPluginX from '@txe/eslint-plugin-x'
 import * as eslintToolingTs from 'typescript-eslint'
 import globals from 'globals'
+import { invoke } from '@txe/invoke'
 
 export default eslintToolingTs.config(
   {
@@ -20,14 +21,41 @@ export default eslintToolingTs.config(
     ignores: ['dist/**', 'coverage/**'],
   },
 
-  eslintPluginJs.configs.recommended,
+  eslintPluginJs.configs.all,
   {
     rules: {
+      'max-lines-per-function': 'off',
+      'max-statements': 'off',
+      'max-params': 'off',
+      'max-lines': 'off',
+
+      'capitalized-comments': 'off',
+      'no-duplicate-imports': 'off',
+      'one-var': 'off',
+      'sort-keys': 'off',
+      'sort-imports': 'off',
+      'init-declarations': 'off',
+      'no-eq-null': 'off',
+      'func-names': 'off',
+      'no-use-before-define': 'off',
+      'no-magic-numbers': 'off',
+      'consistent-return': ['off'],
+
+      'no-shadow': 'warn',
+      'no-await-in-loop': 'warn',
+      'no-console': 'warn',
+      'no-continue': 'warn',
+      'require-atomic-updates': 'warn',
+      'id-length': ['warn', { exceptions: ['_', 'n', 'x'] }],
+      'func-style': ['warn', 'declaration', { allowArrowFunctions: true }],
       'object-shorthand': ['warn', 'properties'],
       'no-restricted-syntax': [
         'warn',
         { selector: 'TSEnumDeclaration', message: 'Avoid enums' },
       ],
+
+      'eqeqeq': ['error', 'smart'],
+      'no-warning-comments': ['error', { terms: ['fixme', 'xxx'] }],
     },
   },
 
@@ -52,18 +80,22 @@ export default eslintToolingTs.config(
 
       'import/consistent-type-specifier-style': ['warn', 'prefer-top-level'],
       'import/no-empty-named-blocks': 'warn',
-      ...(process.env.NODE_ENV === 'development'
-        ? {
+      ...invoke(() => {
+        if (process.env.NODE_ENV === 'development') {
+          return {
             // https://github.com/import-js/eslint-plugin-import/issues/3101
             'import/namespace': 'off',
             // https://github.com/import-js/eslint-plugin-import/issues/3076
             // https://github.com/import-js/eslint-plugin-import/issues/1739
             'import/no-unresolved': 'off',
           }
-        : {
-            'import/namespace': 'warn',
-            'import/no-unresolved': 'warn',
-          }),
+        }
+
+        return {
+          'import/namespace': 'warn',
+          'import/no-unresolved': 'warn',
+        }
+      }),
       'import/newline-after-import': 'warn',
 
       'import/first': 'error',

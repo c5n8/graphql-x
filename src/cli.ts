@@ -61,7 +61,7 @@ export const cli = async () => {
 
     await subscribe(
       path.join(process.cwd(), path.dirname(schemaPath)),
-      async (_, events) => {
+      (_, events) => {
         for (const event of events) {
           if (path.relative(event.path, schemaPath) === '') {
             cmd()

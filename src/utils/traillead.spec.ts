@@ -6,7 +6,9 @@ test('traillead', async () => {
   let store = 0
 
   const save = traillead(async (n: number) => {
-    await new Promise<void>((resolve) => setTimeout(resolve, 0))
+    await new Promise<void>((resolve) => {
+      queueMicrotask(resolve)
+    })
 
     store = n
   })
