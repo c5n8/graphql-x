@@ -6,6 +6,7 @@ import eslintPluginNode from 'eslint-plugin-n'
 import eslintPluginOxlint from 'eslint-plugin-oxlint'
 // @ts-expect-error https://github.com/eslint-community/eslint-plugin-promise/issues/488
 import eslintPluginPromise from 'eslint-plugin-promise'
+import eslintPluginSecurity from 'eslint-plugin-security'
 import eslintPluginStylistic from '@stylistic/eslint-plugin'
 import eslintPluginUnicorn from 'eslint-plugin-unicorn'
 import eslintPluginVitest from '@vitest/eslint-plugin'
@@ -127,6 +128,8 @@ export default eslintToolingTs.config(
       ],
     },
   },
+
+  eslintPluginSecurity.configs.recommended,
 
   // @ts-expect-error somebody in the future, please
   eslintPluginStylistic.configs.customize({

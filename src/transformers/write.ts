@@ -1,3 +1,4 @@
+import assert from 'node:assert'
 import type { Bundle } from '#package/document.js'
 import type { Document } from '#package/document.js'
 import type { InputObjectTypeDefinitionNode } from 'graphql'
@@ -7,15 +8,22 @@ import type { NonNullTypeNode } from 'graphql'
 import type { ObjectTypeDefinitionNode } from 'graphql'
 import type { TypeNode } from 'graphql'
 
+const operations = ['create', 'update'] as const
+
 const operationNames = {
   create: 'Create',
   update: 'Update',
 }
 
-export function writeDirectiveExpansion(operation: 'create' | 'update') {
+export function writeDirectiveExpansion(
+  operation: (typeof operations)[number],
+) {
+  assert(operations.includes(operation))
+
   return function (document: Document) {
     const context = {
       operationName: {
+        // eslint-disable-next-line security/detect-object-injection
         uppercase: operationNames[operation],
         lowercase: operation,
       },
