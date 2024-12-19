@@ -19,15 +19,19 @@
     "style": "warn"
   },
   "rules": {
+    // eslint
     "func-names": "off",
     "max-lines": "off",
     "max-params": "off",
+    // TODO replace console usages with something better?
+    "no-console": "off",
     "no-duplicate-imports": "off",
     "no-magic-numbers": "off",
     "no-undefined": "off",
     "sort-imports": "off",
     "sort-keys": "off",
 
+    // plugins
     "import/first": "error",
     "import/max-dependencies": "off",
     "import/no-default-export": "off",
@@ -42,9 +46,6 @@
     "unicorn/no-anonymous-default-export": "off",
     "unicorn/no-array-reduce": "off",
     "unicorn/text-encoding-identifier-case": "off",
-
-    // TODO replace console usages with something better?
-    "no-console": "off",
 
     // warn
     "no-continue": "warn",

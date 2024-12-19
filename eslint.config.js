@@ -17,24 +17,29 @@ import { invoke } from '@txe/invoke'
 
 export default eslintToolingTs.config(
   {
-    name: 'package/files-to-lint',
+    name: 'package/files',
     files: ['**/*.{js,ts}'],
   },
 
   {
-    name: 'package/files-to-ignore',
-    ignores: ['dist/**', 'coverage/**'],
+    name: 'package/ignores',
+    ignores: ['dist/', 'coverage/'],
   },
 
   {
+    name: 'package/config-files',
     files: ['*'],
     languageOptions: {
       globals: globals.node,
     },
   },
 
-  eslintPluginJs.configs.all,
   {
+    name: 'eslint',
+    ...eslintPluginJs.configs.all,
+  },
+  {
+    name: 'package/eslint-overrides',
     rules: {
       'capitalized-comments': 'off',
       'consistent-return': 'off',
@@ -62,14 +67,19 @@ export default eslintToolingTs.config(
   ...eslintToolingTs.configs.strict,
   ...eslintToolingTs.configs.stylistic,
   {
+    name: 'package/typescript-eslint-overrides',
     rules: {
       '@typescript-eslint/parameter-properties': 'warn',
     },
   },
 
   eslintPluginImport.flatConfigs.recommended,
-  eslintPluginImport.flatConfigs.typescript,
   {
+    name: 'import/typescript',
+    ...eslintPluginImport.flatConfigs.typescript,
+  },
+  {
+    name: 'package/import-overrides',
     settings: {
       'import/resolver': {
         typescript: true,
@@ -107,6 +117,7 @@ export default eslintToolingTs.config(
 
   eslintPluginUnicorn.configs['flat/all'],
   {
+    name: 'package/unicorn-overrides',
     rules: {
       'unicorn/prevent-abbreviations': [
         'warn',
@@ -117,6 +128,7 @@ export default eslintToolingTs.config(
 
   eslintPluginNode.configs['flat/recommended'],
   {
+    name: 'package/node-overrides',
     rules: {
       // https://github.com/eslint-community/eslint-plugin-n/issues/75
       'n/no-missing-import': 'off',
@@ -132,11 +144,15 @@ export default eslintToolingTs.config(
   eslintPluginSecurity.configs.recommended,
 
   // @ts-expect-error somebody in the future, please
-  eslintPluginStylistic.configs.customize({
-    arrowParens: true,
-    braceStyle: '1tbs',
-  }),
   {
+    name: '@stylistic/custom',
+    ...eslintPluginStylistic.configs.customize({
+      arrowParens: true,
+      braceStyle: '1tbs',
+    }),
+  },
+  {
+    name: 'package/@stylistic-overrides',
     rules: {
       // Resolves conflicts with prettier
       '@stylistic/indent': ['off'],
@@ -157,6 +173,7 @@ export default eslintToolingTs.config(
 
   {
     ...eslintPluginVitest.configs.all,
+    name: 'package/vitest-with-overrides',
     files: ['src/**/*.spec.*'],
     rules: {
       ...eslintPluginVitest.configs.all.rules,
@@ -169,5 +186,9 @@ export default eslintToolingTs.config(
 
   ...eslintPluginX.configs.recommended,
   eslintPluginOxlint.configs['flat/all'],
-  eslintConfigPrettier,
+
+  {
+    name: 'prettier',
+    ...eslintConfigPrettier,
+  },
 )
