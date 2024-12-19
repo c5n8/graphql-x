@@ -6,6 +6,7 @@ import eslintPluginOxlint from 'eslint-plugin-oxlint'
 // @ts-expect-error https://github.com/eslint-community/eslint-plugin-promise/issues/488
 import eslintPluginPromise from 'eslint-plugin-promise'
 import eslintPluginStylistic from '@stylistic/eslint-plugin'
+import eslintPluginUnicorn from 'eslint-plugin-unicorn'
 import eslintPluginVitest from '@vitest/eslint-plugin'
 import eslintPluginX from '@txe/eslint-plugin-x'
 import eslintToolingTs from 'typescript-eslint'
@@ -101,6 +102,16 @@ export default eslintToolingTs.config(
   },
 
   eslintPluginPromise.configs['flat/recommended'],
+
+  eslintPluginUnicorn.configs['flat/recommended'],
+  {
+    rules: {
+      'unicorn/prevent-abbreviations': [
+        'warn',
+        { allowList: { fn: true, args: true } },
+      ],
+    },
+  },
 
   // @ts-expect-error somebody in the future, please
   eslintPluginStylistic.configs.customize({

@@ -22,16 +22,16 @@ test('cli', async () => {
   })
 
   onTestFinished(async () => {
-    await rm(outputDir, { recursive: true, force: true })
+    await rm(outputDirectory, { recursive: true, force: true })
   })
 
   const filename = fileURLToPath(import.meta.url)
   const dirname = path.dirname(filename)
   const schemaPath = path.join(dirname, './fixtures/initial.gql')
   const outputPath = path.join(dirname, './fixtures/.generated/schema.gql')
-  const outputDir = path.dirname(outputPath)
+  const outputDirectory = path.dirname(outputPath)
 
-  await rm(outputDir, { recursive: true, force: true })
+  await rm(outputDirectory, { recursive: true, force: true })
   await exec(`bin/graphql-x --schema ${schemaPath} --output ${outputPath}`)
 
   const result = await invoke(async () => {

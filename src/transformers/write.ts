@@ -127,94 +127,93 @@ function addMutationInput(
 
   const relationInputSet = new Set<string>()
 
-  bundle.expansions.push({
-    kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-    name: {
-      kind: Kind.NAME,
-      value: `${context.operationName.uppercase}${node.name.value}Input`,
-    },
-    fields: node.fields?.flatMap((field) => {
-      if (field.directives?.some(({ name }) => name.value === 'readonly')) {
-        return []
-      }
-
-      const type = invoke(function getType(
-        type = field.type,
-        wrapType = (type: TypeNode) => type,
-      ): TypeNode | undefined {
-        if (type.kind === Kind.NON_NULL_TYPE) {
-          const result = getType(type.type, (type) => ({
-            kind: Kind.NON_NULL_TYPE,
-            type: type as NonNullTypeNode['type'],
-          }))
-
-          if (result === undefined) {
-            return
-          }
-
-          return wrapType(result)
+  bundle.expansions.push(
+    {
+      kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+      name: {
+        kind: Kind.NAME,
+        value: `${context.operationName.uppercase}${node.name.value}Input`,
+      },
+      fields: node.fields?.flatMap((field) => {
+        if (field.directives?.some(({ name }) => name.value === 'readonly')) {
+          return []
         }
 
-        if (type.kind === Kind.LIST_TYPE) {
-          const result = getType(type.type, (type) => ({
-            kind: Kind.LIST_TYPE,
-            type,
-          }))
+        const type = invoke(function getType(
+          type = field.type,
+          wrapType = (type: TypeNode) => type,
+        ): TypeNode | undefined {
+          if (type.kind === Kind.NON_NULL_TYPE) {
+            const result = getType(type.type, (type) => ({
+              kind: Kind.NON_NULL_TYPE,
+              type: type as NonNullTypeNode['type'],
+            }))
 
-          if (result === undefined) {
-            return
+            if (result === undefined) {
+              return
+            }
+
+            return wrapType(result)
           }
 
-          return wrapType(result)
-        }
+          if (type.kind === Kind.LIST_TYPE) {
+            const result = getType(type.type, (type) => ({
+              kind: Kind.LIST_TYPE,
+              type,
+            }))
 
-        if (type.kind === Kind.NAMED_TYPE) {
-          if (type.name.value === 'ID') {
-            return
+            if (result === undefined) {
+              return
+            }
+
+            return wrapType(result)
           }
 
-          if (objectTypeNameSet.has(type.name.value)) {
-            const typeName = `${context.operationName.uppercase}${node.name.value}${type.name.value}RelationInput`
+          if (type.kind === Kind.NAMED_TYPE) {
+            if (type.name.value === 'ID') {
+              return
+            }
 
-            relationInputSet.add(typeName)
+            if (objectTypeNameSet.has(type.name.value)) {
+              const typeName = `${context.operationName.uppercase}${node.name.value}${type.name.value}RelationInput`
+
+              relationInputSet.add(typeName)
+
+              return wrapType({
+                kind: Kind.NAMED_TYPE,
+                name: {
+                  kind: Kind.NAME,
+                  value: typeName,
+                },
+              })
+            }
 
             return wrapType({
               kind: Kind.NAMED_TYPE,
               name: {
                 kind: Kind.NAME,
-                value: typeName,
+                value: type.name.value,
               },
             })
           }
+        })
 
-          return wrapType({
-            kind: Kind.NAMED_TYPE,
+        if (type === undefined) {
+          return []
+        }
+
+        return [
+          {
+            kind: Kind.INPUT_VALUE_DEFINITION,
             name: {
               kind: Kind.NAME,
-              value: type.name.value,
+              value: field.name.value,
             },
-          })
-        }
-      })
-
-      if (type === undefined) {
-        return []
-      }
-
-      return [
-        {
-          kind: Kind.INPUT_VALUE_DEFINITION,
-          name: {
-            kind: Kind.NAME,
-            value: field.name.value,
+            type,
           },
-          type,
-        },
-      ]
-    }),
-  })
-
-  bundle.expansions.push(
+        ]
+      }),
+    },
     ...[...relationInputSet].map<InputObjectTypeDefinitionNode>((name) => ({
       kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
       name: {
@@ -470,128 +469,128 @@ function addMutationValidationIssues(
 }
 
 function addGlobals(document: Document) {
-  document.globals.push({
-    kind: Kind.DIRECTIVE_DEFINITION,
-    name: {
-      kind: Kind.NAME,
-      value: 'signature',
-    },
-    repeatable: false,
-    arguments: [
-      {
-        kind: Kind.INPUT_VALUE_DEFINITION,
-        name: {
-          kind: Kind.NAME,
-          value: 'fields',
-        },
-        type: {
-          kind: Kind.NON_NULL_TYPE,
+  document.globals.push(
+    {
+      kind: Kind.DIRECTIVE_DEFINITION,
+      name: {
+        kind: Kind.NAME,
+        value: 'signature',
+      },
+      repeatable: false,
+      arguments: [
+        {
+          kind: Kind.INPUT_VALUE_DEFINITION,
+          name: {
+            kind: Kind.NAME,
+            value: 'fields',
+          },
           type: {
-            kind: Kind.LIST_TYPE,
+            kind: Kind.NON_NULL_TYPE,
             type: {
-              kind: Kind.NON_NULL_TYPE,
+              kind: Kind.LIST_TYPE,
               type: {
-                kind: Kind.NAMED_TYPE,
-                name: {
-                  kind: Kind.NAME,
-                  value: 'String',
+                kind: Kind.NON_NULL_TYPE,
+                type: {
+                  kind: Kind.NAMED_TYPE,
+                  name: {
+                    kind: Kind.NAME,
+                    value: 'String',
+                  },
                 },
               },
             },
           },
         },
-      },
-    ],
-    locations: [
-      {
-        kind: Kind.NAME,
-        value: 'UNION',
-      },
-    ],
-  })
-
-  document.globals.push({
-    kind: Kind.DIRECTIVE_DEFINITION,
-    name: {
-      kind: Kind.NAME,
-      value: 'member',
+      ],
+      locations: [
+        {
+          kind: Kind.NAME,
+          value: 'UNION',
+        },
+      ],
     },
-    repeatable: true,
-    arguments: [
-      {
-        kind: Kind.INPUT_VALUE_DEFINITION,
-        name: {
-          kind: Kind.NAME,
-          value: 'type',
-        },
-        type: {
-          kind: Kind.NON_NULL_TYPE,
-          type: {
-            kind: Kind.NAMED_TYPE,
-            name: {
-              kind: Kind.NAME,
-              value: 'String',
-            },
-          },
-        },
-      },
-      {
-        kind: Kind.INPUT_VALUE_DEFINITION,
-        name: {
-          kind: Kind.NAME,
-          value: 'signature',
-        },
-        type: {
-          kind: Kind.NON_NULL_TYPE,
-          type: {
-            kind: Kind.NAMED_TYPE,
-            name: {
-              kind: Kind.NAME,
-              value: 'String',
-            },
-          },
-        },
-      },
-    ],
-    locations: [
-      {
+    {
+      kind: Kind.DIRECTIVE_DEFINITION,
+      name: {
         kind: Kind.NAME,
-        value: 'UNION',
+        value: 'member',
       },
-    ],
-  })
-
-  document.globals.push({
-    kind: Kind.DIRECTIVE_DEFINITION,
-    name: {
-      kind: Kind.NAME,
-      value: 'issues',
+      repeatable: true,
+      arguments: [
+        {
+          kind: Kind.INPUT_VALUE_DEFINITION,
+          name: {
+            kind: Kind.NAME,
+            value: 'type',
+          },
+          type: {
+            kind: Kind.NON_NULL_TYPE,
+            type: {
+              kind: Kind.NAMED_TYPE,
+              name: {
+                kind: Kind.NAME,
+                value: 'String',
+              },
+            },
+          },
+        },
+        {
+          kind: Kind.INPUT_VALUE_DEFINITION,
+          name: {
+            kind: Kind.NAME,
+            value: 'signature',
+          },
+          type: {
+            kind: Kind.NON_NULL_TYPE,
+            type: {
+              kind: Kind.NAMED_TYPE,
+              name: {
+                kind: Kind.NAME,
+                value: 'String',
+              },
+            },
+          },
+        },
+      ],
+      locations: [
+        {
+          kind: Kind.NAME,
+          value: 'UNION',
+        },
+      ],
     },
-    repeatable: false,
-    arguments: [
-      {
-        kind: Kind.INPUT_VALUE_DEFINITION,
-        name: {
-          kind: Kind.NAME,
-          value: 'input',
-        },
-        type: {
-          kind: Kind.NON_NULL_TYPE,
+    {
+      kind: Kind.DIRECTIVE_DEFINITION,
+      name: {
+        kind: Kind.NAME,
+        value: 'issues',
+      },
+      repeatable: false,
+      arguments: [
+        {
+          kind: Kind.INPUT_VALUE_DEFINITION,
+          name: {
+            kind: Kind.NAME,
+            value: 'input',
+          },
           type: {
-            kind: Kind.NAMED_TYPE,
-            name: {
-              kind: Kind.NAME,
-              value: 'String',
+            kind: Kind.NON_NULL_TYPE,
+            type: {
+              kind: Kind.NAMED_TYPE,
+              name: {
+                kind: Kind.NAME,
+                value: 'String',
+              },
             },
           },
         },
-      },
-    ],
-    locations: [
-      {
-        kind: Kind.NAME,
-        value: 'SCALAR',
-      },
-    ],
-  })
+      ],
+      locations: [
+        {
+          kind: Kind.NAME,
+          value: 'SCALAR',
+        },
+      ],
+    },
+  )
 }
