@@ -2,6 +2,7 @@ import eslintConfigPrettier from 'eslint-config-prettier'
 // @ts-expect-error https://github.com/import-js/eslint-plugin-import/issues/3090
 import eslintPluginImport from 'eslint-plugin-import'
 import eslintPluginJs from '@eslint/js'
+import eslintPluginNode from 'eslint-plugin-n'
 import eslintPluginOxlint from 'eslint-plugin-oxlint'
 // @ts-expect-error https://github.com/eslint-community/eslint-plugin-promise/issues/488
 import eslintPluginPromise from 'eslint-plugin-promise'
@@ -109,6 +110,20 @@ export default eslintToolingTs.config(
       'unicorn/prevent-abbreviations': [
         'warn',
         { allowList: { fn: true, args: true } },
+      ],
+    },
+  },
+
+  eslintPluginNode.configs['flat/recommended'],
+  {
+    rules: {
+      // https://github.com/eslint-community/eslint-plugin-n/issues/75
+      'n/no-missing-import': 'off',
+      'n/no-unsupported-features/es-syntax': [
+        'error',
+        {
+          ignores: ['promise-withresolvers'],
+        },
       ],
     },
   },

@@ -4,3 +4,4 @@ Chabib
 Oxlint
 Tenex
 traillead
+withresolvers
