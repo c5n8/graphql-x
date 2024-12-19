@@ -103,7 +103,7 @@ export default eslintToolingTs.config(
 
   eslintPluginPromise.configs['flat/recommended'],
 
-  eslintPluginUnicorn.configs['flat/recommended'],
+  eslintPluginUnicorn.configs['flat/all'],
   {
     rules: {
       'unicorn/prevent-abbreviations': [
