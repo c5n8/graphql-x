@@ -3,6 +3,8 @@ import eslintConfigPrettier from 'eslint-config-prettier'
 import eslintPluginImport from 'eslint-plugin-import'
 import eslintPluginJs from '@eslint/js'
 import eslintPluginOxlint from 'eslint-plugin-oxlint'
+// @ts-expect-error https://github.com/eslint-community/eslint-plugin-promise/issues/488
+import eslintPluginPromise from 'eslint-plugin-promise'
 import eslintPluginStylistic from '@stylistic/eslint-plugin'
 import eslintPluginVitest from '@vitest/eslint-plugin'
 import eslintPluginX from '@txe/eslint-plugin-x'
@@ -97,6 +99,8 @@ export default eslintToolingTs.config(
       'import/no-empty-named-blocks': 'warn',
     },
   },
+
+  eslintPluginPromise.configs['flat/recommended'],
 
   // @ts-expect-error somebody in the future, please
   eslintPluginStylistic.configs.customize({
