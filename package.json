@@ -8,7 +8,7 @@
     "test": "vitest run --coverage",
     "test:unit": "vitest run --exclude=\"**/*.integration.spec.*\" --coverage",
     "test:integration": "vitest run .integration.spec.",
-    "lint": "concurrently \"oxlint\" \"eslint\" --names=\"ox,es\" --prefix-colors=\"yellow,blueBright\"",
+    "lint": "concurrently \"oxlint\" \"eslint\" --raw --names=\"ox,es\" --prefix-colors=\"yellow,blueBright\"",
     "check-format": "prettier --check .",
     "check-spelling": "cspell **",
     "check-exports": "attw --pack --ignore-rules=cjs-resolves-to-esm ./",

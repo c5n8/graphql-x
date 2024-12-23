@@ -181,7 +181,10 @@ export default eslintToolingTs.config(
     name: 'package/vitest-overrides',
     files: ['src/**/*.spec.*'],
     rules: {
-      'vitest/consistent-test-filename': 'off',
+      'vitest/consistent-test-filename': [
+        'warn',
+        { pattern: '.*\\.spec\\.[tj]sx?$' },
+      ],
       'vitest/require-top-level-describe': 'off',
       'vitest/prefer-expect-assertions': 'off',
       'vitest/no-done-callback': 'off',
