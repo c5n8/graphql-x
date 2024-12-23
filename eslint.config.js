@@ -172,11 +172,15 @@ export default eslintToolingTs.config(
   },
 
   {
+    name: 'vitest/all',
     ...eslintPluginVitest.configs.all,
-    name: 'package/vitest-with-overrides',
+    files: ['src/**/*.spec.*'],
+  },
+
+  {
+    name: 'package/vitest-overrides',
     files: ['src/**/*.spec.*'],
     rules: {
-      ...eslintPluginVitest.configs.all.rules,
       'vitest/consistent-test-filename': 'off',
       'vitest/require-top-level-describe': 'off',
       'vitest/prefer-expect-assertions': 'off',
