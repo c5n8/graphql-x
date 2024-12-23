@@ -1,0 +1,5 @@
+directive @findUnique on OBJECT
+
+type Post @findUnique {
+  id: ID!
+}

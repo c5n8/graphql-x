@@ -4,11 +4,13 @@ directive @update on OBJECT
 
 directive @delete on OBJECT
 
+directive @findUnique on OBJECT
+
 directive @readonly on FIELD_DEFINITION
 
 scalar DateTime
 
-type Post @create @update @delete {
+type Post @create @update @delete @findUnique {
   id: ID!
   createdAt: DateTime @readonly
   title: String!
