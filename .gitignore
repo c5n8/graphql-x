@@ -5,8 +5,8 @@ node_modules/
 
 compose.override.yaml
 
-.devcontainer
-.vscode/*
+.devcontainer/
+.vscode/
 .ignore
 
 .DS_Store
