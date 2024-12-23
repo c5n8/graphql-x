@@ -7,20 +7,20 @@ test('traillead', async () => {
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   const deferred = Promise.withResolvers<void>()
   // oxlint-enable promise/prefer-await-to-then
-  let store = 0
+  let message
 
-  const save = traillead(async (n: number) => {
+  const save = traillead(async (text: string) => {
     await deferred.promise
-    store = n
+    message = text
   })
 
-  const promise = save(1)
-  await save(2)
+  const promise = save('hi')
+  await save('hello')
 
-  expect(store).toBe(0)
+  expect(message).toBeUndefined()
 
   deferred.resolve()
   await promise
 
-  expect(store).toBe(2)
+  expect(message).toBe('hello')
 })

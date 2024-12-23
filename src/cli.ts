@@ -35,6 +35,8 @@ async function main() {
   console.log('Schema expanded.')
 }
 
+const waitDurationInMs = 128
+
 const cmd = await invoke(async () => {
   let x
 
@@ -46,7 +48,7 @@ const cmd = await invoke(async () => {
     const { traillead } = await import('#package/utils/traillead.js')
 
     x = traillead(x)
-    x = debounce(x, 128)
+    x = debounce(x, waitDurationInMs)
   }
 
   return x
