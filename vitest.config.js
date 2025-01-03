@@ -9,6 +9,7 @@ export default mergeConfig(
       coverage: {
         include: ['src/*'],
       },
+      diff: './vitest.diff.config.js',
     },
   }),
 )

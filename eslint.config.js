@@ -49,6 +49,7 @@ export default eslintToolingTs.config(
       'no-use-before-define': 'off',
       // TODO: somebody in the future, please revisit
       'no-shadow': 'off',
+      'no-inline-comments': 'off',
       'one-var': 'off',
 
       'func-style': ['warn', 'declaration', { allowArrowFunctions: true }],
@@ -142,6 +143,12 @@ export default eslintToolingTs.config(
   },
 
   eslintPluginSecurity.configs.recommended,
+  {
+    name: 'package/security-overrides',
+    rules: {
+      // 'security/detect-object-injection': 'off',
+    },
+  },
 
   // @ts-expect-error somebody in the future, please
   {
@@ -183,7 +190,7 @@ export default eslintToolingTs.config(
     rules: {
       'vitest/consistent-test-filename': [
         'warn',
-        { pattern: '.*\\.spec\\.[tj]sx?$' },
+        { pattern: '.*\\.spec\\.ts?$' },
       ],
       'vitest/require-top-level-describe': 'off',
       'vitest/prefer-expect-assertions': 'off',
