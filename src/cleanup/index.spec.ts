@@ -1,5 +1,6 @@
 import { buildSchema } from 'graphql'
 import cleanup from './index.js'
+import { createDocument } from '#package/document.js'
 import type { Document } from '#package/document.js'
 import expandedSchema from './fixtures/expanded.gql?raw'
 import { expect } from 'vitest'
@@ -21,14 +22,12 @@ test('expand directive @create', async () => {
   const results = await Promise.all(
     initialSchemas.map(async (initialSchema) => {
       const initialAST = parse(initialSchema)
+      const document: Document = createDocument()
 
-      const document: Document = {
-        bundles: initialAST.definitions.map((node) => ({
-          node,
-          expansions: [],
-        })),
-        globals: [],
-      }
+      document.bundles = initialAST.definitions.map((node) => ({
+        node,
+        expansions: [],
+      }))
 
       const result = await invoke(async () => {
         let x

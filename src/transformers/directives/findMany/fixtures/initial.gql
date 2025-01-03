@@ -1,0 +1,26 @@
+directive @list(field: String!) on OBJECT
+
+scalar DateTime
+
+type Todo @list(field: "todos") {
+  id: ID!
+  createdAt: DateTime
+  description: String
+  priority: Int
+  budget: Float
+  isDone: Boolean
+  assignee: User
+  tags: [Tag!]
+}
+
+type User {
+  id: ID!
+  email: String
+  todos: [Todo!]
+}
+
+type Tag {
+  id: ID!
+  title: String
+  todos: [Todo!]
+}

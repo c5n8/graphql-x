@@ -9,11 +9,11 @@ export async function execExpansion({
   expand,
   schema: initialSchema,
 }: {
-  expand: (document: Document) => Document
+  expand: (document: Document) => Document | Promise<Document>
   schema: string
 }) {
   const initialAST = parse(initialSchema)
-  const document = expand({
+  const document = await expand({
     bundles: initialAST.definitions.map((node) => ({
       node,
       expansions: [],

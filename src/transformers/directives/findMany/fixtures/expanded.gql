@@ -1,0 +1,88 @@
+directive @list(field: String!) on OBJECT
+
+scalar DateTime
+
+type Todo @list(field: "todos") {
+  id: ID!
+  createdAt: DateTime
+  description: String
+  priority: Int
+  budget: Float
+  isDone: Boolean
+  assignee: User
+  tags: [Tag!]
+}
+
+extend type Query {
+  todos(input: TodoListQueryInput): [Todo!]!
+}
+
+input TodoListQueryInput {
+  take: Int
+  where: TodoWhereInput
+  orderBy: [TodoOrderByInput!]
+}
+
+input TodoWhereInput {
+  createdAt: DateTimeFilterInput
+  description: StringFilterInput
+  priority: IntFilterInput
+  budget: FloatFilterInput
+  isDone: BooleanFilterInput
+  assignee: UserRelationFilterInput
+  tags: TagListRelationFilterInput
+  OR: [TodoWhereInput!]
+  AND: [TodoWhereInput!]
+  NOT: [TodoWhereInput!]
+}
+
+input TodoOrderByInput {
+  createdAt: SortOrderInput
+  description: SortOrderInput
+  priority: SortOrderInput
+  budget: SortOrderInput
+  isDone: SortOrderInput
+  assignee: UserOrderByInput
+  tags: OrderByRelationAggregateInput
+}
+
+type User {
+  id: ID!
+  email: String
+  todos: [Todo!]
+}
+
+input UserWhereInput {
+  id: IDFilterInput
+  email: StringFilterInput
+  todos: TodoListRelationFilterInput
+}
+
+input UserRelationFilterInput {
+  id: IDFilterInput
+  email: StringFilterInput
+  todos: TodoListRelationFilterInput
+  isNot: UserWhereInput
+}
+
+input UserOrderByInput {
+  email: SortOrderInput
+}
+
+type Tag {
+  id: ID!
+  title: String
+  todos: [Todo!]
+}
+
+input TagWhereInput {
+  id: IDFilterInput
+  title: StringFilterInput
+  todos: TodoListRelationFilterInput
+}
+
+input TagListRelationFilterInput {
+  some: TagWhereInput
+  every: TagWhereInput
+  none: TagWhereInput
+}
