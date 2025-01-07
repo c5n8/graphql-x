@@ -9,6 +9,7 @@ export async function expand(schema: string) {
     import('#package/transformers/directives/create/index.js'),
     import('#package/transformers/directives/update/index.js'),
     import('#package/transformers/directives/delete/index.js'),
+    import('#package/transformers/directives/findMany/index.js'),
     import('#package/transformers/directives/findUnique/index.js'),
   ])
 
@@ -25,7 +26,7 @@ export async function expand(schema: string) {
   for (const transformer of transformers) {
     const { default: transform } = transformer
 
-    transform(document)
+    await transform(document)
   }
 
   const cleaned = cleanup({

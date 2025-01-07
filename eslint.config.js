@@ -53,6 +53,7 @@ export default eslintToolingTs.config(
       'one-var': 'off',
 
       'func-style': ['warn', 'declaration', { allowArrowFunctions: true }],
+      'prefer-arrow-callback': ['warn', { allowNamedFunctions: true }],
       'id-length': ['warn', { exceptions: ['_', 'n', 'x'] }],
       'no-restricted-syntax': [
         'warn',

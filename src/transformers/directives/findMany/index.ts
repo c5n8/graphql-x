@@ -10,7 +10,7 @@ import type { StringValueNode } from 'graphql'
 
 interface Context {
   shared: Record<string, DefinitionNode>
-  grouped: Record<string, DefinitionNode[]>
+  grouped: Record<string, Set<string>>
 }
 
 export default async (document: Document) => {
@@ -31,6 +31,17 @@ export default async (document: Document) => {
     addMutation(bundle.node, bundle, document, context)
   }
 
+  for (const bundle of document.bundles) {
+    const expansions = context.grouped[bundle.node.name.value] ?? new Set()
+
+    if (expansions !== undefined) {
+      bundle.expansions = [
+        ...bundle.expansions,
+        ...[...expansions].map((type) => context.shared[type]!),
+      ]
+    }
+  }
+
   const schemaGlobals = await invoke(async () => {
     let x
 
@@ -41,7 +52,7 @@ export default async (document: Document) => {
     return x
   })
 
-  // document.globals.push(...schemaGlobals)
+  document.globals.push(...schemaGlobals)
 
   return document
 }
@@ -63,40 +74,287 @@ function addMutation(
     throw new Error('@list directive requires field argument')
   }
 
-  const typeWhereInput = `${node.name.value}WhereInput`
+  const typeWhereInput = invoke(function registerTypeWhereInput(
+    args = { node },
+  ) {
+    const { node } = args
+    const typeWhereInput = `${node.name.value}WhereInput`
+    const followups: (() => void)[] = []
 
-  // eslint-disable-next-line security/detect-object-injection
-  context.shared[typeWhereInput] ??= {
-    kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-    name: {
-      kind: Kind.NAME,
-      value: typeWhereInput,
-    },
-    fields: [
-      ...(node.fields ?? []).flatMap<InputValueDefinitionNode>((field) => {
-        const fieldType = invoke(function getFieldType(fieldType = field.type) {
-          if (fieldType.kind === Kind.NAMED_TYPE) {
-            const supportedScalars = [
-              'Boolean',
-              'Int',
-              'Float',
-              'String',
-              'DateTime',
-            ]
+    context.shared[typeWhereInput] ??= {
+      kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+      name: {
+        kind: Kind.NAME,
+        value: typeWhereInput,
+      },
+      fields: [
+        ...(node.fields ?? []).flatMap<InputValueDefinitionNode>((field) => {
+          const fieldType = invoke(function getFieldType(
+            fieldType = field.type,
+          ) {
+            if (fieldType.kind === Kind.NAMED_TYPE) {
+              const supportedScalars = [
+                'ID',
+                'Boolean',
+                'Int',
+                'Float',
+                'String',
+                'DateTime',
+              ]
 
-            if (supportedScalars.includes(fieldType.name.value)) {
-              return `${fieldType.name.value}FilterInput`
+              if (supportedScalars.includes(fieldType.name.value)) {
+                return `${fieldType.name.value}FilterInput`
+              }
+
+              const relatedObjectTypeNode = document.bundles.find(
+                (
+                  bundle,
+                ): bundle is Bundle & { node: ObjectTypeDefinitionNode } =>
+                  bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
+                  bundle.node.name.value === fieldType.name.value,
+              )?.node
+
+              if (relatedObjectTypeNode !== undefined) {
+                followups.push(() => {
+                  let relationFieldType!: string
+
+                  if (
+                    context.shared[
+                      `${relatedObjectTypeNode.name.value}WhereInput`
+                    ] === undefined
+                  ) {
+                    relationFieldType = registerTypeWhereInput({
+                      node: relatedObjectTypeNode,
+                    })
+                  }
+
+                  context.grouped[relatedObjectTypeNode.name.value] ??=
+                    new Set()
+
+                  context.grouped[relatedObjectTypeNode.name.value]?.add(
+                    relationFieldType,
+                  )
+
+                  context.shared[
+                    `${relatedObjectTypeNode.name.value}RelationFilterInput`
+                  ] ??= invoke(() => {
+                    const relationInput = structuredClone(
+                      context.shared[relationFieldType]!,
+                    ) as ObjectTypeDefinitionNode
+
+                    relationInput.name.value = `${relatedObjectTypeNode.name.value}RelationFilterInput`
+                    relationInput.fields = [
+                      ...(relationInput.fields ?? []),
+                      {
+                        kind: Kind.INPUT_VALUE_DEFINITION,
+                        name: { kind: Kind.NAME, value: 'isNot' },
+                        type: {
+                          kind: Kind.NAMED_TYPE,
+                          name: {
+                            kind: Kind.NAME,
+                            value: `${relatedObjectTypeNode.name.value}WhereInput`,
+                          },
+                        },
+                      },
+                    ]
+
+                    return relationInput
+                  })
+
+                  context.grouped[relatedObjectTypeNode.name.value]?.add(
+                    `${relatedObjectTypeNode.name.value}RelationFilterInput`,
+                  )
+                })
+
+                return `${relatedObjectTypeNode.name.value}RelationFilterInput`
+              }
             }
 
-            const relatedObjectType = document.bundles.find(
+            if (fieldType.kind === Kind.LIST_TYPE) {
+              const nestedFieldType = invoke(
+                (nestedFieldType = fieldType.type) => {
+                  if (nestedFieldType.kind === Kind.NAMED_TYPE) {
+                    return nestedFieldType.name.value
+                  }
+
+                  if (
+                    nestedFieldType.kind === Kind.NON_NULL_TYPE &&
+                    nestedFieldType.type.kind === Kind.NAMED_TYPE
+                  ) {
+                    return nestedFieldType.type.name.value
+                  }
+                },
+              )
+
+              if (nestedFieldType !== undefined) {
+                const relatedObjectTypeNode = document.bundles.find(
+                  (
+                    bundle,
+                  ): bundle is Bundle & { node: ObjectTypeDefinitionNode } =>
+                    bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
+                    bundle.node.name.value === nestedFieldType,
+                )?.node
+
+                if (relatedObjectTypeNode !== undefined) {
+                  followups.push(() => {
+                    const relatedFieldType = `${relatedObjectTypeNode.name.value}WhereInput`
+
+                    if (
+                      context.shared[
+                        `${relatedObjectTypeNode.name.value}WhereInput`
+                      ] === undefined
+                    ) {
+                      registerTypeWhereInput({
+                        node: relatedObjectTypeNode,
+                      })
+                    }
+
+                    context.grouped[relatedObjectTypeNode.name.value] ??=
+                      new Set()
+                    context.grouped[relatedObjectTypeNode.name.value]?.add(
+                      relatedFieldType,
+                    )
+
+                    context.shared[
+                      `${relatedObjectTypeNode.name.value}ListRelationFilterInput`
+                    ] ??= {
+                      kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+                      name: {
+                        kind: Kind.NAME,
+                        value: `${relatedObjectTypeNode.name.value}ListRelationFilterInput`,
+                      },
+                      fields: ['some', 'every', 'none'].map((field) => ({
+                        kind: Kind.INPUT_VALUE_DEFINITION,
+                        name: { kind: Kind.NAME, value: field },
+                        type: {
+                          kind: Kind.NAMED_TYPE,
+                          name: { kind: Kind.NAME, value: relatedFieldType },
+                        },
+                      })),
+                    }
+
+                    context.grouped[relatedObjectTypeNode.name.value]?.add(
+                      `${relatedObjectTypeNode.name.value}ListRelationFilterInput`,
+                    )
+                  })
+
+                  return `${relatedObjectTypeNode.name.value}ListRelationFilterInput`
+                }
+              }
+
+              return getFieldType(fieldType.type)
+            }
+
+            if (fieldType.kind === Kind.NON_NULL_TYPE) {
+              return getFieldType(fieldType.type)
+            }
+          })
+
+          if (fieldType === undefined) {
+            return []
+          }
+
+          return [
+            {
+              kind: Kind.INPUT_VALUE_DEFINITION,
+              name: { kind: Kind.NAME, value: field.name.value },
+              type: {
+                kind: Kind.NAMED_TYPE,
+                name: {
+                  kind: Kind.NAME,
+                  value: fieldType,
+                },
+              },
+            },
+          ]
+        }),
+        ...['OR', 'AND', 'NOT'].map<InputValueDefinitionNode>((field) => ({
+          kind: Kind.INPUT_VALUE_DEFINITION,
+          name: {
+            kind: Kind.NAME,
+            value: field,
+          },
+          type: {
+            kind: Kind.LIST_TYPE,
+            type: {
+              kind: Kind.NON_NULL_TYPE,
+              type: {
+                kind: Kind.NAMED_TYPE,
+                name: {
+                  kind: Kind.NAME,
+                  value: typeWhereInput,
+                },
+              },
+            },
+          },
+        })),
+      ],
+    }
+
+    context.grouped[node.name.value] ??= new Set()
+    context.grouped[node.name.value]?.add(typeWhereInput)
+
+    for (const followup of followups) {
+      followup()
+    }
+
+    return typeWhereInput
+  })
+
+  invoke(function registerOrderByInput(args = { node }) {
+    const { node } = args
+    const typeOrderByInput = `${node.name.value}OrderByInput`
+    const followups: (() => void)[] = []
+
+    // eslint-disable-next-line security/detect-object-injection
+    context.shared[typeOrderByInput] ??= {
+      kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+      name: {
+        kind: Kind.NAME,
+        value: typeOrderByInput,
+      },
+      fields: (node.fields ?? []).flatMap<InputValueDefinitionNode>((field) => {
+        const fieldType = invoke(function getFieldType(fieldType = field.type) {
+          if (fieldType.kind === Kind.NAMED_TYPE) {
+            if (fieldType.name.value === 'ID') {
+              return
+            }
+
+            const relatedObjectTypeNode = document.bundles.find(
               (bundle): bundle is Bundle & { node: ObjectTypeDefinitionNode } =>
                 bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
                 bundle.node.name.value === fieldType.name.value,
-            )?.node.name.value
+            )?.node
 
-            if (relatedObjectType !== undefined) {
-              return `${relatedObjectType}RelationFilterInput`
+            if (relatedObjectTypeNode !== undefined) {
+              if (relatedObjectTypeNode !== undefined) {
+                followups.push(() => {
+                  let relationFieldType!: string
+
+                  if (
+                    context.shared[
+                      `${relatedObjectTypeNode.name.value}OrderByInput`
+                    ] === undefined
+                  ) {
+                    relationFieldType = registerOrderByInput({
+                      node: relatedObjectTypeNode,
+                    })
+                  }
+
+                  context.grouped[relatedObjectTypeNode.name.value] ??=
+                    new Set()
+                  context.grouped[relatedObjectTypeNode.name.value]?.add(
+                    relationFieldType,
+                  )
+                })
+
+                return `${relatedObjectTypeNode.name.value}OrderByInput`
+              }
+
+              return `${relatedObjectTypeNode}OrderByInput`
             }
+
+            return `SortOrderInput`
           }
 
           if (fieldType.kind === Kind.LIST_TYPE) {
@@ -125,7 +383,7 @@ function addMutation(
               )?.node.name.value
 
               if (relatedObjectType !== undefined) {
-                return `${relatedObjectType}ListRelationFilterInput`
+                return `OrderByRelationAggregateInput`
               }
             }
 
@@ -155,111 +413,17 @@ function addMutation(
           },
         ]
       }),
-      ...['OR', 'AND', 'NOT'].map<InputValueDefinitionNode>((field) => ({
-        kind: Kind.INPUT_VALUE_DEFINITION,
-        name: {
-          kind: Kind.NAME,
-          value: field,
-        },
-        type: {
-          kind: Kind.LIST_TYPE,
-          type: {
-            kind: Kind.NON_NULL_TYPE,
-            type: {
-              kind: Kind.NAMED_TYPE,
-              name: {
-                kind: Kind.NAME,
-                value: typeWhereInput,
-              },
-            },
-          },
-        },
-      })),
-    ],
-  }
+    }
 
-  const typeOrderByInput = `${node.name.value}OrderByInput`
+    context.grouped[node.name.value] ??= new Set()
+    context.grouped[node.name.value]?.add(typeOrderByInput)
 
-  // eslint-disable-next-line security/detect-object-injection
-  context.shared[typeOrderByInput] ??= {
-    kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-    name: {
-      kind: Kind.NAME,
-      value: typeOrderByInput,
-    },
-    fields: (node.fields ?? []).flatMap<InputValueDefinitionNode>((field) => {
-      const fieldType = invoke(function getFieldType(fieldType = field.type) {
-        if (fieldType.kind === Kind.NAMED_TYPE) {
-          if (fieldType.name.value === 'ID') {
-            return
-          }
+    for (const followup of followups) {
+      followup()
+    }
 
-          const relatedObjectType = document.bundles.find(
-            (bundle): bundle is Bundle & { node: ObjectTypeDefinitionNode } =>
-              bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
-              bundle.node.name.value === fieldType.name.value,
-          )?.node.name.value
-
-          if (relatedObjectType !== undefined) {
-            return `${relatedObjectType}OrderByInput`
-          }
-
-          return `SortOrderInput`
-        }
-
-        if (fieldType.kind === Kind.LIST_TYPE) {
-          const nestedFieldType = invoke((nestedFieldType = fieldType.type) => {
-            if (nestedFieldType.kind === Kind.NAMED_TYPE) {
-              return nestedFieldType.name.value
-            }
-
-            if (
-              nestedFieldType.kind === Kind.NON_NULL_TYPE &&
-              nestedFieldType.type.kind === Kind.NAMED_TYPE
-            ) {
-              return nestedFieldType.type.name.value
-            }
-          })
-
-          if (nestedFieldType !== undefined) {
-            const relatedObjectType = document.bundles.find(
-              (bundle): bundle is Bundle & { node: ObjectTypeDefinitionNode } =>
-                bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
-                bundle.node.name.value === nestedFieldType,
-            )?.node.name.value
-
-            if (relatedObjectType !== undefined) {
-              return `OrderByRelationAggregateInput`
-            }
-          }
-
-          return getFieldType(fieldType.type)
-        }
-
-        if (fieldType.kind === Kind.NON_NULL_TYPE) {
-          return getFieldType(fieldType.type)
-        }
-      })
-
-      if (fieldType === undefined) {
-        return []
-      }
-
-      return [
-        {
-          kind: Kind.INPUT_VALUE_DEFINITION,
-          name: { kind: Kind.NAME, value: field.name.value },
-          type: {
-            kind: Kind.NAMED_TYPE,
-            name: {
-              kind: Kind.NAME,
-              value: fieldType,
-            },
-          },
-        },
-      ]
-    }),
-  }
+    return typeOrderByInput
+  })
 
   bundle.expansions.push(
     {
@@ -365,8 +529,5 @@ function addMutation(
         },
       ],
     },
-
-    context.shared[typeWhereInput],
-    context.shared[typeOrderByInput],
   )
 }
