@@ -12,6 +12,8 @@
 
     "lib": ["ESNext"],
 
-    "types": ["node", "vite/client"]
+    "types": ["node", "vite/client"],
+
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo"
   }
 }
