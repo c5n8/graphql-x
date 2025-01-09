@@ -1,0 +1,13 @@
+directive @item on OBJECT
+
+type Post @item {
+  id: ID!
+}
+
+extend type Query {
+  post(input: PostItemQueryInput!): Post
+}
+
+input PostItemQueryInput {
+  id: ID!
+}

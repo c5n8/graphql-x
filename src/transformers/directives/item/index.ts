@@ -9,7 +9,7 @@ export default (document: Document) => {
     (bundle): bundle is Bundle & { node: ObjectTypeDefinitionNode } =>
       bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
       (bundle.node.directives?.some(
-        (directive) => directive.name.value === 'findUnique',
+        (directive) => directive.name.value === 'item',
       ) ??
         false),
   )
@@ -60,7 +60,7 @@ function addMutation(node: ObjectTypeDefinitionNode, bundle: Bundle) {
                   kind: Kind.NAMED_TYPE,
                   name: {
                     kind: Kind.NAME,
-                    value: `FindUnique${node.name.value}Input`,
+                    value: `${node.name.value}ItemQueryInput`,
                   },
                 },
               },
@@ -80,7 +80,7 @@ function addMutation(node: ObjectTypeDefinitionNode, bundle: Bundle) {
       kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
       name: {
         kind: Kind.NAME,
-        value: `FindUnique${node.name.value}Input`,
+        value: `${node.name.value}ItemQueryInput`,
       },
       fields: [
         {

@@ -10,7 +10,7 @@ export async function expand(schema: string) {
     import('#package/transformers/directives/update/index.js'),
     import('#package/transformers/directives/delete/index.js'),
     import('#package/transformers/directives/list/index.js'),
-    import('#package/transformers/directives/findUnique/index.js'),
+    import('#package/transformers/directives/item/index.js'),
   ])
 
   const ast = parse(schema)
