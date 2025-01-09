@@ -7,7 +7,7 @@ import { invoke } from '@txe/invoke'
 import { Kind } from 'graphql'
 import type { Mutable } from '#package/utils/mutable.js'
 import type { ObjectTypeDefinitionNode } from 'graphql'
-import { parse } from 'graphql'
+import { schemaGlobals } from './globals.js'
 import type { StringValueNode } from 'graphql'
 
 interface Context {
@@ -15,7 +15,7 @@ interface Context {
   grouped: Record<string, Set<string>>
 }
 
-export default async (document: Document) => {
+export default (document: Document) => {
   const bundles = document.bundles.filter(
     (bundle): bundle is Bundle & { node: ObjectTypeDefinitionNode } =>
       bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
@@ -50,17 +50,7 @@ export default async (document: Document) => {
     }
   }
 
-  const schemaGlobals = await invoke(async () => {
-    let x
-
-    x = await import('./globals.gql?raw')
-    x = x.default
-    x = parse(x).definitions
-
-    return x
-  })
-
-  document.globals.push(...schemaGlobals)
+  document.globals.push(...(schemaGlobals as DefinitionNode[]))
 
   return document
 }

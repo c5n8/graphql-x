@@ -26,8 +26,7 @@ export async function expand(schema: string) {
   for (const transformer of transformers) {
     const { default: transform } = transformer
 
-    // oxlint-disable-next-line eslint(no-await-in-loop)
-    await transform(document)
+    transform(document)
   }
 
   const cleaned = cleanup({
