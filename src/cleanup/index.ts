@@ -1,6 +1,7 @@
 import type { DefinitionNode } from 'graphql'
 import type { DocumentNode } from 'graphql'
 import { Kind } from 'graphql'
+import type { Mutable } from '#package/utils/mutable.js'
 
 export default function (document: DocumentNode) {
   let types = ['Query', 'Mutation', 'Subscription']
@@ -24,8 +25,4 @@ export default function (document: DocumentNode) {
   }
 
   return document
-}
-
-type Mutable<T> = {
-  -readonly [K in keyof T]: T[K]
 }

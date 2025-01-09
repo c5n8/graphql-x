@@ -147,7 +147,17 @@ export default eslintToolingTs.config(
   {
     name: 'package/security-overrides',
     rules: {
-      // 'security/detect-object-injection': 'off',
+      ...invoke(() => {
+        if (process.env.NODE_ENV === 'development') {
+          return {
+            'security/detect-object-injection': 'off',
+          }
+        }
+
+        return {
+          'security/detect-object-injection': 'warn',
+        }
+      }),
     },
   },
 

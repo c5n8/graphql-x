@@ -1,9 +1,11 @@
 import type { Bundle } from '#package/document.js'
 import type { DefinitionNode } from 'graphql'
 import type { Document } from '#package/document.js'
+import type { InputObjectTypeDefinitionNode } from 'graphql'
 import type { InputValueDefinitionNode } from 'graphql'
 import { invoke } from '@txe/invoke'
 import { Kind } from 'graphql'
+import type { Mutable } from '#package/utils/mutable.js'
 import type { ObjectTypeDefinitionNode } from 'graphql'
 import { parse } from 'graphql'
 import type { StringValueNode } from 'graphql'
@@ -31,12 +33,18 @@ export default async (document: Document) => {
     addMutation(bundle.node, bundle, document, context)
   }
 
-  for (const bundle of document.bundles) {
+  const objectTypeBundles = document.bundles.filter(
+    (bundle): bundle is Bundle & { node: ObjectTypeDefinitionNode } =>
+      bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION,
+  )
+
+  for (const bundle of objectTypeBundles) {
     const expansions = context.grouped[bundle.node.name.value] ?? new Set()
 
     if (expansions !== undefined) {
       bundle.expansions = [
         ...bundle.expansions,
+        // oxlint-disable-next-line typescript-eslint/no-non-null-assertion
         ...[...expansions].map((type) => context.shared[type]!),
       ]
     }
@@ -75,6 +83,7 @@ function addMutation(
   }
 
   const typeWhereInput = invoke(function registerTypeWhereInput(
+    // oxlint-disable-next-line eslint-plugin-unicorn/no-object-as-default-parameter
     args = { node },
   ) {
     const { node } = args
@@ -139,8 +148,9 @@ function addMutation(
                     `${relatedObjectTypeNode.name.value}RelationFilterInput`
                   ] ??= invoke(() => {
                     const relationInput = structuredClone(
+                      // oxlint-disable-next-line typescript-eslint/no-non-null-assertion
                       context.shared[relationFieldType]!,
-                    ) as ObjectTypeDefinitionNode
+                    ) as Mutable<InputObjectTypeDefinitionNode>
 
                     relationInput.name.value = `${relatedObjectTypeNode.name.value}RelationFilterInput`
                     relationInput.fields = [
@@ -158,7 +168,7 @@ function addMutation(
                       },
                     ]
 
-                    return relationInput
+                    return relationInput as DefinitionNode
                   })
 
                   context.grouped[relatedObjectTypeNode.name.value]?.add(
@@ -301,12 +311,12 @@ function addMutation(
     return typeWhereInput
   })
 
+  // oxlint-disable-next-line eslint-plugin-unicorn/no-object-as-default-parameter
   invoke(function registerOrderByInput(args = { node }) {
     const { node } = args
     const typeOrderByInput = `${node.name.value}OrderByInput`
     const followups: (() => void)[] = []
 
-    // eslint-disable-next-line security/detect-object-injection
     context.shared[typeOrderByInput] ??= {
       kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
       name: {

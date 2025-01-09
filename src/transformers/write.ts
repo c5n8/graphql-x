@@ -23,7 +23,6 @@ export function writeDirectiveExpansion(
   return function (document: Document) {
     const context = {
       operationName: {
-        // eslint-disable-next-line security/detect-object-injection
         uppercase: operationNames[operation],
         lowercase: operation,
       },
