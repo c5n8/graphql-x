@@ -18,9 +18,14 @@ extend type Mutation {
 }
 
 input CreatePostInput {
-  title: String!
+  data: CreatePostDataInput
+  dryRun: Boolean
+}
+
+input CreatePostDataInput {
+  title: String
   body: String
-  tags: [String!]
+  tags: [String]
   category: CreatePostCategoryRelationInput
 }
 

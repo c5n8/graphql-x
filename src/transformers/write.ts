@@ -2,9 +2,9 @@ import assert from 'node:assert'
 import type { Bundle } from '#package/document.js'
 import type { Document } from '#package/document.js'
 import type { InputObjectTypeDefinitionNode } from 'graphql'
+import type { InputValueDefinitionNode } from 'graphql'
 import { invoke } from '@txe/invoke'
 import { Kind } from 'graphql'
-import type { NonNullTypeNode } from 'graphql'
 import type { ObjectTypeDefinitionNode } from 'graphql'
 import type { TypeNode } from 'graphql'
 
@@ -142,6 +142,62 @@ function addMutationInput(
         kind: Kind.NAME,
         value: `${context.operationName.uppercase}${node.name.value}Input`,
       },
+      fields: [
+        ...invoke((): InputValueDefinitionNode[] => {
+          if (context.operationName.lowercase === 'create') {
+            return []
+          }
+
+          return [
+            {
+              kind: Kind.INPUT_VALUE_DEFINITION,
+              name: { kind: Kind.NAME, value: 'id' },
+              type: {
+                kind: Kind.NON_NULL_TYPE,
+                type: {
+                  kind: Kind.NAMED_TYPE,
+                  name: {
+                    kind: Kind.NAME,
+                    value: 'ID',
+                  },
+                },
+              },
+            },
+          ]
+        }),
+
+        {
+          kind: Kind.INPUT_VALUE_DEFINITION,
+          name: { kind: Kind.NAME, value: 'data' },
+          type: {
+            kind: Kind.NAMED_TYPE,
+            name: {
+              kind: Kind.NAME,
+              value: `${context.operationName.uppercase}${node.name.value}DataInput`,
+            },
+          },
+        },
+
+        {
+          kind: Kind.INPUT_VALUE_DEFINITION,
+          name: { kind: Kind.NAME, value: 'dryRun' },
+          type: {
+            kind: Kind.NAMED_TYPE,
+            name: {
+              kind: Kind.NAME,
+              value: 'Boolean',
+            },
+          },
+        },
+      ],
+    },
+
+    {
+      kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+      name: {
+        kind: Kind.NAME,
+        value: `${context.operationName.uppercase}${node.name.value}DataInput`,
+      },
       fields: node.fields?.flatMap((field) => {
         if (field.directives?.some(({ name }) => name.value === 'readonly')) {
           return []
@@ -152,10 +208,7 @@ function addMutationInput(
           wrapType = (type: TypeNode) => type,
         ): TypeNode | undefined {
           if (type.kind === Kind.NON_NULL_TYPE) {
-            const result = getType(type.type, (type) => ({
-              kind: Kind.NON_NULL_TYPE,
-              type: type as NonNullTypeNode['type'],
-            }))
+            const result = getType(type.type)
 
             if (result === undefined) {
               return

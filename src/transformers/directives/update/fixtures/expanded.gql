@@ -18,9 +18,15 @@ extend type Mutation {
 }
 
 input UpdatePostInput {
-  title: String!
+  id: ID!
+  data: UpdatePostDataInput
+  dryRun: Boolean
+}
+
+input UpdatePostDataInput {
+  title: String
   body: String
-  tags: [String!]
+  tags: [String]
   category: UpdatePostCategoryRelationInput
 }
 
