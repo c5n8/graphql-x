@@ -314,7 +314,6 @@ input BooleanNotFilterInput {
 input DateTimeFilterInput {
   equals: DateTime
   in: DateTime
-  notIn: DateTime
   lt: DateTime
   lte: DateTime
   gt: DateTime
@@ -325,7 +324,6 @@ input DateTimeFilterInput {
 input DateTimeNotFilterInput {
   equals: DateTime
   in: DateTime
-  notIn: DateTime
   lt: DateTime
   lte: DateTime
   gt: DateTime

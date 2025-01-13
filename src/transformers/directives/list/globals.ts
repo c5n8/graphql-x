@@ -946,20 +946,6 @@ export const schemaGlobals = [
         kind: 'InputValueDefinition',
         name: {
           kind: 'Name',
-          value: 'notIn',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'DateTime',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
           value: 'lt',
         },
         type: {
@@ -1054,20 +1040,6 @@ export const schemaGlobals = [
         name: {
           kind: 'Name',
           value: 'in',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'DateTime',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'notIn',
         },
         type: {
           kind: 'NamedType',
