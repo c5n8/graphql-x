@@ -254,7 +254,7 @@ function addMutation(
             },
           ]
         }),
-        ...['OR', 'AND', 'NOT'].map<InputValueDefinitionNode>((field) => ({
+        ...['OR', 'AND'].map<InputValueDefinitionNode>((field) => ({
           kind: Kind.INPUT_VALUE_DEFINITION,
           name: {
             kind: Kind.NAME,
@@ -274,11 +274,47 @@ function addMutation(
             },
           },
         })),
+        {
+          kind: Kind.INPUT_VALUE_DEFINITION,
+          name: {
+            kind: Kind.NAME,
+            value: 'NOT',
+          },
+          type: {
+            kind: Kind.LIST_TYPE,
+            type: {
+              kind: Kind.NON_NULL_TYPE,
+              type: {
+                kind: Kind.NAMED_TYPE,
+                name: {
+                  kind: Kind.NAME,
+                  value: `${node.name.value}WhereNotInput`,
+                },
+              },
+            },
+          },
+        },
       ],
     }
 
     context.grouped[node.name.value] ??= new Set()
     context.grouped[node.name.value]?.add(typeWhereInput)
+
+    context.shared[`${node.name.value}WhereNotInput`] ??= invoke(() => {
+      const relationInput = structuredClone(
+        // oxlint-disable-next-line typescript-eslint/no-non-null-assertion
+        context.shared[typeWhereInput]!,
+      ) as Mutable<InputObjectTypeDefinitionNode>
+
+      relationInput.name.value = `${node.name.value}WhereNotInput`
+      relationInput.fields = relationInput.fields?.filter(
+        (field) => field.name.value !== 'NOT',
+      )
+
+      return relationInput as DefinitionNode
+    })
+
+    context.grouped[node.name.value]?.add(`${node.name.value}WhereNotInput`)
 
     for (const followup of followups) {
       followup()
