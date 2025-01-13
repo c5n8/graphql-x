@@ -105,10 +105,10 @@ input DeletePostInput {
 }
 
 type Query {
-  post(input: PostItemQueryInput!): Post
+  post(input: PostItemInput!): Post
 }
 
-input PostItemQueryInput {
+input PostItemInput {
   id: ID!
 }
 
@@ -128,10 +128,10 @@ type Todo @list(field: "todos") {
 }
 
 extend type Query {
-  todos(input: TodoListQueryInput): [Todo!]!
+  todos(input: TodoListInput): [Todo!]!
 }
 
-input TodoListQueryInput {
+input TodoListInput {
   take: Int
   where: TodoWhereInput
   orderBy: [TodoOrderByInput!]

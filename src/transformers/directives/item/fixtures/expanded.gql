@@ -5,9 +5,9 @@ type Post @item {
 }
 
 extend type Query {
-  post(input: PostItemQueryInput!): Post
+  post(input: PostItemInput!): Post
 }
 
-input PostItemQueryInput {
+input PostItemInput {
   id: ID!
 }

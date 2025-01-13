@@ -60,7 +60,7 @@ function addMutation(node: ObjectTypeDefinitionNode, bundle: Bundle) {
                   kind: Kind.NAMED_TYPE,
                   name: {
                     kind: Kind.NAME,
-                    value: `${node.name.value}ItemQueryInput`,
+                    value: `${node.name.value}ItemInput`,
                   },
                 },
               },
@@ -80,7 +80,7 @@ function addMutation(node: ObjectTypeDefinitionNode, bundle: Bundle) {
       kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
       name: {
         kind: Kind.NAME,
-        value: `${node.name.value}ItemQueryInput`,
+        value: `${node.name.value}ItemInput`,
       },
       fields: [
         {

@@ -447,7 +447,7 @@ function addMutation(
                 kind: Kind.NAMED_TYPE,
                 name: {
                   kind: Kind.NAME,
-                  value: `${node.name.value}ListQueryInput`,
+                  value: `${node.name.value}ListInput`,
                 },
               },
             },
@@ -476,7 +476,7 @@ function addMutation(
       kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
       name: {
         kind: Kind.NAME,
-        value: `${node.name.value}ListQueryInput`,
+        value: `${node.name.value}ListInput`,
       },
       fields: [
         {
