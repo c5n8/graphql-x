@@ -143,20 +143,6 @@ function addMutation(
                     ) as Mutable<InputObjectTypeDefinitionNode>
 
                     relationInput.name.value = `${relatedObjectTypeNode.name.value}RelationFilterInput`
-                    relationInput.fields = [
-                      ...(relationInput.fields ?? []),
-                      {
-                        kind: Kind.INPUT_VALUE_DEFINITION,
-                        name: { kind: Kind.NAME, value: 'isNot' },
-                        type: {
-                          kind: Kind.NAMED_TYPE,
-                          name: {
-                            kind: Kind.NAME,
-                            value: `${relatedObjectTypeNode.name.value}WhereInput`,
-                          },
-                        },
-                      },
-                    ]
 
                     return relationInput as DefinitionNode
                   })

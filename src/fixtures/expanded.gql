@@ -189,7 +189,6 @@ input UserRelationFilterInput {
   OR: [UserWhereInput!]
   AND: [UserWhereInput!]
   NOT: [UserWhereInput!]
-  isNot: UserWhereInput
 }
 
 input UserOrderByInput {
