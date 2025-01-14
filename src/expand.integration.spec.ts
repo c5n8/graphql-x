@@ -1,7 +1,7 @@
 import { buildSchema } from 'graphql'
 import { expand } from './expand.js'
 import { expect } from 'vitest'
-import { importDefaults } from './testing/utils/import-defaults.js'
+import { importDefaults } from './testing/import-defaults.js'
 import { invoke } from '@txe/invoke'
 import * as prettier from 'prettier'
 import { test } from 'vitest'

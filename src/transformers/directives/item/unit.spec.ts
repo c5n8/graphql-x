@@ -1,8 +1,8 @@
 import { buildSchema } from 'graphql'
-import { execExpansion } from '#package/testing/utils/exec-expansion.js'
+import { execExpansion } from '#package/testing/exec-expansion.js'
 import expand from './index.js'
 import { expect } from 'vitest'
-import { importDefaults } from '#package/testing/utils/import-defaults.js'
+import { importDefaults } from '#package/testing/import-defaults.js'
 import { test } from 'vitest'
 
 test('expand directive @create', async () => {
