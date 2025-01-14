@@ -1,3 +1,3 @@
-import { writeDirectiveExpansion } from '#package/transformers/write.js'
+import { writeDirectiveExpansion } from '#package/transformers/directives/write.js'
 
 export default writeDirectiveExpansion('create')
