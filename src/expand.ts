@@ -6,11 +6,11 @@ import { print } from 'graphql'
 
 export async function expand(schema: string) {
   const transformers = await Promise.all([
-    import('#package/transformers/directives/create/index.js'),
-    import('#package/transformers/directives/update/index.js'),
-    import('#package/transformers/directives/delete/index.js'),
-    import('#package/transformers/directives/list/index.js'),
-    import('#package/transformers/directives/item/index.js'),
+    import('#package/macros/create/index.js'),
+    import('#package/macros/update/index.js'),
+    import('#package/macros/delete/index.js'),
+    import('#package/macros/list/index.js'),
+    import('#package/macros/item/index.js'),
   ])
 
   const ast = parse(schema)
