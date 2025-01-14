@@ -1,1191 +1,137 @@
-export const schemaGlobals = [
-  {
-    kind: 'InputObjectTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'IDFilterInput',
-    },
-    fields: [
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'equals',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'ID',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'in',
-        },
-        type: {
-          kind: 'ListType',
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: {
-                kind: 'Name',
-                value: 'ID',
-              },
-            },
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'not',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'IDNotFilterInput',
-          },
-        },
-      },
+import { GraphQLBoolean as BooleanScalar } from 'graphql'
+import { GraphQLFloat as Float } from 'graphql'
+import { GraphQLID as ID } from 'graphql'
+import { GraphQLInt as Int } from 'graphql'
+import { invoke } from '@txe/invoke'
+import { Kind } from 'graphql'
+import { GraphQLList as List } from 'graphql'
+import { GraphQLNonNull as NonNull } from 'graphql'
+import { GraphQLInputObjectType as ObjectType } from 'graphql'
+import { parse } from 'graphql'
+import { printSchema } from 'graphql'
+import { GraphQLScalarType as Scalar } from 'graphql'
+import { GraphQLSchema as Schema } from 'graphql'
+import { GraphQLString as StringScalar } from 'graphql'
+
+const IDFilterInput: ObjectType = new ObjectType({
+  name: 'IDFilterInput',
+  fields: () => ({
+    equals: { type: ID },
+    in: { type: new List(new NonNull(ID)) },
+    not: { type: IDFilterInput },
+  }),
+})
+
+const QueryMode = new Scalar({ name: 'QueryMode' })
+
+const StringFilterInput: ObjectType = new ObjectType({
+  name: 'StringFilterInput',
+  fields: () => ({
+    equals: { type: StringScalar },
+    in: { type: new List(new NonNull(StringScalar)) },
+    lt: { type: StringScalar },
+    lte: { type: StringScalar },
+    gt: { type: StringScalar },
+    gte: { type: StringScalar },
+    contains: { type: StringScalar },
+    startsWith: { type: StringScalar },
+    endsWith: { type: StringScalar },
+    mode: { type: QueryMode },
+    not: { type: StringFilterInput },
+  }),
+})
+
+const FloatFilterInput: ObjectType = new ObjectType({
+  name: 'FloatFilterInput',
+  fields: () => ({
+    equals: { type: Float },
+    in: { type: new List(new NonNull(Float)) },
+    lt: { type: Float },
+    lte: { type: Float },
+    gt: { type: Float },
+    gte: { type: Float },
+    not: { type: FloatFilterInput },
+  }),
+})
+
+const IntFilterInput: ObjectType = new ObjectType({
+  name: 'IntFilterInput',
+  fields: () => ({
+    equals: { type: Int },
+    in: { type: new List(new NonNull(Int)) },
+    lt: { type: Int },
+    lte: { type: Int },
+    gt: { type: Int },
+    gte: { type: Int },
+    not: { type: IntFilterInput },
+  }),
+})
+
+const BooleanFilterInput: ObjectType = new ObjectType({
+  name: 'BooleanFilterInput',
+  fields: () => ({
+    equals: { type: BooleanScalar },
+    not: { type: BooleanFilterInput },
+  }),
+})
+
+const DateTimeScalar = new Scalar({ name: 'DateTime' })
+
+const DateTimeFilterInput: ObjectType = new ObjectType({
+  name: 'DateTimeFilterInput',
+  fields: () => ({
+    equals: { type: DateTimeScalar },
+    in: { type: new List(new NonNull(DateTimeScalar)) },
+    lt: { type: DateTimeScalar },
+    lte: { type: DateTimeScalar },
+    gt: { type: DateTimeScalar },
+    gte: { type: DateTimeScalar },
+    not: { type: DateTimeFilterInput },
+  }),
+})
+
+const SortOrder = new Scalar({ name: 'SortOrder' })
+const NullsOrder = new Scalar({ name: 'NullsOrder' })
+
+const SortOrderInput = new ObjectType({
+  name: 'SortOrderInput',
+  fields: {
+    sort: { type: SortOrder },
+    nulls: { type: NullsOrder },
+  },
+})
+
+const OrderByRelationAggregateInput = new ObjectType({
+  name: 'OrderByRelationAggregateInput',
+  fields: {
+    _count: { type: SortOrder },
+  },
+})
+
+export const schemaGlobals = invoke(() => {
+  let x
+
+  x = new Schema({
+    types: [
+      IDFilterInput,
+      StringFilterInput,
+      FloatFilterInput,
+      IntFilterInput,
+      BooleanFilterInput,
+      DateTimeFilterInput,
+      SortOrderInput,
+      OrderByRelationAggregateInput,
     ],
-  },
-  {
-    kind: 'InputObjectTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'IDNotFilterInput',
-    },
-    fields: [
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'equals',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'ID',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'in',
-        },
-        type: {
-          kind: 'ListType',
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: {
-                kind: 'Name',
-                value: 'ID',
-              },
-            },
-          },
-        },
-      },
-    ],
-  },
-  {
-    kind: 'InputObjectTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'StringFilterInput',
-    },
-    fields: [
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'equals',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'String',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'in',
-        },
-        type: {
-          kind: 'ListType',
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: {
-                kind: 'Name',
-                value: 'String',
-              },
-            },
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'lt',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'String',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'lte',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'String',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'gt',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'String',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'gte',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'String',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'contains',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'String',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'startsWith',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'String',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'endsWith',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'String',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'mode',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'QueryMode',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'not',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'StringNotFilterInput',
-          },
-        },
-      },
-    ],
-  },
-  {
-    kind: 'InputObjectTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'StringNotFilterInput',
-    },
-    fields: [
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'equals',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'String',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'in',
-        },
-        type: {
-          kind: 'ListType',
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: {
-                kind: 'Name',
-                value: 'String',
-              },
-            },
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'lt',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'String',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'lte',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'String',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'gt',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'String',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'gte',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'String',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'contains',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'String',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'startsWith',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'String',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'endsWith',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'String',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'mode',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'QueryMode',
-          },
-        },
-      },
-    ],
-  },
-  {
-    kind: 'InputObjectTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'FloatFilterInput',
-    },
-    fields: [
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'equals',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Float',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'in',
-        },
-        type: {
-          kind: 'ListType',
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: {
-                kind: 'Name',
-                value: 'Float',
-              },
-            },
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'lt',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Float',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'lte',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Float',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'gt',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Float',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'gte',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Float',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'not',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'FloatNotFilterInput',
-          },
-        },
-      },
-    ],
-  },
-  {
-    kind: 'InputObjectTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'FloatNotFilterInput',
-    },
-    fields: [
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'equals',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Float',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'in',
-        },
-        type: {
-          kind: 'ListType',
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: {
-                kind: 'Name',
-                value: 'Float',
-              },
-            },
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'lt',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Float',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'lte',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Float',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'gt',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Float',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'gte',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Float',
-          },
-        },
-      },
-    ],
-  },
-  {
-    kind: 'InputObjectTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'IntFilterInput',
-    },
-    fields: [
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'equals',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Int',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'in',
-        },
-        type: {
-          kind: 'ListType',
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: {
-                kind: 'Name',
-                value: 'Int',
-              },
-            },
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'lt',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Int',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'lte',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Int',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'gt',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Int',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'gte',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Int',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'not',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'IntNotFilterInput',
-          },
-        },
-      },
-    ],
-  },
-  {
-    kind: 'InputObjectTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'IntNotFilterInput',
-    },
-    fields: [
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'equals',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Int',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'in',
-        },
-        type: {
-          kind: 'ListType',
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: {
-                kind: 'Name',
-                value: 'Int',
-              },
-            },
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'lt',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Int',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'lte',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Int',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'gt',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Int',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'gte',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Int',
-          },
-        },
-      },
-    ],
-  },
-  {
-    kind: 'InputObjectTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'BooleanFilterInput',
-    },
-    fields: [
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'equals',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Boolean',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'not',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'BooleanNotFilterInput',
-          },
-        },
-      },
-    ],
-  },
-  {
-    kind: 'InputObjectTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'BooleanNotFilterInput',
-    },
-    fields: [
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'equals',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'Boolean',
-          },
-        },
-      },
-    ],
-  },
-  {
-    kind: 'InputObjectTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'DateTimeFilterInput',
-    },
-    fields: [
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'equals',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'DateTime',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'in',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'DateTime',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'lt',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'DateTime',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'lte',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'DateTime',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'gt',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'DateTime',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'gte',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'DateTime',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'not',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'DateTimeNotFilterInput',
-          },
-        },
-      },
-    ],
-  },
-  {
-    kind: 'InputObjectTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'DateTimeNotFilterInput',
-    },
-    fields: [
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'equals',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'DateTime',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'in',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'DateTime',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'lt',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'DateTime',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'lte',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'DateTime',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'gt',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'DateTime',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'gte',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'DateTime',
-          },
-        },
-      },
-    ],
-  },
-  {
-    kind: 'InputObjectTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'SortOrderInput',
-    },
-    fields: [
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'sort',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'SortOrder',
-          },
-        },
-      },
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: 'nulls',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'NullsOrder',
-          },
-        },
-      },
-    ],
-  },
-  {
-    kind: 'InputObjectTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'OrderByRelationAggregateInput',
-    },
-    fields: [
-      {
-        kind: 'InputValueDefinition',
-        name: {
-          kind: 'Name',
-          value: '_count',
-        },
-        type: {
-          kind: 'NamedType',
-          name: {
-            kind: 'Name',
-            value: 'SortOrder',
-          },
-        },
-      },
-    ],
-  },
-  {
-    kind: 'ScalarTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'QueryMode',
-    },
-  },
-  {
-    kind: 'ScalarTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'SortOrder',
-    },
-  },
-  {
-    kind: 'ScalarTypeDefinition',
-    name: {
-      kind: 'Name',
-      value: 'NullsOrder',
-    },
-  },
-]
+  })
+
+  x = printSchema(x)
+  x = parse(x)
+
+  x = x.definitions.filter(
+    (definition) =>
+      (definition.kind === Kind.SCALAR_TYPE_DEFINITION &&
+        definition.name.value === 'DateTime') === false,
+  )
+
+  return x
+})

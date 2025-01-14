@@ -219,12 +219,7 @@ scalar Void
 input IDFilterInput {
   equals: ID
   in: [ID!]
-  not: IDNotFilterInput
-}
-
-input IDNotFilterInput {
-  equals: ID
-  in: [ID!]
+  not: IDFilterInput
 }
 
 input StringFilterInput {
@@ -238,21 +233,10 @@ input StringFilterInput {
   startsWith: String
   endsWith: String
   mode: QueryMode
-  not: StringNotFilterInput
+  not: StringFilterInput
 }
 
-input StringNotFilterInput {
-  equals: String
-  in: [String!]
-  lt: String
-  lte: String
-  gt: String
-  gte: String
-  contains: String
-  startsWith: String
-  endsWith: String
-  mode: QueryMode
-}
+scalar QueryMode
 
 input FloatFilterInput {
   equals: Float
@@ -261,16 +245,7 @@ input FloatFilterInput {
   lte: Float
   gt: Float
   gte: Float
-  not: FloatNotFilterInput
-}
-
-input FloatNotFilterInput {
-  equals: Float
-  in: [Float!]
-  lt: Float
-  lte: Float
-  gt: Float
-  gte: Float
+  not: FloatFilterInput
 }
 
 input IntFilterInput {
@@ -280,44 +255,22 @@ input IntFilterInput {
   lte: Int
   gt: Int
   gte: Int
-  not: IntNotFilterInput
-}
-
-input IntNotFilterInput {
-  equals: Int
-  in: [Int!]
-  lt: Int
-  lte: Int
-  gt: Int
-  gte: Int
+  not: IntFilterInput
 }
 
 input BooleanFilterInput {
   equals: Boolean
-  not: BooleanNotFilterInput
-}
-
-input BooleanNotFilterInput {
-  equals: Boolean
+  not: BooleanFilterInput
 }
 
 input DateTimeFilterInput {
   equals: DateTime
-  in: DateTime
+  in: [DateTime!]
   lt: DateTime
   lte: DateTime
   gt: DateTime
   gte: DateTime
-  not: DateTimeNotFilterInput
-}
-
-input DateTimeNotFilterInput {
-  equals: DateTime
-  in: DateTime
-  lt: DateTime
-  lte: DateTime
-  gt: DateTime
-  gte: DateTime
+  not: DateTimeFilterInput
 }
 
 input SortOrderInput {
@@ -325,12 +278,10 @@ input SortOrderInput {
   nulls: NullsOrder
 }
 
-input OrderByRelationAggregateInput {
-  _count: SortOrder
-}
-
-scalar QueryMode
-
 scalar SortOrder
 
 scalar NullsOrder
+
+input OrderByRelationAggregateInput {
+  _count: SortOrder
+}
