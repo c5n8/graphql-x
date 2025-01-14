@@ -30,24 +30,11 @@ input TodoWhereInput {
   priority: IntFilterInput
   budget: FloatFilterInput
   isDone: BooleanFilterInput
-  assignee: UserRelationFilterInput
+  assignee: UserWhereInput
   tags: TagListRelationFilterInput
   OR: [TodoWhereInput!]
   AND: [TodoWhereInput!]
-  NOT: [TodoWhereNotInput!]
-}
-
-input TodoWhereNotInput {
-  id: IDFilterInput
-  createdAt: DateTimeFilterInput
-  description: StringFilterInput
-  priority: IntFilterInput
-  budget: FloatFilterInput
-  isDone: BooleanFilterInput
-  assignee: UserRelationFilterInput
-  tags: TagListRelationFilterInput
-  OR: [TodoWhereInput!]
-  AND: [TodoWhereInput!]
+  NOT: [TodoWhereInput!]
 }
 
 input TodoListRelationFilterInput {
@@ -78,24 +65,7 @@ input UserWhereInput {
   todos: TodoListRelationFilterInput
   OR: [UserWhereInput!]
   AND: [UserWhereInput!]
-  NOT: [UserWhereNotInput!]
-}
-
-input UserWhereNotInput {
-  id: IDFilterInput
-  email: StringFilterInput
-  todos: TodoListRelationFilterInput
-  OR: [UserWhereInput!]
-  AND: [UserWhereInput!]
-}
-
-input UserRelationFilterInput {
-  id: IDFilterInput
-  email: StringFilterInput
-  todos: TodoListRelationFilterInput
-  OR: [UserWhereInput!]
-  AND: [UserWhereInput!]
-  NOT: [UserWhereNotInput!]
+  NOT: [UserWhereInput!]
 }
 
 input UserOrderByInput {
@@ -115,15 +85,7 @@ input TagWhereInput {
   todos: TodoListRelationFilterInput
   OR: [TagWhereInput!]
   AND: [TagWhereInput!]
-  NOT: [TagWhereNotInput!]
-}
-
-input TagWhereNotInput {
-  id: IDFilterInput
-  title: StringFilterInput
-  todos: TodoListRelationFilterInput
-  OR: [TagWhereInput!]
-  AND: [TagWhereInput!]
+  NOT: [TagWhereInput!]
 }
 
 input TagListRelationFilterInput {
