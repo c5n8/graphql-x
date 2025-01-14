@@ -319,7 +319,7 @@ function addMutationOutput(
         kind: Kind.DIRECTIVE,
         name: {
           kind: Kind.NAME,
-          value: 'signature',
+          value: 'output',
         },
         arguments: [
           {
@@ -534,7 +534,7 @@ function addGlobals(document: Document) {
       kind: Kind.DIRECTIVE_DEFINITION,
       name: {
         kind: Kind.NAME,
-        value: 'signature',
+        value: 'output',
       },
       repeatable: false,
       arguments: [

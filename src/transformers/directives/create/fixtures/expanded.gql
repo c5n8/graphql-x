@@ -34,7 +34,7 @@ input CreatePostCategoryRelationInput {
 }
 
 union CreatePostOutput
-  @signature(fields: ["issues", "result"])
+  @output(fields: ["issues", "result"])
   @member(type: "CreatePostResult", signature: "result")
   @member(type: "CreatePostValidation", signature: "issues") =
   | CreatePostResult
@@ -54,7 +54,7 @@ type Category {
   id: ID!
 }
 
-directive @signature(fields: [String!]!) on UNION
+directive @output(fields: [String!]!) on UNION
 
 directive @member(type: String!, signature: String!) repeatable on UNION
 
