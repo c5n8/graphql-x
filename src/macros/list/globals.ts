@@ -1,4 +1,5 @@
 import { GraphQLBoolean as BooleanScalar } from 'graphql'
+import { define } from '@txe/define-x'
 import { GraphQLFloat as Float } from 'graphql'
 import { GraphQLID as ID } from 'graphql'
 import { GraphQLInt as Int } from 'graphql'
@@ -13,124 +14,135 @@ import { GraphQLScalarType as Scalar } from 'graphql'
 import { GraphQLSchema as Schema } from 'graphql'
 import { GraphQLString as StringScalar } from 'graphql'
 
-const IDFilterInput: ObjectType = new ObjectType({
-  name: 'IDFilterInput',
-  fields: () => ({
-    equals: { type: ID },
-    in: { type: new List(new NonNull(ID)) },
-    not: { type: IDFilterInput },
-  }),
-})
+const types: Record<string, ObjectType> = invoke(() => {
+  let x
 
-const QueryMode = new Scalar({ name: 'QueryMode' })
+  // oxlint-disable typescript-eslint/no-non-null-assertion
+  x = define<Record<string, (name: string) => ObjectType>>({
+    IDFilterInput: (name) =>
+      new ObjectType({
+        name,
+        fields: () => ({
+          equals: { type: ID },
+          in: { type: new List(new NonNull(ID)) },
+          not: { type: types[name]! },
+        }),
+      }),
 
-const StringFilterInput: ObjectType = new ObjectType({
-  name: 'StringFilterInput',
-  fields: () => ({
-    equals: { type: StringScalar },
-    in: { type: new List(new NonNull(StringScalar)) },
-    lt: { type: StringScalar },
-    lte: { type: StringScalar },
-    gt: { type: StringScalar },
-    gte: { type: StringScalar },
-    contains: { type: StringScalar },
-    startsWith: { type: StringScalar },
-    endsWith: { type: StringScalar },
-    mode: { type: QueryMode },
-    not: { type: StringFilterInput },
-  }),
-})
+    StringFilterInput: (name) =>
+      new ObjectType({
+        name,
+        fields: () => ({
+          equals: { type: StringScalar },
+          in: { type: new List(new NonNull(StringScalar)) },
+          lt: { type: StringScalar },
+          lte: { type: StringScalar },
+          gt: { type: StringScalar },
+          gte: { type: StringScalar },
+          contains: { type: StringScalar },
+          startsWith: { type: StringScalar },
+          endsWith: { type: StringScalar },
+          mode: { type: new Scalar({ name: 'QueryMode' }) },
+          not: { type: types[name]! },
+        }),
+      }),
 
-const FloatFilterInput: ObjectType = new ObjectType({
-  name: 'FloatFilterInput',
-  fields: () => ({
-    equals: { type: Float },
-    in: { type: new List(new NonNull(Float)) },
-    lt: { type: Float },
-    lte: { type: Float },
-    gt: { type: Float },
-    gte: { type: Float },
-    not: { type: FloatFilterInput },
-  }),
-})
+    FloatFilterInput: (name) =>
+      new ObjectType({
+        name,
+        fields: () => ({
+          equals: { type: Float },
+          in: { type: new List(new NonNull(Float)) },
+          lt: { type: Float },
+          lte: { type: Float },
+          gt: { type: Float },
+          gte: { type: Float },
+          not: { type: types[name]! },
+        }),
+      }),
 
-const IntFilterInput: ObjectType = new ObjectType({
-  name: 'IntFilterInput',
-  fields: () => ({
-    equals: { type: Int },
-    in: { type: new List(new NonNull(Int)) },
-    lt: { type: Int },
-    lte: { type: Int },
-    gt: { type: Int },
-    gte: { type: Int },
-    not: { type: IntFilterInput },
-  }),
-})
+    IntFilterInput: (name) =>
+      new ObjectType({
+        name,
+        fields: () => ({
+          equals: { type: Int },
+          in: { type: new List(new NonNull(Int)) },
+          lt: { type: Int },
+          lte: { type: Int },
+          gt: { type: Int },
+          gte: { type: Int },
+          not: { type: types[name]! },
+        }),
+      }),
 
-const BooleanFilterInput: ObjectType = new ObjectType({
-  name: 'BooleanFilterInput',
-  fields: () => ({
-    equals: { type: BooleanScalar },
-    not: { type: BooleanFilterInput },
-  }),
-})
+    BooleanFilterInput: (name) =>
+      new ObjectType({
+        name,
+        fields: () => ({
+          equals: { type: BooleanScalar },
+          not: { type: types[name]! },
+        }),
+      }),
 
-const DateTimeScalar = new Scalar({ name: 'DateTime' })
+    DateTimeFilterInput: (name) => {
+      const DateTimeScalar = new Scalar({ name: 'DateTime' })
 
-const DateTimeFilterInput: ObjectType = new ObjectType({
-  name: 'DateTimeFilterInput',
-  fields: () => ({
-    equals: { type: DateTimeScalar },
-    in: { type: new List(new NonNull(DateTimeScalar)) },
-    lt: { type: DateTimeScalar },
-    lte: { type: DateTimeScalar },
-    gt: { type: DateTimeScalar },
-    gte: { type: DateTimeScalar },
-    not: { type: DateTimeFilterInput },
-  }),
-})
+      return new ObjectType({
+        name,
+        fields: () => ({
+          equals: { type: DateTimeScalar },
+          in: { type: new List(new NonNull(DateTimeScalar)) },
+          lt: { type: DateTimeScalar },
+          lte: { type: DateTimeScalar },
+          gt: { type: DateTimeScalar },
+          gte: { type: DateTimeScalar },
+          not: { type: types[name]! },
+        }),
+      })
+    },
 
-const SortOrder = new Scalar({ name: 'SortOrder' })
-const NullsOrder = new Scalar({ name: 'NullsOrder' })
+    ...invoke(() => {
+      const SortOrder = new Scalar({ name: 'SortOrder' })
 
-const SortOrderInput = new ObjectType({
-  name: 'SortOrderInput',
-  fields: {
-    sort: { type: SortOrder },
-    nulls: { type: NullsOrder },
-  },
-})
+      return {
+        SortOrderInput: (name) =>
+          new ObjectType({
+            name,
+            fields: {
+              sort: { type: SortOrder },
+              nulls: { type: new Scalar({ name: 'NullsOrder' }) },
+            },
+          }),
 
-const OrderByRelationAggregateInput = new ObjectType({
-  name: 'OrderByRelationAggregateInput',
-  fields: {
-    _count: { type: SortOrder },
-  },
+        OrderByRelationAggregateInput: (name) =>
+          new ObjectType({
+            name,
+            fields: {
+              _count: { type: SortOrder },
+            },
+          }),
+      }
+    }),
+  })
+  // oxlint-enable typescript-eslint/no-non-null-assertion
+
+  x = Object.entries(x).map(([name, create]) => [name, create(name)])
+  x = Object.fromEntries(x)
+
+  return x
 })
 
 export const schemaGlobals = invoke(() => {
   let x
 
-  x = new Schema({
-    types: [
-      IDFilterInput,
-      StringFilterInput,
-      FloatFilterInput,
-      IntFilterInput,
-      BooleanFilterInput,
-      DateTimeFilterInput,
-      SortOrderInput,
-      OrderByRelationAggregateInput,
-    ],
-  })
-
+  x = new Schema({ types: Object.values(types) })
   x = printSchema(x)
   x = parse(x)
 
   x = x.definitions.filter(
     (definition) =>
       (definition.kind === Kind.SCALAR_TYPE_DEFINITION &&
-        definition.name.value === 'DateTime') === false,
+        definition.name.value === 'DateTime') !== true,
   )
 
   return x
