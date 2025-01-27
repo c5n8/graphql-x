@@ -4,6 +4,7 @@ import type { Document } from '#package/document.js'
 import type { InputValueDefinitionNode } from 'graphql'
 import { invoke } from '@txe/invoke'
 import { Kind } from 'graphql'
+import type { Mutable } from '#package/utils/mutable.js'
 import type { ObjectTypeDefinitionNode } from 'graphql'
 import { schemaGlobals } from './globals.js'
 import type { StringValueNode } from 'graphql'
@@ -11,6 +12,9 @@ import type { StringValueNode } from 'graphql'
 interface Context {
   shared: Record<string, DefinitionNode>
   grouped: Record<string, Set<string>>
+  objectTypeBundles: (Bundle & {
+    node: ObjectTypeDefinitionNode
+  })[]
 }
 
 export default (document: Document) => {
@@ -22,19 +26,79 @@ export default (document: Document) => {
       ) !== undefined,
   )
 
+  const objectTypeBundles = document.bundles.filter(
+    (bundle): bundle is Bundle & { node: ObjectTypeDefinitionNode } =>
+      bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION,
+  )
+
   const context: Context = {
     shared: {},
     grouped: {},
+    objectTypeBundles,
   }
 
   for (const bundle of bundles) {
     addMutation(bundle.node, bundle, document, context)
   }
 
-  const objectTypeBundles = document.bundles.filter(
-    (bundle): bundle is Bundle & { node: ObjectTypeDefinitionNode } =>
-      bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION,
-  )
+  for (const bundle of objectTypeBundles) {
+    const node = bundle.node as Mutable<typeof bundle.node>
+    node.fields = node.fields?.map((field) => {
+      if (
+        !field.directives?.find(
+          (directive) => directive.name.value === 'relatedList',
+        )
+      ) {
+        return field
+      }
+
+      if ((field.arguments?.length ?? 0) > 0) {
+        return field
+      }
+
+      let fieldType = field.type
+
+      if (!(fieldType.kind === Kind.LIST_TYPE)) {
+        return field
+      }
+
+      fieldType = fieldType.type
+
+      if (fieldType.kind === Kind.NON_NULL_TYPE) {
+        fieldType = fieldType.type
+      }
+
+      if (!(fieldType.kind === Kind.NAMED_TYPE)) {
+        return field
+      }
+
+      const relatedObjectType = objectTypeBundles.find(
+        (bundle) => bundle.node.name.value === fieldType.name.value,
+      )
+
+      if (!(relatedObjectType !== undefined)) {
+        return field
+      }
+
+      field.arguments = [
+        {
+          kind: Kind.INPUT_VALUE_DEFINITION,
+          name: { kind: Kind.NAME, value: 'input' },
+          type: {
+            kind: Kind.NAMED_TYPE,
+            name: {
+              kind: Kind.NAME,
+              value: `${fieldType.name.value}ListInput`,
+            },
+          },
+        },
+      ]
+
+      createListInput(relatedObjectType.node, document, context)
+
+      return field
+    })
+  }
 
   for (const bundle of objectTypeBundles) {
     const expansions = context.grouped[bundle.node.name.value] ?? new Set()
@@ -70,7 +134,121 @@ function addMutation(
     throw new Error('@list directive requires field argument')
   }
 
-  const typeWhereInput = invoke(function registerTypeWhereInput(
+  createListInput(node, document, context)
+
+  bundle.expansions.push({
+    kind: Kind.OBJECT_TYPE_EXTENSION,
+    name: { kind: Kind.NAME, value: 'Query' },
+    fields: [
+      {
+        kind: Kind.FIELD_DEFINITION,
+        name: {
+          kind: Kind.NAME,
+          value: fieldName,
+        },
+        arguments: [
+          {
+            kind: Kind.INPUT_VALUE_DEFINITION,
+            name: {
+              kind: Kind.NAME,
+              value: 'input',
+            },
+            type: {
+              kind: Kind.NAMED_TYPE,
+              name: {
+                kind: Kind.NAME,
+                value: `${node.name.value}ListInput`,
+              },
+            },
+          },
+        ],
+        type: {
+          kind: Kind.NON_NULL_TYPE,
+          type: {
+            kind: Kind.LIST_TYPE,
+            type: {
+              kind: Kind.NON_NULL_TYPE,
+              type: {
+                kind: Kind.NAMED_TYPE,
+                name: {
+                  kind: Kind.NAME,
+                  value: `${node.name.value}`,
+                },
+              },
+            },
+          },
+        },
+      },
+    ],
+  })
+}
+
+function createListInput(
+  node: ObjectTypeDefinitionNode,
+  document: Document,
+  context: Context,
+) {
+  context.grouped[node.name.value] ??= new Set()
+  context.grouped[node.name.value]?.add(`${node.name.value}ListInput`)
+  context.shared[`${node.name.value}ListInput`] = {
+    kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+    name: {
+      kind: Kind.NAME,
+      value: `${node.name.value}ListInput`,
+    },
+    fields: [
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: {
+          kind: Kind.NAME,
+          value: 'take',
+        },
+        type: {
+          kind: Kind.NAMED_TYPE,
+          name: {
+            kind: Kind.NAME,
+            value: 'Int',
+          },
+        },
+      },
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: {
+          kind: Kind.NAME,
+          value: 'where',
+        },
+        type: {
+          kind: Kind.NAMED_TYPE,
+          name: {
+            kind: Kind.NAME,
+            value: `${node.name.value}WhereInput`,
+          },
+        },
+      },
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: {
+          kind: Kind.NAME,
+          value: 'orderBy',
+        },
+        type: {
+          kind: Kind.LIST_TYPE,
+          type: {
+            kind: Kind.NON_NULL_TYPE,
+            type: {
+              kind: Kind.NAMED_TYPE,
+              name: {
+                kind: Kind.NAME,
+                value: `${node.name.value}OrderByInput`,
+              },
+            },
+          },
+        },
+      },
+    ],
+  }
+
+  invoke(function registerTypeWhereInput(
     // oxlint-disable-next-line eslint-plugin-unicorn/no-object-as-default-parameter
     args = { node },
   ) {
@@ -140,16 +318,25 @@ function addMutation(
             if (fieldType.kind === Kind.LIST_TYPE) {
               const nestedFieldType = invoke(
                 (nestedFieldType = fieldType.type) => {
-                  if (nestedFieldType.kind === Kind.NAMED_TYPE) {
-                    return nestedFieldType.name.value
+                  let x = nestedFieldType
+
+                  if (x.kind === Kind.NON_NULL_TYPE) {
+                    x = x.type
                   }
 
-                  if (
-                    nestedFieldType.kind === Kind.NON_NULL_TYPE &&
-                    nestedFieldType.type.kind === Kind.NAMED_TYPE
-                  ) {
-                    return nestedFieldType.type.name.value
+                  if (!(x.kind === Kind.NAMED_TYPE)) {
+                    return
                   }
+
+                  // if (
+                  //   !context.objectTypeBundles.some(
+                  //     (bundle) => bundle.node.name.value === x.name.value,
+                  //   )
+                  // ) {
+                  //   return
+                  // }
+
+                  return x.name.value
                 },
               )
 
@@ -161,6 +348,7 @@ function addMutation(
                     bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
                     bundle.node.name.value === nestedFieldType,
                 )?.node
+                console.log('BRUH', nestedFieldType)
 
                 if (relatedObjectTypeNode !== undefined) {
                   followups.push(() => {
@@ -207,6 +395,8 @@ function addMutation(
 
                   return `${relatedObjectTypeNode.name.value}ListRelationFilterInput`
                 }
+
+                return
               }
 
               return getFieldType(fieldType.type)
@@ -352,6 +542,8 @@ function addMutation(
               if (relatedObjectType !== undefined) {
                 return `OrderByRelationAggregateInput`
               }
+
+              return
             }
 
             return getFieldType(fieldType.type)
@@ -391,110 +583,4 @@ function addMutation(
 
     return typeOrderByInput
   })
-
-  bundle.expansions.push(
-    {
-      kind: Kind.OBJECT_TYPE_EXTENSION,
-      name: { kind: Kind.NAME, value: 'Query' },
-      fields: [
-        {
-          kind: Kind.FIELD_DEFINITION,
-          name: {
-            kind: Kind.NAME,
-            value: fieldName,
-          },
-          arguments: [
-            {
-              kind: Kind.INPUT_VALUE_DEFINITION,
-              name: {
-                kind: Kind.NAME,
-                value: 'input',
-              },
-              type: {
-                kind: Kind.NAMED_TYPE,
-                name: {
-                  kind: Kind.NAME,
-                  value: `${node.name.value}ListInput`,
-                },
-              },
-            },
-          ],
-          type: {
-            kind: Kind.NON_NULL_TYPE,
-            type: {
-              kind: Kind.LIST_TYPE,
-              type: {
-                kind: Kind.NON_NULL_TYPE,
-                type: {
-                  kind: Kind.NAMED_TYPE,
-                  name: {
-                    kind: Kind.NAME,
-                    value: `${node.name.value}`,
-                  },
-                },
-              },
-            },
-          },
-        },
-      ],
-    },
-
-    {
-      kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-      name: {
-        kind: Kind.NAME,
-        value: `${node.name.value}ListInput`,
-      },
-      fields: [
-        {
-          kind: Kind.INPUT_VALUE_DEFINITION,
-          name: {
-            kind: Kind.NAME,
-            value: 'take',
-          },
-          type: {
-            kind: Kind.NAMED_TYPE,
-            name: {
-              kind: Kind.NAME,
-              value: 'Int',
-            },
-          },
-        },
-        {
-          kind: Kind.INPUT_VALUE_DEFINITION,
-          name: {
-            kind: Kind.NAME,
-            value: 'where',
-          },
-          type: {
-            kind: Kind.NAMED_TYPE,
-            name: {
-              kind: Kind.NAME,
-              value: typeWhereInput,
-            },
-          },
-        },
-        {
-          kind: Kind.INPUT_VALUE_DEFINITION,
-          name: {
-            kind: Kind.NAME,
-            value: 'orderBy',
-          },
-          type: {
-            kind: Kind.LIST_TYPE,
-            type: {
-              kind: Kind.NON_NULL_TYPE,
-              type: {
-                kind: Kind.NAMED_TYPE,
-                name: {
-                  kind: Kind.NAME,
-                  value: `${node.name.value}OrderByInput`,
-                },
-              },
-            },
-          },
-        },
-      ],
-    },
-  )
 }

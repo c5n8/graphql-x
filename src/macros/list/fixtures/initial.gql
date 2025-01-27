@@ -1,5 +1,7 @@
 directive @list(field: String!) on OBJECT
 
+directive @relatedList on FIELD_DEFINITION
+
 scalar DateTime
 
 type Todo @list(field: "todos") {
@@ -10,7 +12,7 @@ type Todo @list(field: "todos") {
   budget: Float
   isDone: Boolean
   assignee: User
-  tags: [Tag!]
+  tags: [Tag!] @relatedList
 }
 
 type User {
