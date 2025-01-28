@@ -13,6 +13,7 @@ type Todo @list(field: "todos") {
   isDone: Boolean
   assignee: User
   tags(input: TagListInput): [Tag!] @relatedList
+  tags2(input: TagListInput): [Tag!]! @relatedList
 }
 
 extend type Query {
@@ -36,6 +37,7 @@ input TodoWhereInput {
   isDone: BooleanFilterInput
   assignee: UserWhereInput
   tags: TagListRelationFilterInput
+  tags2: TagListRelationFilterInput
   OR: [TodoWhereInput!]
   AND: [TodoWhereInput!]
   NOT: [TodoWhereInput!]
@@ -64,6 +66,7 @@ input TodoOrderByInput {
   isDone: SortOrderInput
   assignee: UserOrderByInput
   tags: OrderByRelationAggregateInput
+  tags2: OrderByRelationAggregateInput
 }
 
 type User {

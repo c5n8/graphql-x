@@ -58,6 +58,10 @@ export default (document: Document) => {
 
       let fieldType = field.type
 
+      if (fieldType.kind === Kind.NON_NULL_TYPE) {
+        fieldType = fieldType.type
+      }
+
       if (!(fieldType.kind === Kind.LIST_TYPE)) {
         return field
       }
