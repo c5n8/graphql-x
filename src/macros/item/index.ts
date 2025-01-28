@@ -8,10 +8,10 @@ export default (document: Document) => {
   const bundles = document.bundles.filter(
     (bundle): bundle is Bundle & { node: ObjectTypeDefinitionNode } =>
       bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
-      (bundle.node.directives?.some(
+      bundle.node.directives !== undefined &&
+      bundle.node.directives.some(
         (directive) => directive.name.value === 'item',
-      ) ??
-        false),
+      ),
   )
 
   for (const bundle of bundles) {

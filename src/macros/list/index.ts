@@ -54,7 +54,7 @@ export default (document: Document) => {
       }
 
       // oxlint-disable typescript-eslint/no-non-null-assertion
-      if (field.arguments!.length > 0) {
+      if (field.arguments !== undefined && field.arguments.length > 0) {
         return field
       }
 

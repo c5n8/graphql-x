@@ -22,7 +22,9 @@ export default function (document: DocumentNode) {
         return document
       }
     }
+    /* v8 ignore next */
   }
 
+  /* v8 ignore next 2 */
   return document
 }

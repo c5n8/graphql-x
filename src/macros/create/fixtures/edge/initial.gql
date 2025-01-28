@@ -1,0 +1,5 @@
+directive @create on OBJECT
+
+type Post @create {
+  ids: [ID]
+}
