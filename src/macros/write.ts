@@ -1,4 +1,3 @@
-import assert from 'node:assert'
 import type { Bundle } from '#package/document.js'
 import type { Document } from '#package/document.js'
 import type { InputObjectTypeDefinitionNode } from 'graphql'
@@ -18,8 +17,6 @@ const operationNames = {
 export function writeDirectiveExpansion(
   operation: (typeof operations)[number],
 ) {
-  assert(operations.includes(operation))
-
   return function (document: Document) {
     const context = {
       operationName: {
