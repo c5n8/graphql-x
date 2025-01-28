@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.17.0
+
+### Minor Changes
+
+- 53c5df9: support usage in browser
+
 ## 0.16.0
 
 ### Minor Changes
