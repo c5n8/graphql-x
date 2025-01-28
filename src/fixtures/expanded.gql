@@ -132,9 +132,11 @@ extend type Query {
 }
 
 input TodoListInput {
-  take: Int
   where: TodoWhereInput
+  cursor: TodoCursorInput
   orderBy: [TodoOrderByInput!]
+  take: Int
+  skip: Int
 }
 
 input TodoWhereInput {
@@ -155,6 +157,15 @@ input TodoListRelationFilterInput {
   some: TodoWhereInput
   every: TodoWhereInput
   none: TodoWhereInput
+}
+
+input TodoCursorInput {
+  id: ID
+  createdAt: DateTime
+  description: String
+  priority: Int
+  budget: Float
+  isDone: Boolean
 }
 
 input TodoOrderByInput {

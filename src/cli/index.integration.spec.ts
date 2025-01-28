@@ -1,4 +1,4 @@
-import './cli.js'
+import './index.js'
 import { exec as _exec } from 'node:child_process'
 import { expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
@@ -15,10 +15,10 @@ import { test } from 'vitest'
 const exec = promisify(_exec)
 
 test('cli', async () => {
-  import('./fixtures/initial.gql?raw')
+  import('../fixtures/initial.gql?raw')
 
   const schema = await importDefaults({
-    expanded: () => import('./fixtures/expanded.gql?raw'),
+    expanded: () => import('../fixtures/expanded.gql?raw'),
   })
 
   onTestFinished(async () => {
@@ -27,8 +27,8 @@ test('cli', async () => {
 
   const filename = fileURLToPath(import.meta.url)
   const dirname = path.dirname(filename)
-  const schemaPath = path.join(dirname, './fixtures/initial.gql')
-  const outputPath = path.join(dirname, './fixtures/.generated/schema.gql')
+  const schemaPath = path.join(dirname, '../fixtures/initial.gql')
+  const outputPath = path.join(dirname, '../fixtures/.generated/schema.gql')
   const outputDirectory = path.dirname(outputPath)
 
   await rm(outputDirectory, { recursive: true, force: true })

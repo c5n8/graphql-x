@@ -1,4 +1,3 @@
-import { cmdErrorHandling } from '#package/utils/cmd-error-handling.js'
 import { expand } from '#package/expand.js'
 import { invoke } from '@txe/invoke'
 import { mkdir } from 'node:fs/promises'
@@ -41,7 +40,7 @@ const cmd = await invoke(async () => {
   let x
 
   x = main
-  x = cmdErrorHandling({ watch }, x)
+  x = errorHandling({ watch }, x)
 
   if (watch) {
     const { default: debounce } = await import('debounce')
@@ -77,5 +76,27 @@ export const cli = async () => {
         }
       },
     )
+  }
+}
+
+function errorHandling(option: { watch: boolean }, fn: () => Promise<void>) {
+  const { watch = false } = option
+
+  return async () => {
+    try {
+      await fn()
+    } catch (error) {
+      console.error(error)
+
+      if (watch) {
+        console.log('Watching for changes...')
+      }
+
+      return
+    }
+
+    if (watch) {
+      console.log('Watching for changes...')
+    }
   }
 }
