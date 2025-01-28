@@ -1,0 +1,7 @@
+directive @list(field: String!) on OBJECT
+
+scalar DateTime
+
+type Thing @list(field: "things") {
+  x1: [[String]]
+}

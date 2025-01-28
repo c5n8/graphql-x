@@ -43,6 +43,7 @@ export default (document: Document) => {
 
   for (const bundle of objectTypeBundles) {
     const node = bundle.node as Mutable<typeof bundle.node>
+
     node.fields = node.fields?.map((field) => {
       if (
         !field.directives?.find(
@@ -52,7 +53,8 @@ export default (document: Document) => {
         return field
       }
 
-      if ((field.arguments?.length ?? 0) > 0) {
+      // oxlint-disable typescript-eslint/no-non-null-assertion
+      if (field.arguments!.length > 0) {
         return field
       }
 
@@ -127,16 +129,13 @@ function addMutation(
   document: Document,
   context: Context,
 ) {
+  // oxlint-disable typescript-eslint/no-non-null-assertion
   const fieldName = node.directives
     ?.find((directive) => directive.name.value === 'list')
     ?.arguments?.find(
       (argument): argument is typeof argument & { value: StringValueNode } =>
         argument.name.value === 'field' && argument.value.kind === Kind.STRING,
-    )?.value.value
-
-  if (fieldName === undefined) {
-    throw new Error('@list directive requires field argument')
-  }
+    )?.value.value!
 
   createListInput(node, document, context)
 
@@ -299,7 +298,7 @@ function createListInput(
         value: typeWhereInput,
       },
       fields: [
-        ...(node.fields ?? []).flatMap<InputValueDefinitionNode>((field) => {
+        ...node.fields!.flatMap<InputValueDefinitionNode>((field) => {
           const fieldType = invoke(function getFieldType(
             fieldType = field.type,
           ) {
@@ -384,7 +383,6 @@ function createListInput(
                     bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
                     bundle.node.name.value === nestedFieldType,
                 )?.node
-                console.log('BRUH', nestedFieldType)
 
                 if (relatedObjectTypeNode !== undefined) {
                   followups.push(() => {
@@ -510,10 +508,6 @@ function createListInput(
           return []
         }
 
-        if (!(fieldType.kind === Kind.NAMED_TYPE)) {
-          return []
-        }
-
         if (
           context.objectTypeBundles.some(
             (bundle) => bundle.node.name.value === fieldType.name.value,
@@ -548,7 +542,7 @@ function createListInput(
         kind: Kind.NAME,
         value: typeOrderByInput,
       },
-      fields: (node.fields ?? []).flatMap<InputValueDefinitionNode>((field) => {
+      fields: node.fields!.flatMap<InputValueDefinitionNode>((field) => {
         const fieldType = invoke(function getFieldType(fieldType = field.type) {
           if (fieldType.kind === Kind.NAMED_TYPE) {
             if (fieldType.name.value === 'ID') {
@@ -561,33 +555,32 @@ function createListInput(
                 bundle.node.name.value === fieldType.name.value,
             )?.node
 
+            // if (relatedObjectTypeNode !== undefined) {
             if (relatedObjectTypeNode !== undefined) {
-              if (relatedObjectTypeNode !== undefined) {
-                followups.push(() => {
-                  let relationFieldType!: string
+              followups.push(() => {
+                let relationFieldType!: string
 
-                  if (
-                    context.shared[
-                      `${relatedObjectTypeNode.name.value}OrderByInput`
-                    ] === undefined
-                  ) {
-                    relationFieldType = registerOrderByInput({
-                      node: relatedObjectTypeNode,
-                    })
-                  }
+                if (
+                  context.shared[
+                    `${relatedObjectTypeNode.name.value}OrderByInput`
+                  ] === undefined
+                ) {
+                  relationFieldType = registerOrderByInput({
+                    node: relatedObjectTypeNode,
+                  })
+                }
 
-                  context.grouped[relatedObjectTypeNode.name.value] ??=
-                    new Set()
-                  context.grouped[relatedObjectTypeNode.name.value]?.add(
-                    relationFieldType,
-                  )
-                })
+                context.grouped[relatedObjectTypeNode.name.value] ??= new Set()
+                context.grouped[relatedObjectTypeNode.name.value]?.add(
+                  relationFieldType,
+                )
+              })
 
-                return `${relatedObjectTypeNode.name.value}OrderByInput`
-              }
-
-              return `${relatedObjectTypeNode}OrderByInput`
+              return `${relatedObjectTypeNode.name.value}OrderByInput`
             }
+
+            //   return `${relatedObjectTypeNode}OrderByInput`
+            // }
 
             return `SortOrderInput`
           }

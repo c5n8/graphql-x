@@ -1,0 +1,13 @@
+directive @relatedList on FIELD_DEFINITION
+
+scalar DateTime
+
+type Thing {
+  x1: [Stuff!]! @relatedList
+  x2(input: String): [Stuff!] @relatedList
+  x3: [[Stuff]] @relatedList
+  x4: String! @relatedList
+  x5: [String] @relatedList
+}
+
+type Stuff

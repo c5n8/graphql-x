@@ -13,7 +13,7 @@
     "check-spelling": "cspell **",
     "check-exports": "attw --pack --ignore-rules=cjs-resolves-to-esm ./",
     "watch:build": "tsc --build --noEmit --watch --preserveWatchOutput",
-    "watch:test": "vitest --exclude=\"**/*.integration.spec.*\" --clearScreen=false",
+    "watch:test": "vitest --coverage --exclude=\"**/*.integration.spec.*\" --clearScreen=false",
     "format": "prettier --write ./"
   },
   "description": "GraphQL eXpansion",
