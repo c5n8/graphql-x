@@ -201,20 +201,6 @@ function createListInput(
         kind: Kind.INPUT_VALUE_DEFINITION,
         name: {
           kind: Kind.NAME,
-          value: 'take',
-        },
-        type: {
-          kind: Kind.NAMED_TYPE,
-          name: {
-            kind: Kind.NAME,
-            value: 'Int',
-          },
-        },
-      },
-      {
-        kind: Kind.INPUT_VALUE_DEFINITION,
-        name: {
-          kind: Kind.NAME,
           value: 'where',
         },
         type: {
@@ -225,6 +211,22 @@ function createListInput(
           },
         },
       },
+
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: {
+          kind: Kind.NAME,
+          value: 'cursor',
+        },
+        type: {
+          kind: Kind.NAMED_TYPE,
+          name: {
+            kind: Kind.NAME,
+            value: `${node.name.value}CursorInput`,
+          },
+        },
+      },
+
       {
         kind: Kind.INPUT_VALUE_DEFINITION,
         name: {
@@ -242,6 +244,36 @@ function createListInput(
                 value: `${node.name.value}OrderByInput`,
               },
             },
+          },
+        },
+      },
+
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: {
+          kind: Kind.NAME,
+          value: 'take',
+        },
+        type: {
+          kind: Kind.NAMED_TYPE,
+          name: {
+            kind: Kind.NAME,
+            value: 'Int',
+          },
+        },
+      },
+
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: {
+          kind: Kind.NAME,
+          value: 'skip',
+        },
+        type: {
+          kind: Kind.NAMED_TYPE,
+          name: {
+            kind: Kind.NAME,
+            value: 'Int',
           },
         },
       },
@@ -457,6 +489,48 @@ function createListInput(
 
     return typeWhereInput
   })
+
+  {
+    context.grouped[node.name.value]?.add(`${node.name.value}CursorInput`)
+    context.shared[`${node.name.value}CursorInput`] = {
+      kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+      name: { kind: Kind.NAME, value: `${node.name.value}CursorInput` },
+      fields: node.fields?.flatMap((field) => {
+        let fieldType = field.type
+
+        if (fieldType.kind === Kind.NON_NULL_TYPE) {
+          fieldType = fieldType.type
+        }
+
+        if (fieldType.kind === Kind.LIST_TYPE) {
+          return []
+        }
+
+        if (!(fieldType.kind === Kind.NAMED_TYPE)) {
+          return []
+        }
+
+        if (
+          context.objectTypeBundles.some(
+            (bundle) => bundle.node.name.value === fieldType.name.value,
+          )
+        ) {
+          return []
+        }
+
+        return [
+          {
+            kind: Kind.INPUT_VALUE_DEFINITION,
+            name: { kind: Kind.NAME, value: field.name.value },
+            type: {
+              kind: Kind.NAMED_TYPE,
+              name: { kind: Kind.NAME, value: fieldType.name.value },
+            },
+          },
+        ]
+      }),
+    }
+  }
 
   // oxlint-disable-next-line eslint-plugin-unicorn/no-object-as-default-parameter
   invoke(function registerOrderByInput(args = { node }) {
