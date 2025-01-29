@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.20.0
+
+### Minor Changes
+
+- db35d46: feat: order expansions as directives order
+
 ## 0.19.0
 
 ### Minor Changes
