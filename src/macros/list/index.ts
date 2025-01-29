@@ -165,7 +165,6 @@ export default (document: Document) => {
       }),
     )
 
-  // document.globals.push(...(schemaGlobals as DefinitionNode[]))
   document.globals.push(...customGlobals)
 
   return document

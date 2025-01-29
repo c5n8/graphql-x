@@ -132,20 +132,4 @@ const types: Record<string, ObjectType> = invoke(() => {
   return x
 })
 
-export const schemaGlobals = invoke(() => {
-  let x
-
-  x = new Schema({ types: Object.values(types) })
-  x = printSchema(x)
-  x = parse(x)
-
-  x = x.definitions.filter(
-    (definition) =>
-      (definition.kind === Kind.SCALAR_TYPE_DEFINITION &&
-        definition.name.value === 'DateTime') !== true,
-  )
-
-  return x
-})
-
 export { types as groupedGlobals }
