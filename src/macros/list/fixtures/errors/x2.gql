@@ -1,0 +1,3 @@
+directive @list(field: String!) on OBJECT
+
+type Todo @list(field: 1)

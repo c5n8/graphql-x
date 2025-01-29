@@ -135,7 +135,18 @@ function addMutation(
     ?.arguments?.find(
       (argument): argument is typeof argument & { value: StringValueNode } =>
         argument.name.value === 'field' && argument.value.kind === Kind.STRING,
-    )?.value.value!
+    )?.value.value
+
+  if (!(typeof fieldName === 'string')) {
+    throw new Error(
+      `Directive "@list" argument "field" must be of type "String".`,
+    )
+  }
+
+  // oxlint-disable eslint-plugin-unicorn(explicit-length-check)
+  if (!(fieldName.length > 0)) {
+    throw new Error(`Directive "@list" argument "field" must be non-empty.`)
+  }
 
   createListInput(node, document, context)
 

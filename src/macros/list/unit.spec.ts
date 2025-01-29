@@ -35,6 +35,34 @@ test('@list edge cases', async () => {
   expect(result).toBe(schema.expanded)
 })
 
+test('@list error case 1', async () => {
+  const schema = await importDefaults({
+    initial: () => import('./fixtures/errors/x1.gql?raw'),
+  })
+
+  expect(() => buildSchema(schema.initial)).not.toThrow()
+
+  // oxlint-disable eslint-plugin-jest(no-conditional-expect)
+  await expect(
+    execExpansion({ expand, schema: schema.initial }),
+  ).rejects.toThrow('Directive "@list" argument "field" must be non-empty.')
+})
+
+test('@list error case 2', async () => {
+  const schema = await importDefaults({
+    initial: () => import('./fixtures/errors/x2.gql?raw'),
+  })
+
+  expect(() => buildSchema(schema.initial)).not.toThrow()
+
+  // oxlint-disable eslint-plugin-jest(no-conditional-expect)
+  await expect(
+    execExpansion({ expand, schema: schema.initial }),
+  ).rejects.toThrow(
+    'Directive "@list" argument "field" must be of type "String".',
+  )
+})
+
 test('@relatedList edge cases', async () => {
   const schema = await importDefaults({
     base: () => import('#package/fixtures/base.gql?raw'),
