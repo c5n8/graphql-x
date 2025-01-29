@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.18.0
+
+### Minor Changes
+
+- 0f0bbd4: fix: unwanted result
+
 ## 0.17.0
 
 ### Minor Changes
