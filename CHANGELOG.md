@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.20.1
+
+### Patch Changes
+
+- 04a160e: fix: regression
+
 ## 0.20.0
 
 ### Minor Changes
