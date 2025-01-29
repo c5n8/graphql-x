@@ -1,4 +1,5 @@
 import type { Bundle } from '#package/document.js'
+import type { DefinitionNode } from 'graphql'
 import type { Document } from '#package/document.js'
 import { invoke } from '@txe/invoke'
 import { Kind } from 'graphql'
@@ -15,13 +16,16 @@ export default (document: Document) => {
   )
 
   for (const bundle of bundles) {
-    addMutation(bundle.node, bundle)
+    const expansions = addMutation(bundle.node) as DefinitionNode[]
+    bundle.expansions.push(...expansions)
+    // eslint-disable-next-line dot-notation
+    bundle.groupedExpansions['item'] = expansions
   }
 
   return document
 }
 
-function addMutation(node: ObjectTypeDefinitionNode, bundle: Bundle) {
+function addMutation(node: ObjectTypeDefinitionNode) {
   const fieldName = invoke(() => {
     let x
 
@@ -33,7 +37,7 @@ function addMutation(node: ObjectTypeDefinitionNode, bundle: Bundle) {
     return x
   })
 
-  bundle.expansions.push(
+  return [
     {
       kind: Kind.OBJECT_TYPE_EXTENSION,
       name: {
@@ -102,5 +106,5 @@ function addMutation(node: ObjectTypeDefinitionNode, bundle: Bundle) {
         },
       ],
     },
-  )
+  ]
 }

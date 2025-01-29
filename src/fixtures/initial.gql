@@ -12,7 +12,7 @@ directive @readonly on FIELD_DEFINITION
 
 scalar DateTime
 
-type Post @create @update @delete @item {
+type Post @create @update @item @delete {
   id: ID!
   createdAt: DateTime @readonly
   title: String!

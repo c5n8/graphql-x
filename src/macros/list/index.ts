@@ -43,7 +43,18 @@ export default (document: Document) => {
   }
 
   for (const bundle of bundles) {
-    addMutation(bundle.node, bundle, document, context)
+    const expansions = addMutation(
+      bundle.node,
+      document,
+      context,
+    ) as DefinitionNode[]
+    bundle.expansions.push(...expansions)
+    // eslint-disable-next-line dot-notation
+    bundle.groupedExpansions['list'] = [
+      // eslint-disable-next-line dot-notation
+      ...(bundle.groupedExpansions['list'] ?? []),
+      ...expansions,
+    ]
   }
 
   for (const bundle of objectTypeBundles) {
@@ -112,15 +123,24 @@ export default (document: Document) => {
   }
 
   for (const bundle of objectTypeBundles) {
-    const expansions = context.grouped[bundle.node.name.value] ?? new Set()
+    const groupedExpansions =
+      context.grouped[bundle.node.name.value] ?? new Set()
 
-    if (expansions !== undefined) {
-      bundle.expansions = [
-        ...bundle.expansions,
-        // oxlint-disable-next-line typescript-eslint/no-non-null-assertion
-        ...[...expansions].map((type) => context.shared[type]!),
-      ]
+    const expansions = [...groupedExpansions].map(
+      (type) => context.shared[type]!,
+    )
+
+    if (expansions.length > 0 && !bundle.directives.includes('list')) {
+      bundle.directives.push('list')
     }
+
+    bundle.expansions.push(...expansions)
+    // eslint-disable-next-line dot-notation
+    bundle.groupedExpansions['list'] = [
+      // eslint-disable-next-line dot-notation
+      ...(bundle.groupedExpansions['list'] ?? []),
+      ...expansions,
+    ]
   }
 
   const globalsOrder = Object.entries([
@@ -172,7 +192,6 @@ export default (document: Document) => {
 
 function addMutation(
   node: ObjectTypeDefinitionNode,
-  bundle: Bundle,
   document: Document,
   context: Context,
 ) {
@@ -197,51 +216,53 @@ function addMutation(
 
   createListInput(node, document, context)
 
-  bundle.expansions.push({
-    kind: Kind.OBJECT_TYPE_EXTENSION,
-    name: { kind: Kind.NAME, value: 'Query' },
-    fields: [
-      {
-        kind: Kind.FIELD_DEFINITION,
-        name: {
-          kind: Kind.NAME,
-          value: fieldName,
-        },
-        arguments: [
-          {
-            kind: Kind.INPUT_VALUE_DEFINITION,
-            name: {
-              kind: Kind.NAME,
-              value: 'input',
-            },
-            type: {
-              kind: Kind.NAMED_TYPE,
+  return [
+    {
+      kind: Kind.OBJECT_TYPE_EXTENSION,
+      name: { kind: Kind.NAME, value: 'Query' },
+      fields: [
+        {
+          kind: Kind.FIELD_DEFINITION,
+          name: {
+            kind: Kind.NAME,
+            value: fieldName,
+          },
+          arguments: [
+            {
+              kind: Kind.INPUT_VALUE_DEFINITION,
               name: {
                 kind: Kind.NAME,
-                value: `${node.name.value}ListInput`,
+                value: 'input',
               },
-            },
-          },
-        ],
-        type: {
-          kind: Kind.NON_NULL_TYPE,
-          type: {
-            kind: Kind.LIST_TYPE,
-            type: {
-              kind: Kind.NON_NULL_TYPE,
               type: {
                 kind: Kind.NAMED_TYPE,
                 name: {
                   kind: Kind.NAME,
-                  value: `${node.name.value}`,
+                  value: `${node.name.value}ListInput`,
+                },
+              },
+            },
+          ],
+          type: {
+            kind: Kind.NON_NULL_TYPE,
+            type: {
+              kind: Kind.LIST_TYPE,
+              type: {
+                kind: Kind.NON_NULL_TYPE,
+                type: {
+                  kind: Kind.NAMED_TYPE,
+                  name: {
+                    kind: Kind.NAME,
+                    value: `${node.name.value}`,
+                  },
                 },
               },
             },
           },
         },
-      },
-    ],
-  })
+      ],
+    },
+  ]
 }
 
 function createListInput(

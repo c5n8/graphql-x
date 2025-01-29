@@ -1,4 +1,5 @@
 import type { Bundle } from '#package/document.js'
+import type { DefinitionNode } from 'graphql'
 import type { Document } from '#package/document.js'
 import type { InputObjectTypeDefinitionNode } from 'graphql'
 import type { InputValueDefinitionNode } from 'graphql'
@@ -14,6 +15,14 @@ const operationNames = {
   update: 'Update',
 }
 
+interface Context {
+  operationName: {
+    uppercase: string
+    lowercase: string
+  }
+  objectTypeNameSet: Set<string>
+}
+
 export function writeDirectiveExpansion(
   operation: (typeof operations)[number],
 ) {
@@ -23,6 +32,15 @@ export function writeDirectiveExpansion(
         uppercase: operationNames[operation],
         lowercase: operation,
       },
+      objectTypeNameSet: document.bundles.reduce((set, bundle) => {
+        const { node } = bundle
+
+        if (node.kind === Kind.OBJECT_TYPE_DEFINITION) {
+          set.add(node.name.value)
+        }
+
+        return set
+      }, new Set<string>()),
     }
 
     const bundles = document.bundles.filter(
@@ -37,110 +55,106 @@ export function writeDirectiveExpansion(
     for (const bundle of bundles) {
       const { node } = bundle
 
-      addMutation(context, node, bundle)
-      addMutationInput(context, node, bundle, document)
-      addMutationOutput(context, node, bundle)
-      addMutationResult(context, node, bundle)
-      addMutationValidation(context, node, bundle)
-      addMutationValidationIssues(context, node, bundle)
+      const expansions = invoke(() => {
+        let x
+
+        x = [
+          addMutation,
+          addMutationInput,
+          addMutationOutput,
+          addMutationResult,
+          addMutationValidation,
+          addMutationValidationIssues,
+        ]
+
+        x = x.reduce<DefinitionNode[]>((result, fn) => {
+          result.push(...(fn(context, node) as DefinitionNode[]))
+
+          return result
+        }, [])
+
+        return x
+      })
+
+      bundle.expansions.push(...expansions)
+      // eslint-disable-next-line unicorn/consistent-destructuring
+      bundle.groupedExpansions[operation] = expansions
     }
 
     if (bundles.length > 0) {
-      addGlobals(document)
+      document.globals.push(...(addGlobals() as DefinitionNode[]))
     }
 
     return document
   }
 }
 
-interface Context {
-  operationName: {
-    uppercase: string
-    lowercase: string
-  }
-}
-
-function addMutation(
-  context: Context,
-  node: ObjectTypeDefinitionNode,
-  bundle: Bundle,
-) {
-  bundle.expansions?.push({
-    kind: Kind.OBJECT_TYPE_EXTENSION,
-    name: {
-      kind: Kind.NAME,
-      value: 'Mutation',
-    },
-    fields: [
-      {
-        kind: Kind.FIELD_DEFINITION,
-        name: {
-          kind: Kind.NAME,
-          value: `${context.operationName.lowercase}${node.name.value}`,
-        },
-        arguments: [
-          {
-            kind: Kind.INPUT_VALUE_DEFINITION,
-            name: {
-              kind: Kind.NAME,
-              value: 'input',
-            },
-            type: {
-              kind: Kind.NON_NULL_TYPE,
+function addMutation(context: Context, node: ObjectTypeDefinitionNode) {
+  return [
+    {
+      kind: Kind.OBJECT_TYPE_EXTENSION,
+      name: {
+        kind: Kind.NAME,
+        value: 'Mutation',
+      },
+      fields: [
+        {
+          kind: Kind.FIELD_DEFINITION,
+          name: {
+            kind: Kind.NAME,
+            value: `${context.operationName.lowercase}${node.name.value}`,
+          },
+          arguments: [
+            {
+              kind: Kind.INPUT_VALUE_DEFINITION,
+              name: {
+                kind: Kind.NAME,
+                value: 'input',
+              },
               type: {
-                kind: Kind.NAMED_TYPE,
-                name: {
-                  kind: Kind.NAME,
-                  value: `${context.operationName.uppercase}${node.name.value}Input`,
+                kind: Kind.NON_NULL_TYPE,
+                type: {
+                  kind: Kind.NAMED_TYPE,
+                  name: {
+                    kind: Kind.NAME,
+                    value: `${context.operationName.uppercase}${node.name.value}Input`,
+                  },
                 },
               },
             },
-          },
-        ],
-        type: {
-          kind: Kind.NON_NULL_TYPE,
+          ],
           type: {
-            kind: Kind.NAMED_TYPE,
-            name: {
-              kind: Kind.NAME,
-              value: `${context.operationName.uppercase}${node.name.value}Output`,
+            kind: Kind.NON_NULL_TYPE,
+            type: {
+              kind: Kind.NAMED_TYPE,
+              name: {
+                kind: Kind.NAME,
+                value: `${context.operationName.uppercase}${node.name.value}Output`,
+              },
             },
           },
         },
-      },
-    ],
-  })
+      ],
+    },
+  ]
 }
 
-function addMutationInput(
-  context: Context,
-  node: ObjectTypeDefinitionNode,
-  bundle: Bundle,
-  document: Document,
-) {
+function addMutationInput(context: Context, node: ObjectTypeDefinitionNode) {
   // TODO embed these to document
-  const objectTypeNameSet = document.bundles.reduce((set, bundle) => {
-    const { node } = bundle
-
-    if (node.kind === Kind.OBJECT_TYPE_DEFINITION) {
-      set.add(node.name.value)
-    }
-
-    return set
-  }, new Set<string>())
+  const { objectTypeNameSet, operationName } = context
 
   const relationInputSet = new Set<string>()
 
-  bundle.expansions.push(
+  return [
     {
       kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
       name: {
         kind: Kind.NAME,
-        value: `${context.operationName.uppercase}${node.name.value}Input`,
+        value: `${operationName.uppercase}${node.name.value}Input`,
       },
       fields: [
         ...invoke((): InputValueDefinitionNode[] => {
-          if (context.operationName.lowercase === 'create') {
+          if (operationName.lowercase === 'create') {
             return []
           }
 
@@ -169,7 +183,7 @@ function addMutationInput(
             kind: Kind.NAMED_TYPE,
             name: {
               kind: Kind.NAME,
-              value: `${context.operationName.uppercase}${node.name.value}DataInput`,
+              value: `${operationName.uppercase}${node.name.value}DataInput`,
             },
           },
         },
@@ -192,7 +206,7 @@ function addMutationInput(
       kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
       name: {
         kind: Kind.NAME,
-        value: `${context.operationName.uppercase}${node.name.value}DataInput`,
+        value: `${operationName.uppercase}${node.name.value}DataInput`,
       },
       fields: node.fields?.flatMap((field) => {
         if (field.directives?.some(({ name }) => name.value === 'readonly')) {
@@ -232,7 +246,7 @@ function addMutationInput(
             }
 
             if (objectTypeNameSet.has(type.name.value)) {
-              const typeName = `${context.operationName.uppercase}${node.name.value}${type.name.value}RelationInput`
+              const typeName = `${operationName.uppercase}${node.name.value}${type.name.value}RelationInput`
 
               relationInputSet.add(typeName)
 
@@ -297,236 +311,234 @@ function addMutationInput(
         },
       ],
     })),
-  )
+  ]
 }
 
-function addMutationOutput(
-  context: Context,
-  node: ObjectTypeDefinitionNode,
-  bundle: Bundle,
-) {
-  bundle.expansions.push({
-    kind: Kind.UNION_TYPE_DEFINITION,
-    name: {
-      kind: Kind.NAME,
-      value: `${context.operationName.uppercase}${node.name.value}Output`,
+function addMutationOutput(context: Context, node: ObjectTypeDefinitionNode) {
+  return [
+    {
+      kind: Kind.UNION_TYPE_DEFINITION,
+      name: {
+        kind: Kind.NAME,
+        value: `${context.operationName.uppercase}${node.name.value}Output`,
+      },
+      directives: [
+        {
+          kind: Kind.DIRECTIVE,
+          name: {
+            kind: Kind.NAME,
+            value: 'output',
+          },
+          arguments: [
+            {
+              kind: Kind.ARGUMENT,
+              name: {
+                kind: Kind.NAME,
+                value: 'fields',
+              },
+              value: {
+                kind: Kind.LIST,
+                values: [
+                  {
+                    kind: Kind.STRING,
+                    value: 'issues',
+                  },
+                  {
+                    kind: Kind.STRING,
+                    value: 'result',
+                  },
+                ],
+              },
+            },
+          ],
+        },
+        {
+          kind: Kind.DIRECTIVE,
+          name: {
+            kind: Kind.NAME,
+            value: 'member',
+          },
+          arguments: [
+            {
+              kind: Kind.ARGUMENT,
+              name: {
+                kind: Kind.NAME,
+                value: 'type',
+              },
+              value: {
+                kind: Kind.STRING,
+                value: `${context.operationName.uppercase}${node.name.value}Result`,
+              },
+            },
+            {
+              kind: Kind.ARGUMENT,
+              name: {
+                kind: Kind.NAME,
+                value: 'signature',
+              },
+              value: {
+                kind: Kind.STRING,
+                value: 'result',
+              },
+            },
+          ],
+        },
+        {
+          kind: Kind.DIRECTIVE,
+          name: {
+            kind: Kind.NAME,
+            value: 'member',
+          },
+          arguments: [
+            {
+              kind: Kind.ARGUMENT,
+              name: {
+                kind: Kind.NAME,
+                value: 'type',
+              },
+              value: {
+                kind: Kind.STRING,
+                value: `${context.operationName.uppercase}${node.name.value}Validation`,
+              },
+            },
+            {
+              kind: Kind.ARGUMENT,
+              name: {
+                kind: Kind.NAME,
+                value: 'signature',
+              },
+              value: {
+                kind: Kind.STRING,
+                value: 'issues',
+              },
+            },
+          ],
+        },
+      ],
+      types: [
+        {
+          kind: Kind.NAMED_TYPE,
+          name: {
+            kind: Kind.NAME,
+            value: `${context.operationName.uppercase}${node.name.value}Result`,
+          },
+        },
+        {
+          kind: Kind.NAMED_TYPE,
+          name: {
+            kind: Kind.NAME,
+            value: `${context.operationName.uppercase}${node.name.value}Validation`,
+          },
+        },
+      ],
     },
-    directives: [
-      {
-        kind: Kind.DIRECTIVE,
-        name: {
-          kind: Kind.NAME,
-          value: 'output',
-        },
-        arguments: [
-          {
-            kind: Kind.ARGUMENT,
-            name: {
-              kind: Kind.NAME,
-              value: 'fields',
-            },
-            value: {
-              kind: Kind.LIST,
-              values: [
-                {
-                  kind: Kind.STRING,
-                  value: 'issues',
-                },
-                {
-                  kind: Kind.STRING,
-                  value: 'result',
-                },
-              ],
-            },
-          },
-        ],
-      },
-      {
-        kind: Kind.DIRECTIVE,
-        name: {
-          kind: Kind.NAME,
-          value: 'member',
-        },
-        arguments: [
-          {
-            kind: Kind.ARGUMENT,
-            name: {
-              kind: Kind.NAME,
-              value: 'type',
-            },
-            value: {
-              kind: Kind.STRING,
-              value: `${context.operationName.uppercase}${node.name.value}Result`,
-            },
-          },
-          {
-            kind: Kind.ARGUMENT,
-            name: {
-              kind: Kind.NAME,
-              value: 'signature',
-            },
-            value: {
-              kind: Kind.STRING,
-              value: 'result',
-            },
-          },
-        ],
-      },
-      {
-        kind: Kind.DIRECTIVE,
-        name: {
-          kind: Kind.NAME,
-          value: 'member',
-        },
-        arguments: [
-          {
-            kind: Kind.ARGUMENT,
-            name: {
-              kind: Kind.NAME,
-              value: 'type',
-            },
-            value: {
-              kind: Kind.STRING,
-              value: `${context.operationName.uppercase}${node.name.value}Validation`,
-            },
-          },
-          {
-            kind: Kind.ARGUMENT,
-            name: {
-              kind: Kind.NAME,
-              value: 'signature',
-            },
-            value: {
-              kind: Kind.STRING,
-              value: 'issues',
-            },
-          },
-        ],
-      },
-    ],
-    types: [
-      {
-        kind: Kind.NAMED_TYPE,
-        name: {
-          kind: Kind.NAME,
-          value: `${context.operationName.uppercase}${node.name.value}Result`,
-        },
-      },
-      {
-        kind: Kind.NAMED_TYPE,
-        name: {
-          kind: Kind.NAME,
-          value: `${context.operationName.uppercase}${node.name.value}Validation`,
-        },
-      },
-    ],
-  })
+  ]
 }
 
-function addMutationResult(
-  context: Context,
-  node: ObjectTypeDefinitionNode,
-  bundle: Bundle,
-) {
-  bundle.expansions.push({
-    kind: Kind.OBJECT_TYPE_DEFINITION,
-    name: {
-      kind: Kind.NAME,
-      value: `${context.operationName.uppercase}${node.name.value}Result`,
-    },
-    fields: [
-      {
-        kind: Kind.FIELD_DEFINITION,
-        name: {
-          kind: Kind.NAME,
-          value: 'result',
-        },
-        type: {
-          kind: Kind.NON_NULL_TYPE,
+function addMutationResult(context: Context, node: ObjectTypeDefinitionNode) {
+  return [
+    {
+      kind: Kind.OBJECT_TYPE_DEFINITION,
+      name: {
+        kind: Kind.NAME,
+        value: `${context.operationName.uppercase}${node.name.value}Result`,
+      },
+      fields: [
+        {
+          kind: Kind.FIELD_DEFINITION,
+          name: {
+            kind: Kind.NAME,
+            value: 'result',
+          },
           type: {
-            kind: Kind.NAMED_TYPE,
-            name: {
-              kind: Kind.NAME,
-              value: node.name.value,
+            kind: Kind.NON_NULL_TYPE,
+            type: {
+              kind: Kind.NAMED_TYPE,
+              name: {
+                kind: Kind.NAME,
+                value: node.name.value,
+              },
             },
           },
         },
-      },
-    ],
-  })
+      ],
+    },
+  ]
 }
 
 function addMutationValidation(
   context: Context,
   node: ObjectTypeDefinitionNode,
-  bundle: Bundle,
 ) {
-  bundle.expansions.push({
-    kind: Kind.OBJECT_TYPE_DEFINITION,
-    name: {
-      kind: Kind.NAME,
-      value: `${context.operationName.uppercase}${node.name.value}Validation`,
-    },
-    fields: [
-      {
-        kind: Kind.FIELD_DEFINITION,
-        name: {
-          kind: Kind.NAME,
-          value: 'issues',
-        },
-        type: {
-          kind: Kind.NON_NULL_TYPE,
+  return [
+    {
+      kind: Kind.OBJECT_TYPE_DEFINITION,
+      name: {
+        kind: Kind.NAME,
+        value: `${context.operationName.uppercase}${node.name.value}Validation`,
+      },
+      fields: [
+        {
+          kind: Kind.FIELD_DEFINITION,
+          name: {
+            kind: Kind.NAME,
+            value: 'issues',
+          },
           type: {
-            kind: Kind.NAMED_TYPE,
-            name: {
-              kind: Kind.NAME,
-              value: `${context.operationName.uppercase}${node.name.value}ValidationIssues`,
+            kind: Kind.NON_NULL_TYPE,
+            type: {
+              kind: Kind.NAMED_TYPE,
+              name: {
+                kind: Kind.NAME,
+                value: `${context.operationName.uppercase}${node.name.value}ValidationIssues`,
+              },
             },
           },
         },
-      },
-    ],
-  })
+      ],
+    },
+  ]
 }
 
 function addMutationValidationIssues(
   context: Context,
   node: ObjectTypeDefinitionNode,
-  bundle: Bundle,
 ) {
-  bundle.expansions.push({
-    kind: Kind.SCALAR_TYPE_DEFINITION,
-    name: {
-      kind: Kind.NAME,
-      value: `${context.operationName.uppercase}${node.name.value}ValidationIssues`,
-    },
-    directives: [
-      {
-        kind: Kind.DIRECTIVE,
-        name: {
-          kind: Kind.NAME,
-          value: 'issues',
-        },
-        arguments: [
-          {
-            kind: Kind.ARGUMENT,
-            name: {
-              kind: Kind.NAME,
-              value: 'input',
-            },
-            value: {
-              kind: Kind.STRING,
-              value: `${context.operationName.uppercase}${node.name.value}Input`,
-            },
-          },
-        ],
+  return [
+    {
+      kind: Kind.SCALAR_TYPE_DEFINITION,
+      name: {
+        kind: Kind.NAME,
+        value: `${context.operationName.uppercase}${node.name.value}ValidationIssues`,
       },
-    ],
-  })
+      directives: [
+        {
+          kind: Kind.DIRECTIVE,
+          name: {
+            kind: Kind.NAME,
+            value: 'issues',
+          },
+          arguments: [
+            {
+              kind: Kind.ARGUMENT,
+              name: {
+                kind: Kind.NAME,
+                value: 'input',
+              },
+              value: {
+                kind: Kind.STRING,
+                value: `${context.operationName.uppercase}${node.name.value}Input`,
+              },
+            },
+          ],
+        },
+      ],
+    },
+  ]
 }
 
-function addGlobals(document: Document) {
-  document.globals.push(
+function addGlobals() {
+  return [
     {
       kind: Kind.DIRECTIVE_DEFINITION,
       name: {
@@ -649,5 +661,5 @@ function addGlobals(document: Document) {
         },
       ],
     },
-  )
+  ]
 }

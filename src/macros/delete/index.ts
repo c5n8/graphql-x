@@ -1,4 +1,5 @@
 import type { Bundle } from '#package/document.js'
+import type { DefinitionNode } from 'graphql'
 import type { Document } from '#package/document.js'
 import { Kind } from 'graphql'
 import type { ObjectTypeDefinitionNode } from 'graphql'
@@ -14,18 +15,26 @@ export default (document: Document) => {
   )
 
   for (const bundle of bundles) {
-    addMutation(bundle.node, bundle, document)
+    const expansions = addMutation(bundle.node) as DefinitionNode[]
+
+    bundle.expansions.push(...expansions)
+    // eslint-disable-next-line dot-notation
+    bundle.groupedExpansions['delete'] = expansions
   }
+
+  document.globals.push({
+    kind: Kind.SCALAR_TYPE_DEFINITION,
+    name: {
+      kind: Kind.NAME,
+      value: 'Void',
+    },
+  })
 
   return document
 }
 
-function addMutation(
-  node: ObjectTypeDefinitionNode,
-  bundle: Bundle,
-  document: Document,
-) {
-  bundle.expansions.push(
+function addMutation(node: ObjectTypeDefinitionNode) {
+  return [
     {
       kind: Kind.OBJECT_TYPE_EXTENSION,
       name: {
@@ -94,13 +103,5 @@ function addMutation(
         },
       ],
     },
-  )
-
-  document.globals.push({
-    kind: Kind.SCALAR_TYPE_DEFINITION,
-    name: {
-      kind: Kind.NAME,
-      value: 'Void',
-    },
-  })
+  ]
 }

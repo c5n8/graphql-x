@@ -12,7 +12,7 @@ directive @readonly on FIELD_DEFINITION
 
 scalar DateTime
 
-type Post @create @update @delete @item {
+type Post @create @update @item @delete {
   id: ID!
   createdAt: DateTime @readonly
   title: String!
@@ -96,19 +96,19 @@ type UpdatePostValidation {
 
 scalar UpdatePostValidationIssues @issues(input: "UpdatePostInput")
 
-extend type Mutation {
-  deletePost(input: DeletePostInput!): Void
-}
-
-input DeletePostInput {
-  id: ID!
-}
-
 type Query {
   post(input: PostItemInput!): Post
 }
 
 input PostItemInput {
+  id: ID!
+}
+
+extend type Mutation {
+  deletePost(input: DeletePostInput!): Void
+}
+
+input DeletePostInput {
   id: ID!
 }
 

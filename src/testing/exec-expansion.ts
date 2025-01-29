@@ -1,3 +1,5 @@
+import { createBundle } from '#package/document.js'
+import type { DefinitionNode } from 'graphql'
 import type { Document } from '#package/document.js'
 import { invoke } from '@txe/invoke'
 import { Kind } from 'graphql'
@@ -14,10 +16,22 @@ export async function execExpansion({
 }) {
   const initialAST = parse(initialSchema)
   const document = await expand({
-    bundles: initialAST.definitions.map((node) => ({
-      node,
-      expansions: [],
-    })),
+    bundles: initialAST.definitions.map((node) =>
+      createBundle({
+        node,
+
+        directives: invoke(() => {
+          if (
+            node.kind === Kind.OBJECT_TYPE_DEFINITION &&
+            node.directives !== undefined
+          ) {
+            return node.directives.map((directive) => directive.name.value)
+          }
+
+          return []
+        }),
+      }),
+    ),
     globals: [],
   })
 
@@ -28,7 +42,13 @@ export async function execExpansion({
       kind: Kind.DOCUMENT,
       definitions: document.bundles.flatMap((bundle) => [
         bundle.node,
-        ...bundle.expansions,
+        ...bundle.directives.reduce<DefinitionNode[]>((result, directive) => {
+          if (bundle.groupedExpansions[directive] !== undefined) {
+            result.push(...bundle.groupedExpansions[directive])
+          }
+
+          return result
+        }, []),
       ]),
     })
 
