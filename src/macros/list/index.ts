@@ -10,7 +10,6 @@ import type { ObjectTypeDefinitionNode } from 'graphql'
 import { parse } from 'graphql'
 import { printSchema } from 'graphql'
 import { GraphQLSchema as Schema } from 'graphql'
-import { schemaGlobals } from './globals.js'
 import type { StringValueNode } from 'graphql'
 
 interface Context {
