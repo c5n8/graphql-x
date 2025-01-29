@@ -149,12 +149,17 @@ export default (document: Document) => {
         x = new Schema({ types: [groupedGlobals[type]!] })
         x = printSchema(x)
         x = parse(x)
+        x = x.definitions
 
-        x = x.definitions.filter(
-          (definition) =>
-            (definition.kind === Kind.SCALAR_TYPE_DEFINITION &&
-              definition.name.value === 'DateTime') !== true,
-        )
+        if (type === 'DateTimeFilterInput') {
+          x = x.filter(
+            (definition) =>
+              !(
+                definition.kind === Kind.SCALAR_TYPE_DEFINITION &&
+                definition.name.value === 'DateTime'
+              ),
+          )
+        }
 
         return x
       }),
