@@ -48,7 +48,6 @@ export default (document: Document) => {
       document,
       context,
     ) as DefinitionNode[]
-    bundle.expansions.push(...expansions)
     // eslint-disable-next-line dot-notation
     bundle.groupedExpansions['list'] = [
       // eslint-disable-next-line dot-notation
@@ -134,7 +133,6 @@ export default (document: Document) => {
       bundle.directives.push('list')
     }
 
-    bundle.expansions.push(...expansions)
     // eslint-disable-next-line dot-notation
     bundle.groupedExpansions['list'] = [
       // eslint-disable-next-line dot-notation

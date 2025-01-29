@@ -14,7 +14,6 @@ export function createBundle<
   T extends Pick<Bundle, 'node'> & Partial<Omit<Bundle, 'node'>>,
 >(bundle: T): Bundle {
   return {
-    expansions: [],
     groupedExpansions: {},
     directives: [],
     ...bundle,
@@ -28,7 +27,6 @@ export interface Document {
 
 export interface Bundle {
   node: DefinitionNode
-  expansions: DefinitionNode[]
   groupedExpansions: Record<string, DefinitionNode[]>
   directives: string[]
 }

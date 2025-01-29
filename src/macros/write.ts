@@ -76,7 +76,6 @@ export function writeDirectiveExpansion(
         return x
       })
 
-      bundle.expansions.push(...expansions)
       // eslint-disable-next-line unicorn/consistent-destructuring
       bundle.groupedExpansions[operation] = expansions
     }

@@ -32,10 +32,7 @@ test('expand directive @create', async () => {
 
         x = cleanup({
           kind: Kind.DOCUMENT,
-          definitions: document.bundles.flatMap((bundle) => [
-            bundle.node,
-            ...bundle.expansions,
-          ]),
+          definitions: document.bundles.flatMap((bundle) => [bundle.node]),
         })
 
         x = [

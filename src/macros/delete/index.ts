@@ -17,7 +17,6 @@ export default (document: Document) => {
   for (const bundle of bundles) {
     const expansions = addMutation(bundle.node) as DefinitionNode[]
 
-    bundle.expansions.push(...expansions)
     // eslint-disable-next-line dot-notation
     bundle.groupedExpansions['delete'] = expansions
   }
