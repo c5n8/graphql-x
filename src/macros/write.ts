@@ -153,7 +153,7 @@ function addMutationInput(context: Context, node: ObjectTypeDefinitionNode) {
       },
       fields: [
         ...invoke((): InputValueDefinitionNode[] => {
-          if (operationName.lowercase === 'create') {
+          if (!(operationName.lowercase === 'update')) {
             return []
           }
 
@@ -326,7 +326,7 @@ function addMutationOutput(context: Context, node: ObjectTypeDefinitionNode) {
           kind: Kind.DIRECTIVE,
           name: {
             kind: Kind.NAME,
-            value: 'output',
+            value: 'signature',
           },
           arguments: [
             {
@@ -542,7 +542,7 @@ function addGlobals() {
       kind: Kind.DIRECTIVE_DEFINITION,
       name: {
         kind: Kind.NAME,
-        value: 'output',
+        value: 'signature',
       },
       repeatable: false,
       arguments: [
