@@ -22,13 +22,15 @@ export default (document: Document) => {
     bundle.groupedExpansions['delete'] = expansions
   }
 
-  document.globals.push({
-    kind: Kind.SCALAR_TYPE_DEFINITION,
-    name: {
-      kind: Kind.NAME,
-      value: 'Void',
-    },
-  })
+  if (bundles.length > 0) {
+    document.globals.push({
+      kind: Kind.SCALAR_TYPE_DEFINITION,
+      name: {
+        kind: Kind.NAME,
+        value: 'Void',
+      },
+    })
+  }
 
   return document
 }
