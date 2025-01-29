@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.19.0
+
+### Minor Changes
+
+- 03acd8a: feat: generate each @list globals only if needed
+
 ## 0.18.0
 
 ### Minor Changes
