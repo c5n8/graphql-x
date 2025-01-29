@@ -1,11 +1,15 @@
 import type { Bundle } from '#package/document.js'
 import type { DefinitionNode } from 'graphql'
 import type { Document } from '#package/document.js'
+import { groupedGlobals } from './globals.js'
 import type { InputValueDefinitionNode } from 'graphql'
 import { invoke } from '@txe/invoke'
 import { Kind } from 'graphql'
 import type { Mutable } from '#package/utils/mutable.js'
 import type { ObjectTypeDefinitionNode } from 'graphql'
+import { parse } from 'graphql'
+import { printSchema } from 'graphql'
+import { GraphQLSchema as Schema } from 'graphql'
 import { schemaGlobals } from './globals.js'
 import type { StringValueNode } from 'graphql'
 
@@ -15,6 +19,7 @@ interface Context {
   objectTypeBundles: (Bundle & {
     node: ObjectTypeDefinitionNode
   })[]
+  globals: Set<string>
 }
 
 export default (document: Document) => {
@@ -35,6 +40,7 @@ export default (document: Document) => {
     shared: {},
     grouped: {},
     objectTypeBundles,
+    globals: new Set(),
   }
 
   for (const bundle of bundles) {
@@ -118,7 +124,45 @@ export default (document: Document) => {
     }
   }
 
-  document.globals.push(...(schemaGlobals as DefinitionNode[]))
+  const globalsOrder = Object.entries([
+    'IDFilterInput',
+    'StringFilterInput',
+    'FloatFilterInput',
+    'IntFilterInput',
+    'BooleanFilterInput',
+    'DateTimeFilterInput',
+    'SortOrderInput',
+    'OrderByRelationAggregateInput',
+  ]).reduce<Record<string, string>>((result, [key, value]) => {
+    result[value] = key
+
+    return result
+  }, {})
+
+  const customGlobals = [...context.globals]
+    .sort((left, right) =>
+      globalsOrder[left]!.localeCompare(globalsOrder[right]!),
+    )
+    .flatMap((type) =>
+      invoke(() => {
+        let x
+
+        x = new Schema({ types: [groupedGlobals[type]!] })
+        x = printSchema(x)
+        x = parse(x)
+
+        x = x.definitions.filter(
+          (definition) =>
+            (definition.kind === Kind.SCALAR_TYPE_DEFINITION &&
+              definition.name.value === 'DateTime') !== true,
+        )
+
+        return x
+      }),
+    )
+
+  // document.globals.push(...(schemaGlobals as DefinitionNode[]))
+  document.globals.push(...customGlobals)
 
   return document
 }
@@ -324,6 +368,8 @@ function createListInput(
               ]
 
               if (supportedScalars.includes(fieldType.name.value)) {
+                context.globals.add(`${fieldType.name.value}FilterInput`)
+
                 return `${fieldType.name.value}FilterInput`
               }
 
@@ -593,6 +639,8 @@ function createListInput(
             //   return `${relatedObjectTypeNode}OrderByInput`
             // }
 
+            context.globals.add(`SortOrderInput`)
+
             return `SortOrderInput`
           }
 
@@ -622,6 +670,8 @@ function createListInput(
               )?.node.name.value
 
               if (relatedObjectType !== undefined) {
+                context.globals.add(`OrderByRelationAggregateInput`)
+
                 return `OrderByRelationAggregateInput`
               }
 

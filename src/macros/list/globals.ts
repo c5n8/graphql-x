@@ -147,3 +147,5 @@ export const schemaGlobals = invoke(() => {
 
   return x
 })
+
+export { types as groupedGlobals }
