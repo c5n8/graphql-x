@@ -21,6 +21,8 @@ type Post @create @update @item @delete {
   category: Category
 }
 
+# start: @create Post
+
 type Mutation {
   createPost(input: CreatePostInput!): CreatePostOutput!
 }
@@ -57,6 +59,10 @@ type CreatePostValidation {
 }
 
 scalar CreatePostValidationIssues @issues(input: "CreatePostInput")
+
+# end: @create Post
+
+# start: @update Post
 
 extend type Mutation {
   updatePost(input: UpdatePostInput!): UpdatePostOutput!
@@ -96,6 +102,10 @@ type UpdatePostValidation {
 
 scalar UpdatePostValidationIssues @issues(input: "UpdatePostInput")
 
+# end: @update Post
+
+# start: @item Post
+
 type Query {
   post(input: PostItemInput!): Post
 }
@@ -104,6 +114,10 @@ input PostItemInput {
   id: ID!
 }
 
+# end: @item Post
+
+# start: @delete Post
+
 extend type Mutation {
   deletePost(input: DeletePostInput!): Void
 }
@@ -111,6 +125,8 @@ extend type Mutation {
 input DeletePostInput {
   id: ID!
 }
+
+# end: @delete Post
 
 type Category {
   id: ID!
@@ -126,6 +142,8 @@ type Todo @list(field: "todos") {
   assignee: User
   tags: [Tag!]
 }
+
+# start: @list Todo
 
 extend type Query {
   todos(input: TodoListInput): [Todo!]!
@@ -178,11 +196,15 @@ input TodoOrderByInput {
   tags: OrderByRelationAggregateInput
 }
 
+# end: @list Todo
+
 type User {
   id: ID!
   email: String
   todos: [Todo!]
 }
+
+# start: @list User
 
 input UserWhereInput {
   id: IDFilterInput
@@ -198,11 +220,15 @@ input UserOrderByInput {
   todos: OrderByRelationAggregateInput
 }
 
+# end: @list User
+
 type Tag {
   id: ID!
   title: String
   todos: [Todo!]
 }
+
+# start: @list Tag
 
 input TagWhereInput {
   id: IDFilterInput
@@ -218,6 +244,8 @@ input TagListRelationFilterInput {
   every: TagWhereInput
   none: TagWhereInput
 }
+
+# end: @list Tag
 
 directive @signature(fields: [String!]!) on UNION
 

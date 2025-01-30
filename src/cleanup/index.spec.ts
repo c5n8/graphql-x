@@ -1,5 +1,5 @@
 import { buildSchema } from 'graphql'
-import cleanup from './index.js'
+import { cleanup } from './index.js'
 import { createBundle } from '#package/document.js'
 import { createDocument } from '#package/document.js'
 import type { Document } from '#package/document.js'
@@ -30,13 +30,36 @@ test('expand directive @create', async () => {
       const result = await invoke(async () => {
         let x
 
-        x = cleanup({
-          kind: Kind.DOCUMENT,
-          definitions: document.bundles.flatMap((bundle) => [bundle.node]),
-        })
+        x = cleanup(document)
+
+        x = x.bundles.flatMap((bundle) => [
+          print(bundle.node),
+          ...bundle.directives.flatMap((directive) => {
+            // oxlint-disable-next-line eslint-plugin-jest(no-conditional-in-test)
+            if (bundle.groupedExpansions[directive] !== undefined) {
+              const type =
+                // oxlint-disable-next-line eslint-plugin-jest(no-conditional-in-test)
+                bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
+                bundle.node.name.value
+
+              return [
+                `# start: @${directive} ${type}`,
+
+                ...bundle.groupedExpansions[directive].map((expansion) =>
+                  print(expansion),
+                ),
+                `# end: @${directive} ${type}`,
+              ].join('\n\n')
+            }
+
+            return []
+          }),
+        ])
+
+        x = x.join('\n\n')
 
         x = [
-          print(x),
+          x,
           ...document.globals.reduce((set, definition) => {
             const printed = print({
               kind: Kind.DOCUMENT,

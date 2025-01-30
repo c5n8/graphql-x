@@ -6,6 +6,8 @@ type Thing @list(field: "things") {
   x1: [[String]]
 }
 
+# start: @list Thing
+
 extend type Query {
   things(input: ThingListInput): [Thing!]!
 }
@@ -27,3 +29,5 @@ input ThingWhereInput {
 input ThingCursorInput
 
 input ThingOrderByInput
+
+# end: @list Thing

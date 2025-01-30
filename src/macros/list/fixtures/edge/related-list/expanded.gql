@@ -12,6 +12,8 @@ type Thing {
 
 type Stuff
 
+# start: @list Stuff
+
 input StuffListInput {
   where: StuffWhereInput
   cursor: StuffCursorInput
@@ -29,3 +31,5 @@ input StuffWhereInput {
 input StuffCursorInput
 
 input StuffOrderByInput
+
+# end: @list Stuff

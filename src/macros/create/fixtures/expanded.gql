@@ -13,6 +13,8 @@ type Post @create {
   category: Category
 }
 
+# start: @create Post
+
 extend type Mutation {
   createPost(input: CreatePostInput!): CreatePostOutput!
 }
@@ -49,6 +51,8 @@ type CreatePostValidation {
 }
 
 scalar CreatePostValidationIssues @issues(input: "CreatePostInput")
+
+# end: @create Post
 
 type Category {
   id: ID!

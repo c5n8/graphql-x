@@ -4,6 +4,8 @@ type Post @delete {
   id: ID!
 }
 
+# start: @delete Post
+
 extend type Mutation {
   deletePost(input: DeletePostInput!): Void
 }
@@ -11,5 +13,7 @@ extend type Mutation {
 input DeletePostInput {
   id: ID!
 }
+
+# end: @delete Post
 
 scalar Void

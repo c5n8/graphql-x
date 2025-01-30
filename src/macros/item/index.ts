@@ -30,7 +30,7 @@ function addMutation(node: ObjectTypeDefinitionNode) {
     let x
 
     x = [...node.name.value]
-    // oxlint-disable no-non-null-assertion
+    // oxlint-disable-next-line no-non-null-assertion
     x.splice(0, 1, [...node.name.value][0]!.toLocaleLowerCase())
     x = x.join('')
 

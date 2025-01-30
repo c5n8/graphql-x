@@ -68,7 +68,7 @@ export default (document: Document) => {
         return field
       }
 
-      // oxlint-disable typescript-eslint/no-non-null-assertion
+      // oxlint-disable-next-line typescript-eslint/no-non-null-assertion
       if (field.arguments !== undefined && field.arguments.length > 0) {
         return field
       }
@@ -125,7 +125,8 @@ export default (document: Document) => {
     const groupedExpansions =
       context.grouped[bundle.node.name.value] ?? new Set()
 
-    const expansions = [...groupedExpansions].map(
+    const expansions = [...groupedExpansions].flatMap(
+      // oxlint-disable-next-line typescript-eslint/no-non-null-assertion
       (type) => context.shared[type]!,
     )
 
@@ -158,12 +159,14 @@ export default (document: Document) => {
 
   const customGlobals = [...context.globals]
     .sort((left, right) =>
+      // oxlint-disable-next-line typescript-eslint/no-non-null-assertion
       globalsOrder[left]!.localeCompare(globalsOrder[right]!),
     )
     .flatMap((type) =>
       invoke(() => {
         let x
 
+        // oxlint-disable-next-line typescript-eslint/no-non-null-assertion
         x = new Schema({ types: [groupedGlobals[type]!] })
         x = printSchema(x)
         x = parse(x)
@@ -193,7 +196,6 @@ function addMutation(
   document: Document,
   context: Context,
 ) {
-  // oxlint-disable typescript-eslint/no-non-null-assertion
   const fieldName = node.directives
     ?.find((directive) => directive.name.value === 'list')
     ?.arguments?.find(
@@ -207,7 +209,7 @@ function addMutation(
     )
   }
 
-  // oxlint-disable eslint-plugin-unicorn(explicit-length-check)
+  // oxlint-disable-next-line eslint-plugin-unicorn(explicit-length-check)
   if (!(fieldName.length > 0)) {
     throw new Error(`Directive "@list" argument "field" must be non-empty.`)
   }
@@ -375,6 +377,7 @@ function createListInput(
         value: typeWhereInput,
       },
       fields: [
+        // oxlint-disable-next-line typescript-eslint/no-non-null-assertion
         ...node.fields!.flatMap<InputValueDefinitionNode>((field) => {
           const fieldType = invoke(function getFieldType(
             fieldType = field.type,
@@ -621,6 +624,7 @@ function createListInput(
         kind: Kind.NAME,
         value: typeOrderByInput,
       },
+      // oxlint-disable-next-line typescript-eslint(no-non-null-assertion)
       fields: node.fields!.flatMap<InputValueDefinitionNode>((field) => {
         const fieldType = invoke(function getFieldType(fieldType = field.type) {
           if (fieldType.kind === Kind.NAMED_TYPE) {
@@ -686,7 +690,9 @@ function createListInput(
               const relatedObjectType = document.bundles.find(
                 (
                   bundle,
-                ): bundle is Bundle & { node: ObjectTypeDefinitionNode } =>
+                ): bundle is Bundle & {
+                  node: ObjectTypeDefinitionNode
+                } =>
                   bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
                   bundle.node.name.value === nestedFieldType,
               )?.node.name.value

@@ -1,7 +1,6 @@
-import cleanup from '#package/cleanup/index.js'
+import { cleanup } from '#package/cleanup/index.js'
 import { createBundle } from '#package/document.js'
 import { createDocument } from '#package/document.js'
-import type { DefinitionNode } from 'graphql'
 import type { Document } from '#package/document.js'
 import { invoke } from '@txe/invoke'
 import { Kind } from 'graphql'
@@ -46,22 +45,34 @@ export async function expand(schema: string) {
   return invoke(() => {
     let x
 
-    x = cleanup({
-      kind: Kind.DOCUMENT,
-      definitions: document.bundles.flatMap((bundle) => [
-        bundle.node,
-        ...bundle.directives.reduce<DefinitionNode[]>((result, directive) => {
-          if (bundle.groupedExpansions[directive] !== undefined) {
-            result.push(...bundle.groupedExpansions[directive])
-          }
+    x = cleanup(document)
 
-          return result
-        }, []),
-      ]),
-    })
+    x = x.bundles.flatMap((bundle) => [
+      print(bundle.node),
+      ...bundle.directives.flatMap((directive) => {
+        if (bundle.groupedExpansions[directive] !== undefined) {
+          const type =
+            bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
+            bundle.node.name.value
+
+          return [
+            `# start: @${directive} ${type}`,
+
+            ...bundle.groupedExpansions[directive].map((expansion) =>
+              print(expansion),
+            ),
+            `# end: @${directive} ${type}`,
+          ].join('\n\n')
+        }
+
+        return []
+      }),
+    ])
+
+    x = x.join('\n\n')
 
     x = [
-      print(x),
+      x,
       ...document.globals.reduce((set, definition) => {
         const printed = print({
           kind: Kind.DOCUMENT,

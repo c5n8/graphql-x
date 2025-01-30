@@ -4,6 +4,8 @@ type Post @create {
   ids: [ID]
 }
 
+# start: @create Post
+
 extend type Mutation {
   createPost(input: CreatePostInput!): CreatePostOutput!
 }
@@ -31,6 +33,8 @@ type CreatePostValidation {
 }
 
 scalar CreatePostValidationIssues @issues(input: "CreatePostInput")
+
+# end: @create Post
 
 directive @signature(fields: [String!]!) on UNION
 

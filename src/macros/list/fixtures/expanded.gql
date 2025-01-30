@@ -15,6 +15,8 @@ type Todo @list(field: "todos") {
   tags(input: TagListInput): [Tag!] @relatedList
 }
 
+# start: @list Todo
+
 extend type Query {
   todos(input: TodoListInput): [Todo!]!
 }
@@ -66,11 +68,15 @@ input TodoOrderByInput {
   tags: OrderByRelationAggregateInput
 }
 
+# end: @list Todo
+
 type User {
   id: ID!
   email: String
   todos: [Todo!]
 }
+
+# start: @list User
 
 input UserWhereInput {
   id: IDFilterInput
@@ -86,11 +92,15 @@ input UserOrderByInput {
   todos: OrderByRelationAggregateInput
 }
 
+# end: @list User
+
 type Tag {
   id: ID!
   title: String
   todos: [Todo!]
 }
+
+# start: @list Tag
 
 input TagWhereInput {
   id: IDFilterInput
@@ -124,6 +134,8 @@ input TagOrderByInput {
   title: SortOrderInput
   todos: OrderByRelationAggregateInput
 }
+
+# end: @list Tag
 
 input IDFilterInput {
   equals: ID

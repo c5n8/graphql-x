@@ -4,6 +4,8 @@ type Post @item {
   id: ID!
 }
 
+# start: @item Post
+
 extend type Query {
   post(input: PostItemInput!): Post
 }
@@ -11,3 +13,5 @@ extend type Query {
 input PostItemInput {
   id: ID!
 }
+
+# end: @item Post

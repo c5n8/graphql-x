@@ -1,5 +1,4 @@
 import { createBundle } from '#package/document.js'
-import type { DefinitionNode } from 'graphql'
 import type { Document } from '#package/document.js'
 import { invoke } from '@txe/invoke'
 import { Kind } from 'graphql'
@@ -38,19 +37,26 @@ export async function execExpansion({
   const result = await invoke(async () => {
     let x
 
-    x = print({
-      kind: Kind.DOCUMENT,
-      definitions: document.bundles.flatMap((bundle) => [
-        bundle.node,
-        ...bundle.directives.reduce<DefinitionNode[]>((result, directive) => {
-          if (bundle.groupedExpansions[directive] !== undefined) {
-            result.push(...bundle.groupedExpansions[directive])
-          }
+    x = document.bundles.flatMap((bundle) => [
+      print(bundle.node),
+      ...bundle.directives.flatMap((directive) => {
+        const type =
+          bundle.node.kind === Kind.OBJECT_TYPE_DEFINITION &&
+          bundle.node.name.value
 
-          return result
-        }, []),
-      ]),
-    })
+        return [
+          `# start: @${directive} ${type}`,
+
+          // oxlint-disable-next-line typescript-eslint(no-non-null-assertion)
+          ...bundle.groupedExpansions[directive]!.map((expansion) =>
+            print(expansion),
+          ),
+          `# end: @${directive} ${type}`,
+        ].join('\n\n')
+      }),
+    ])
+
+    x = x.join('\n\n')
 
     x = [
       x,

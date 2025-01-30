@@ -13,6 +13,8 @@ type Post @update {
   category: Category
 }
 
+# start: @update Post
+
 extend type Mutation {
   updatePost(input: UpdatePostInput!): UpdatePostOutput!
 }
@@ -50,6 +52,8 @@ type UpdatePostValidation {
 }
 
 scalar UpdatePostValidationIssues @issues(input: "UpdatePostInput")
+
+# end: @update Post
 
 type Category {
   id: ID!

@@ -42,7 +42,7 @@ test('@list error case 1', async () => {
 
   expect(() => buildSchema(schema.initial)).not.toThrow()
 
-  // oxlint-disable eslint-plugin-jest(no-conditional-expect)
+  // oxlint-disable-next-line eslint-plugin-jest(no-conditional-expect)
   await expect(
     execExpansion({ expand, schema: schema.initial }),
   ).rejects.toThrow('Directive "@list" argument "field" must be non-empty.')
@@ -55,7 +55,7 @@ test('@list error case 2', async () => {
 
   expect(() => buildSchema(schema.initial)).not.toThrow()
 
-  // oxlint-disable eslint-plugin-jest(no-conditional-expect)
+  // oxlint-disable-next-line eslint-plugin-jest(no-conditional-expect)
   await expect(
     execExpansion({ expand, schema: schema.initial }),
   ).rejects.toThrow(

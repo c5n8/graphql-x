@@ -1,12 +1,17 @@
 import type { DefinitionNode } from 'graphql'
-import type { DocumentNode } from 'graphql'
+import type { Document } from '#package/document.js'
 import { Kind } from 'graphql'
 import type { Mutable } from '#package/utils/mutable.js'
 
-export default function (document: DocumentNode) {
+export function cleanup(document: Document) {
   let types = ['Query', 'Mutation', 'Subscription']
 
-  for (const node of document.definitions) {
+  const nodes = document.bundles.flatMap((bundle) => [
+    bundle.node,
+    ...Object.values(bundle.groupedExpansions).flat(),
+  ])
+
+  for (const node of nodes) {
     if (
       (node.kind === Kind.OBJECT_TYPE_DEFINITION ||
         node.kind === Kind.OBJECT_TYPE_EXTENSION) &&
