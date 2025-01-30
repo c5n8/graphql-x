@@ -247,6 +247,8 @@ input TagListRelationFilterInput {
 
 # end: @list Tag
 
+# start: globals
+
 directive @signature(fields: [String!]!) on UNION
 
 directive @member(type: String!, signature: String!) repeatable on UNION
@@ -324,3 +326,5 @@ scalar NullsOrder
 input OrderByRelationAggregateInput {
   _count: SortOrder
 }
+
+# end: globals

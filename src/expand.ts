@@ -73,6 +73,7 @@ export async function expand(schema: string) {
 
     x = [
       x,
+      `# start: globals`,
       ...document.globals.reduce((set, definition) => {
         const printed = print({
           kind: Kind.DOCUMENT,
@@ -83,6 +84,7 @@ export async function expand(schema: string) {
 
         return set
       }, new Set<string>()),
+      `# end: globals`,
     ].join('\n\n')
 
     return x
