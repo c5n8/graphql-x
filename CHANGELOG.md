@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.22.0
+
+### Minor Changes
+
+- f18089d: feat: flexible id field name
+
 ## 0.21.0
 
 ### Minor Changes
