@@ -326,7 +326,7 @@ function addMutationInput(context: Context, node: ObjectTypeDefinitionNode) {
 
       if (!(idFields.length === 1 && idFields[0] !== undefined)) {
         throw new Error(
-          'Type used as type of a field of another type with directive "@create" "@update" should have exactly one field of type ID.',
+          'Type used as type of a field of another type with directive "@create" or "@update" should have exactly one field of type ID.',
         )
       }
 

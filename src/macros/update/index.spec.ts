@@ -61,6 +61,6 @@ test('@update error case 3', async () => {
   await expect(
     execExpansion({ expand, schema: schema.initial }),
   ).rejects.toThrow(
-    'Type used as type of a field of another type with directive "@create" "@update" should have exactly one field of type ID.',
+    'Type used as type of a field of another type with directive "@create" or "@update" should have exactly one field of type ID.',
   )
 })
