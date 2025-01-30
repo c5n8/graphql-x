@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.21.0
+
+### Minor Changes
+
+- 4cb41dd: feat: group expansions with comments
+
 ## 0.20.1
 
 ### Patch Changes
