@@ -1,0 +1,3 @@
+directive @delete on OBJECT
+
+type Post @delete

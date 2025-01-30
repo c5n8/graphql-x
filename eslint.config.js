@@ -121,6 +121,7 @@ export default eslintToolingTs.config(
   {
     name: 'package/unicorn-overrides',
     rules: {
+      'unicorn/consistent-destructuring': 'off',
       'unicorn/prevent-abbreviations': [
         'warn',
         { allowList: { fn: true, args: true } },

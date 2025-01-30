@@ -1,0 +1,6 @@
+directive @delete on OBJECT
+
+type Post @delete {
+  x1: ID
+  x2: ID!
+}

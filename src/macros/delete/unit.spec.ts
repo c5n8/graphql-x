@@ -19,3 +19,33 @@ test('expand directive @create', async () => {
 
   expect(result).toBe(schema.expanded)
 })
+
+test('@delete error case 1', async () => {
+  const schema = await importDefaults({
+    initial: () => import('./fixtures/errors/x1.gql?raw'),
+  })
+
+  expect(() => buildSchema(schema.initial)).not.toThrow()
+
+  // oxlint-disable-next-line eslint-plugin-jest(no-conditional-expect)
+  await expect(
+    execExpansion({ expand, schema: schema.initial }),
+  ).rejects.toThrow(
+    'Type with directive "@delete" should have exactly one field of type ID.',
+  )
+})
+
+test('@delete error case 2', async () => {
+  const schema = await importDefaults({
+    initial: () => import('./fixtures/errors/x2.gql?raw'),
+  })
+
+  expect(() => buildSchema(schema.initial)).not.toThrow()
+
+  // oxlint-disable-next-line eslint-plugin-jest(no-conditional-expect)
+  await expect(
+    execExpansion({ expand, schema: schema.initial }),
+  ).rejects.toThrow(
+    'Type with directive "@delete" should have exactly one field of type ID.',
+  )
+})

@@ -1,0 +1,6 @@
+directive @item on OBJECT
+
+type Post @item {
+  x1: ID
+  x2: ID!
+}

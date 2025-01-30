@@ -20,6 +20,7 @@ interface Context {
     uppercase: string
     lowercase: string
   }
+  objectTypeMap: Map<string, ObjectTypeDefinitionNode>
   objectTypeNameSet: Set<string>
 }
 
@@ -27,20 +28,23 @@ export function writeDirectiveExpansion(
   operation: (typeof operations)[number],
 ) {
   return function (document: Document) {
+    const objectTypeMap = document.bundles.reduce((map, bundle) => {
+      const { node } = bundle
+
+      if (node.kind === Kind.OBJECT_TYPE_DEFINITION) {
+        map.set(node.name.value, node)
+      }
+
+      return map
+    }, new Map())
+    const objectTypeNameSet = new Set(objectTypeMap.keys())
     const context = {
       operationName: {
         uppercase: operationNames[operation],
         lowercase: operation,
       },
-      objectTypeNameSet: document.bundles.reduce((set, bundle) => {
-        const { node } = bundle
-
-        if (node.kind === Kind.OBJECT_TYPE_DEFINITION) {
-          set.add(node.name.value)
-        }
-
-        return set
-      }, new Set<string>()),
+      objectTypeNameSet,
+      objectTypeMap,
     }
 
     const bundles = document.bundles.filter(
@@ -76,7 +80,6 @@ export function writeDirectiveExpansion(
         return x
       })
 
-      // eslint-disable-next-line unicorn/consistent-destructuring
       bundle.groupedExpansions[operation] = expansions
     }
 
@@ -143,6 +146,7 @@ function addMutationInput(context: Context, node: ObjectTypeDefinitionNode) {
   const { objectTypeNameSet, operationName } = context
 
   const relationInputSet = new Set<string>()
+  const relationInputMap = new Map<string, ObjectTypeDefinitionNode>()
 
   return [
     {
@@ -157,10 +161,28 @@ function addMutationInput(context: Context, node: ObjectTypeDefinitionNode) {
             return []
           }
 
+          // oxlint-disable-next-line typescript-eslint(no-non-null-assertion)
+          const idFields = node.fields!.filter((field) => {
+            let { type } = field
+
+            if (type.kind === Kind.NON_NULL_TYPE) {
+              // eslint-disable-next-line prefer-destructuring
+              type = type.type
+            }
+
+            return type.kind === Kind.NAMED_TYPE && type.name.value === 'ID'
+          })
+
+          if (!(idFields.length === 1 && idFields[0] !== undefined)) {
+            throw new Error(
+              'Type with directive "@update" should have exactly one field of type ID.',
+            )
+          }
+
           return [
             {
               kind: Kind.INPUT_VALUE_DEFINITION,
-              name: { kind: Kind.NAME, value: 'id' },
+              name: { kind: Kind.NAME, value: idFields[0]?.name.value },
               type: {
                 kind: Kind.NON_NULL_TYPE,
                 type: {
@@ -248,6 +270,11 @@ function addMutationInput(context: Context, node: ObjectTypeDefinitionNode) {
               const typeName = `${operationName.uppercase}${node.name.value}${type.name.value}RelationInput`
 
               relationInputSet.add(typeName)
+              relationInputMap.set(
+                typeName,
+                // oxlint-disable-next-line typescript-eslint(no-non-null-assertion)
+                context.objectTypeMap.get(type.name.value)!,
+              )
 
               return wrapType({
                 kind: Kind.NAMED_TYPE,
@@ -284,32 +311,52 @@ function addMutationInput(context: Context, node: ObjectTypeDefinitionNode) {
         ]
       }),
     },
-    ...[...relationInputSet].map<InputObjectTypeDefinitionNode>((name) => ({
-      kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
-      name: {
-        kind: Kind.NAME,
-        value: name,
-      },
-      fields: [
-        {
-          kind: Kind.INPUT_VALUE_DEFINITION,
-          name: {
-            kind: Kind.NAME,
-            value: 'id',
-          },
-          type: {
-            kind: Kind.NON_NULL_TYPE,
+    ...[...relationInputSet].map<InputObjectTypeDefinitionNode>((name) => {
+      // oxlint-disable-next-line typescript-eslint(no-non-null-assertion)
+      const idFields = relationInputMap.get(name)!.fields!.filter((field) => {
+        let { type } = field
+
+        if (type.kind === Kind.NON_NULL_TYPE) {
+          // eslint-disable-next-line prefer-destructuring
+          type = type.type
+        }
+
+        return type.kind === Kind.NAMED_TYPE && type.name.value === 'ID'
+      })
+
+      if (!(idFields.length === 1 && idFields[0] !== undefined)) {
+        throw new Error(
+          'Type used as type of a field of another type with directive "@create" "@update" should have exactly one field of type ID.',
+        )
+      }
+
+      return {
+        kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+        name: {
+          kind: Kind.NAME,
+          value: name,
+        },
+        fields: [
+          {
+            kind: Kind.INPUT_VALUE_DEFINITION,
+            name: {
+              kind: Kind.NAME,
+              value: idFields[0].name.value,
+            },
             type: {
-              kind: Kind.NAMED_TYPE,
-              name: {
-                kind: Kind.NAME,
-                value: 'ID',
+              kind: Kind.NON_NULL_TYPE,
+              type: {
+                kind: Kind.NAMED_TYPE,
+                name: {
+                  kind: Kind.NAME,
+                  value: 'ID',
+                },
               },
             },
           },
-        },
-      ],
-    })),
+        ],
+      }
+    }),
   ]
 }
 

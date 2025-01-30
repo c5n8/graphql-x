@@ -1,0 +1,3 @@
+directive @update on OBJECT
+
+type Post @update

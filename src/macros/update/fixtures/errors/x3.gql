@@ -1,0 +1,11 @@
+directive @update on OBJECT
+
+type Post @update {
+  x1: ID!
+  category: Category
+}
+
+type Category {
+  x1: ID!
+  x2: ID
+}

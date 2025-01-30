@@ -1,0 +1,3 @@
+directive @item on OBJECT
+
+type Post @item
