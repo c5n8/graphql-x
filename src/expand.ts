@@ -85,7 +85,8 @@ export async function expand(schema: string) {
 
         return set
       }, new Set<string>()),
-      `# end: globals`,
+      // oxlint-disable-next-line eslint(no-ternary)
+      ...(document.globals.length > 0 ? [`# end: globals`] : []),
     ].join('\n\n')
 
     return x
