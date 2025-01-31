@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.23.0
+
+### Minor Changes
+
+- 52b2c58: feat: add global expansions comments only when needed
+
 ## 0.22.0
 
 ### Minor Changes
