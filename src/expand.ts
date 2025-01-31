@@ -73,7 +73,8 @@ export async function expand(schema: string) {
 
     x = [
       x,
-      `# start: globals`,
+      // oxlint-disable-next-line eslint(no-ternary)
+      ...(document.globals.length > 0 ? [`# start: globals`] : []),
       ...document.globals.reduce((set, definition) => {
         const printed = print({
           kind: Kind.DOCUMENT,
