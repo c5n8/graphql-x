@@ -87,22 +87,12 @@ export default eslintToolingTs.config(
       },
     },
     rules: {
-      ...invoke(() => {
-        if (process.env.NODE_ENV === 'development') {
-          return {
-            // https://github.com/import-js/eslint-plugin-import/issues/3101
-            'import/namespace': 'off',
-            // https://github.com/import-js/eslint-plugin-import/issues/3076
-            // https://github.com/import-js/eslint-plugin-import/issues/1739
-            'import/no-unresolved': 'off',
-          }
-        }
-
-        return {
-          'import/namespace': 'warn',
-          'import/no-unresolved': 'warn',
-        }
-      }),
+      // Assuming the next 2 rules is substituted with typescript
+      // https://github.com/import-js/eslint-plugin-import/issues/3101
+      'import/namespace': 'off',
+      // https://github.com/import-js/eslint-plugin-import/issues/3076
+      // https://github.com/import-js/eslint-plugin-import/issues/1739
+      'import/no-unresolved': 'off',
 
       'import/consistent-type-specifier-style': ['warn', 'prefer-top-level'],
       'import/newline-after-import': 'warn',
