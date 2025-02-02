@@ -12,7 +12,6 @@ import eslintPluginVitest from '@vitest/eslint-plugin'
 import eslintPluginX from '@txe/eslint-plugin-x'
 import eslintToolingTs from 'typescript-eslint'
 import globals from 'globals'
-import { invoke } from '@txe/invoke'
 
 export default eslintToolingTs.config(
   {
