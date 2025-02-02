@@ -6,7 +6,6 @@ import eslintPluginNode from 'eslint-plugin-n'
 import eslintPluginOxlint from 'eslint-plugin-oxlint'
 // @ts-expect-error https://github.com/eslint-community/eslint-plugin-promise/issues/488
 import eslintPluginPromise from 'eslint-plugin-promise'
-import eslintPluginSecurity from 'eslint-plugin-security'
 import eslintPluginStylistic from '@stylistic/eslint-plugin'
 import eslintPluginUnicorn from 'eslint-plugin-unicorn'
 import eslintPluginVitest from '@vitest/eslint-plugin'
@@ -141,24 +140,6 @@ export default eslintToolingTs.config(
           ignores: ['promise-withresolvers'],
         },
       ],
-    },
-  },
-
-  eslintPluginSecurity.configs.recommended,
-  {
-    name: 'package/security-overrides',
-    rules: {
-      ...invoke(() => {
-        if (process.env.NODE_ENV === 'development') {
-          return {
-            'security/detect-object-injection': 'off',
-          }
-        }
-
-        return {
-          'security/detect-object-injection': 'warn',
-        }
-      }),
     },
   },
 

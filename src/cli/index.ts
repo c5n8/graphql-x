@@ -24,11 +24,9 @@ const {
 async function main() {
   console.log('Expanding...')
 
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
   const initial = await readFile(schemaPath, { encoding: 'utf-8' })
   const expanded = await expand(initial)
 
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
   await writeFile(outputPath, expanded, { encoding: 'utf-8' })
 
   console.log('Schema expanded.')
@@ -54,9 +52,7 @@ const cmd = await invoke(async () => {
 })
 
 export const cli = async () => {
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
   await readFile(schemaPath)
-  // eslint-disable-next-line security/detect-non-literal-fs-filename
   await mkdir(path.dirname(outputPath), { recursive: true })
 
   cmd()
