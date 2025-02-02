@@ -112,7 +112,13 @@ export default eslintToolingTs.config(
       'unicorn/consistent-destructuring': 'off',
       'unicorn/prevent-abbreviations': [
         'warn',
-        { allowList: { fn: true, args: true } },
+        {
+          allowList: {
+            pkg: true,
+            fn: true,
+            args: true,
+          },
+        },
       ],
     },
   },

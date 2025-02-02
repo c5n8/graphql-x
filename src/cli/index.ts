@@ -1,25 +1,45 @@
 import { expand } from '#package/expand.js'
+import { fileURLToPath } from 'node:url'
 import { invoke } from '@txe/invoke'
 import { mkdir } from 'node:fs/promises'
-import { parseArgs } from 'node:util'
 import path from 'node:path'
+import { program } from 'commander'
 import { readFile } from 'node:fs/promises'
 import { writeFile } from 'node:fs/promises'
 
-const args = parseArgs({
-  options: {
-    schema: { type: 'string' },
-    output: { type: 'string' },
-    watch: { type: 'boolean' },
-  },
-  strict: true,
+const pkg = await invoke(async () => {
+  let x
+
+  x = fileURLToPath(import.meta.url)
+  x = path.dirname(x)
+  x = path.join(x, '../../package.json')
+  x = await readFile(x, { encoding: 'utf-8' })
+  x = JSON.parse(x)
+
+  return x
 })
+
+program
+  .requiredOption('--schema <string>', 'Initial schema file path')
+  .requiredOption('--output <string>', 'Expanded schema ~file path')
+  .option('--watch', 'Run in watch mode')
+
+program
+  .name('graphql-x')
+  .description('Expand GraphQL schema with macro directives')
+  .version(pkg.version)
+
+program.parse()
 
 const {
   schema: schemaPath = '',
   output: outputPath = '',
   watch = false,
-} = args.values
+} = program.opts<{
+  schema: string
+  output: string
+  watch: boolean
+}>()
 
 async function main() {
   console.log('Expanding...')
