@@ -6,6 +6,7 @@
 GraphQL eXpansion is a library designed to make GraphQL schema authoring less of a hassle by automating the repetitive bits using macro directives.
 
 Try it in playground linked below to get a sense on how it works.
+
 https://graphql-x.web.app/
 
 ## Quick Start
