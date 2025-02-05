@@ -21,7 +21,7 @@ const pkg = await invoke(async () => {
 
 program
   .requiredOption('--schema <string>', 'Initial schema file path')
-  .requiredOption('--output <string>', 'Expanded schema ~file path')
+  .requiredOption('--output <string>', 'Expanded schema file path')
   .option('--watch', 'Run in watch mode')
 
 program
