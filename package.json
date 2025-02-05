@@ -18,14 +18,14 @@
   },
   "description": "GraphQL eXpansion",
   "license": "MIT",
-  "author": "Chabib N. R. <cnr@tenex.engineering> (https://tenex.engineering)",
-  "homepage": "https://github.com/tenex-engineering/graphql-x#readme",
+  "author": "Chabib N.",
+  "homepage": "https://github.com/c5n8/graphql-x#readme",
   "bugs": {
-    "url": "https://github.com/tenex-engineering/graphql-x/issues"
+    "url": "https://github.com/c5n8/graphql-x/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tenex-engineering/graphql-x.git"
+    "url": "git+https://github.com/c5n8/graphql-x.git"
   },
   "keywords": [
     "graphql",
