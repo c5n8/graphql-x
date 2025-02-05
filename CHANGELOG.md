@@ -1,5 +1,11 @@
 # graphql-x
 
+## 0.25.0
+
+### Minor Changes
+
+- 64d1930: docs
+
 ## 0.24.0
 
 ### Minor Changes
