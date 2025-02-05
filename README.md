@@ -7,7 +7,7 @@ GraphQL eXpansion is a library designed to make GraphQL schema authoring less of
 
 Try it in playground linked below to get a sense on how it works.
 
-https://graphql-x.web.app/
+[GraphQL X Playground](https://graphql-x.web.app)
 
 ## Quick Start
 
