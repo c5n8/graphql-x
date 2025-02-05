@@ -1,4 +1,3 @@
-import './index.js'
 import { exec as _exec } from 'node:child_process'
 import { expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
