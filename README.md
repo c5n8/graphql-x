@@ -1,7 +1,6 @@
-<div align="center">
-  <h1>GraphQL eXpansion</h1>
-  <br>
-</div>
+# GraphQL eXpansion
+
+[![npm version](https://badge.fury.io/js/@txe%2Fgraphql-x.svg)](https://badge.fury.io/js/@txe%2Fgraphql-x)
 
 GraphQL eXpansion is a library designed to make GraphQL schema authoring less of a hassle by automating the repetitive bits using macro directives.
 
