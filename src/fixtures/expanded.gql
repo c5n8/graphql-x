@@ -315,7 +315,7 @@ input DateTimeFilterInput {
 }
 
 input SortOrderInput {
-  sort: SortOrder
+  sort: SortOrder!
   nulls: NullsOrder
 }
 

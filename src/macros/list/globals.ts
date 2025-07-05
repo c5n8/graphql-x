@@ -105,7 +105,7 @@ const types: Record<string, ObjectType> = invoke(() => {
           new ObjectType({
             name,
             fields: {
-              sort: { type: SortOrder },
+              sort: { type: new NonNull(SortOrder) },
               nulls: { type: new Scalar({ name: 'NullsOrder' }) },
             },
           }),
