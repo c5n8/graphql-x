@@ -178,7 +178,7 @@ input TodoListRelationFilterInput {
 }
 
 input TodoCursorInput {
-  id: ID
+  id: ID!
   createdAt: DateTime
   description: String
   priority: Int

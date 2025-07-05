@@ -6,6 +6,7 @@ import type { InputValueDefinitionNode } from 'graphql'
 import { invoke } from '@txe/invoke'
 import { Kind } from 'graphql'
 import type { Mutable } from '#package/utils/mutable.js'
+import type { NamedTypeNode } from 'graphql'
 import type { ObjectTypeDefinitionNode } from 'graphql'
 import { parse } from 'graphql'
 import { printSchema } from 'graphql'
@@ -602,10 +603,21 @@ function createListInput(
           {
             kind: Kind.INPUT_VALUE_DEFINITION,
             name: { kind: Kind.NAME, value: field.name.value },
-            type: {
-              kind: Kind.NAMED_TYPE,
-              name: { kind: Kind.NAME, value: fieldType.name.value },
-            },
+            type: invoke(() => {
+              const type: NamedTypeNode = {
+                kind: Kind.NAMED_TYPE,
+                name: { kind: Kind.NAME, value: fieldType.name.value },
+              }
+
+              if (field.name.value === 'id') {
+                return {
+                  kind: Kind.NON_NULL_TYPE,
+                  type,
+                }
+              }
+
+              return type
+            }),
           },
         ]
       }),
